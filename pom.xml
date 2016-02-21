@@ -20,16 +20,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>com.surrey.com3014.group5.Application</start-class>
         <java.version>1.8</java.version>
-        <plugin.mvn.compiler.version>3.3</plugin.mvn.compiler.version>
-        <plugin.mvn.surefire.version>2.18.1</plugin.mvn.surefire.version>
-        <plugin.mvn.shade.version>2.3</plugin.mvn.shade.version>
-
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -45,6 +47,10 @@
             <artifactId>jstl</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -56,7 +62,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${plugin.mvn.compiler.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
