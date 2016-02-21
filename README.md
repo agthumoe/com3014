@@ -9,6 +9,5 @@ Tron game development as part of com3014 group coursework
 
 ## How to install dependencies and run the application
 * ```bower install``` to install web components
-* mvn clean spring-boot:run to compile and run the application
-* go to //localhost:8080/
-
+* ```mvn clean spring-boot:run``` to compile and run the application
+* go to ```//localhost:8080/```
