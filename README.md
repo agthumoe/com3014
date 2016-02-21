@@ -11,4 +11,4 @@ Tron game development as part of com3014 group coursework
 * ```bower install``` to install web components
 * ```mvn clean spring-boot:run``` to compile and run the application
 * go to ```//localhost:8080/```
-*MySQL runs on: localhost:3306, with username/password: root/root
+* MySQL runs on: localhost:3306, with username/password: root/root
