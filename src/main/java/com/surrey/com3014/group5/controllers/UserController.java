@@ -32,10 +32,9 @@ public class UserController {
     public String create(String username, String password, String email, String name) {
         String userId = "";
         try {
-            String encodedPassword = getPasswordEncoder().encode(password);
+            //String encodedPassword = getPasswordEncoder().encode(password);
             User user = new User(username, password, email, name);
-            logger.debug(user.getUsername() + " " + user.getPassword() + " " + user.getEmail() + " " + user.getName());
-            userDao.save(user);
+            user = userDao.save(user);
             userId = String.valueOf(user.getId());
         }
         catch (Exception ex) {
@@ -84,7 +83,7 @@ public class UserController {
     public String updateUser(long id, String password, String email, String name) {
         try {
             User user = userDao.findOne(id);
-            String encodedPassword = getPasswordEncoder().encode(password);
+            //String encodedPassword = getPasswordEncoder().encode(password);
             user.setPassword(password);
             user.setEmail(email);
             user.setName(name);
@@ -116,7 +115,7 @@ public class UserController {
     /**
      * Get by email
      */
-    @RequestMapping("/get-by-email")
+    @RequestMapping("/getByEmail")
     @ResponseBody
     public String getByEmail(String email) {
         String userId = "";
