@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by spyro on 21-Feb-16.
  */
 @Transactional
-public interface UserDao extends CrudRepository<User, Long>{
+public interface UserDao extends IDao<User>{
 
     User findByUsername(String username);
 

@@ -1,11 +1,10 @@
 package com.surrey.com3014.group5.controllers;
 
-import com.surrey.com3014.group5.daos.UserDao;
 import com.surrey.com3014.group5.models.User;
+import com.surrey.com3014.group5.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,12 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    private final IUserService userService;
 
     @Autowired
-    private UserDao userDao;
+    public UserController(IUserService userService){
+        this.userService = userService;
+    }
 
-    private PasswordEncoder passwordEncoder;
+
     /**
      * Creating new user.
      */
@@ -32,9 +35,8 @@ public class UserController {
     public String create(String username, String password, String email, String name) {
         String userId = "";
         try {
-            //String encodedPassword = getPasswordEncoder().encode(password);
             User user = new User(username, password, email, name);
-            user = userDao.save(user);
+            user = userService.create(user);
             userId = String.valueOf(user.getId());
         }
         catch (Exception ex) {
@@ -51,7 +53,7 @@ public class UserController {
     public String deleteById(long id) {
         try {
             User user = new User(id);
-            userDao.delete(user);
+            userService.delete(user);
         }
         catch (Exception ex) {
             return "Error deleting the user:" + ex.toString();
@@ -66,8 +68,8 @@ public class UserController {
     @ResponseBody
     public String deleteByUsername(String username) {
         try {
-            User user = userDao.findByUsername(username);
-            userDao.delete(user);
+            User user = userService.findByUsername(username);
+            userService.delete(user);
         }
         catch (Exception ex) {
             return "Error deleting the user:" + ex.toString();
@@ -76,18 +78,18 @@ public class UserController {
     }
 
     /**
-     *
+     *Update the user
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update")
     @ResponseBody
     public String updateUser(long id, String password, String email, String name) {
         try {
-            User user = userDao.findOne(id);
+            User user = userService.findOne(id);
             //String encodedPassword = getPasswordEncoder().encode(password);
             user.setPassword(password);
             user.setEmail(email);
             user.setName(name);
-            userDao.save(user);
+            userService.update(user);
         }
         catch (Exception ex) {
             return "Error updating the user: " + ex.toString();
@@ -103,7 +105,7 @@ public class UserController {
     public String getByUsername(String username) {
         String userId = "";
         try {
-            User user = userDao.findByUsername(username);
+            User user = userService.findByUsername(username);
             userId = String.valueOf(user.getId());
         }
         catch (Exception ex) {
@@ -120,7 +122,7 @@ public class UserController {
     public String getByEmail(String email) {
         String userId = "";
         try {
-            User user = userDao.findByEmail(email);
+            User user = userService.findByEmail(email);
             userId = String.valueOf(user.getId());
         }
         catch (Exception ex) {
@@ -129,14 +131,8 @@ public class UserController {
         return "The user id is: " + userId;
     }
 
-    public PasswordEncoder getPasswordEncoder(){
-        return this.passwordEncoder;
+    public IUserService getUserService() {
+        return userService;
     }
-
-
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder){
-        this.passwordEncoder = passwordEncoder;
-    }
-
 
 }

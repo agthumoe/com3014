@@ -7,11 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="USER")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+public class User extends AMutableModel{
 
     @Column(unique = true, nullable = false, updatable = false)
     private String username;
@@ -28,7 +24,7 @@ public class User {
     public User() { }
 
     public User(long id) {
-        this.id = id;
+        this.setId(id);
     }
 
     public User(String username, String password, String email, String name) {
@@ -36,15 +32,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.name = name;
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -82,7 +69,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-            "id=" + id +
+            "id=" + this.getId() +
             ", username='" + username + '\'' +
             ", email='" + email + '\'' +
             ", name='" + name + '\'' +
