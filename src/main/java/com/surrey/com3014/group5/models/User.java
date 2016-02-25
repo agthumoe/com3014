@@ -1,6 +1,9 @@
 package com.surrey.com3014.group5.models;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by spyro on 21-Feb-16.
@@ -10,15 +13,19 @@ import javax.persistence.*;
 public class User extends AMutableModel{
 
     @Column(unique = true, nullable = false, updatable = false)
+    @NotNull
     private String username;
 
     @Column(unique = false, nullable = false)
+    @NotNull
     private String password;
 
     @Column(unique = true, nullable = false)
+    @NotNull
     private String email;
 
     @Column(unique = false, nullable = false)
+    @NotNull
     private String name;
 
     public User() { }

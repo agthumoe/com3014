@@ -6,6 +6,7 @@ import com.surrey.com3014.group5.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,4 +42,12 @@ public class UserService extends MutableService<User> implements IUserService {
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
+
+    @Override
+    public <S extends User> S create(S s) {
+        s.setPassword(BCrypt.hashpw(s.getPassword(), BCrypt.gensalt())); //Password hashed and salt added.
+        //(BCrypt.checkpw(candidate, hashed) for checking
+        return super.create(s);
+    }
+
 }
