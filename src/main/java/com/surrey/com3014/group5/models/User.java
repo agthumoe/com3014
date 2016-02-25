@@ -1,6 +1,5 @@
 package com.surrey.com3014.group5.models;
 
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

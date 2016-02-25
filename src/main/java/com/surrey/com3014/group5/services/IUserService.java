@@ -12,4 +12,6 @@ public interface IUserService extends IMutableService<User>{
 
     User findByEmail(String email);
 
+    boolean validate(User user);
+
 }

@@ -46,8 +46,15 @@ public class UserService extends MutableService<User> implements IUserService {
     @Override
     public <S extends User> S create(S s) {
         s.setPassword(BCrypt.hashpw(s.getPassword(), BCrypt.gensalt())); //Password hashed and salt added.
-        //(BCrypt.checkpw(candidate, hashed) for checking
         return super.create(s);
+    }
+
+    @Override
+    public boolean validate(User user){
+        User userFromDatabase = this.findByEmail(user.getEmail());
+        LOGGER.info("user password: " + user.getPassword());
+        LOGGER.info("userFromDatabase password: " + userFromDatabase.getPassword());
+        return BCrypt.checkpw(user.getPassword(), userFromDatabase.getPassword());
     }
 
 }

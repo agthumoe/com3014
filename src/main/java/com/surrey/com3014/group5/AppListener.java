@@ -27,7 +27,10 @@ public class AppListener implements ApplicationListener{
             LOGGER.debug("onApplicationEvent STARTING: " + applicationEvent.getClass().getSimpleName());
 
             // save a User
-            getUserService().create(new User("autoUsername", "autoPassword", "autoEmail", "autoName"));
+            User autoUser = new User("autoUsername", "autoPassword", "autoEmail", "autoName");
+            getUserService().create(autoUser);
+
+
 
             LOGGER.info("Users found with findAll():");
             for (Object o : getUserService().findAll()) {
@@ -56,6 +59,9 @@ public class AppListener implements ApplicationListener{
             LOGGER.info("--------------------------------");
             LOGGER.info(userByEmail.toString());
             LOGGER.info("");
+
+            //User Validation
+            LOGGER.info("User Validated: " + getUserService().validate(new User("autoUsername", "autoPassword", "autoEmail", "autoName")));
 
         }
     }
