@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5;
+package com.surrey.com3014.group5.config;
 
 import com.surrey.com3014.group5.models.User;
 import com.surrey.com3014.group5.services.IUserService;

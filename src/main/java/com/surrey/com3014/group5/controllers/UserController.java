@@ -5,10 +5,10 @@ import com.surrey.com3014.group5.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by spyro on 21-Feb-16.
@@ -26,23 +26,26 @@ public class UserController {
         this.userService = userService;
     }
 
+    @ModelAttribute("user")
+    public User setupUser(){
+        return new User();
+    }
 
     /**
      * Creating new user.
      */
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     @ResponseBody
-    public String create(String username, String password, String email, String name) {
+    public ResponseEntity<String> create(@ModelAttribute("user") User user) {
+        LOGGER.debug(user.toString());
         String userId = "";
         try {
-            User user = new User(username, password, email, name);
             user = userService.create(user);
-            userId = String.valueOf(user.getId());
         }
         catch (Exception ex) {
-            return "Error creating the user: " + ex.toString();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.toString());
         }
-        return "User successfully created with id = " + userId;
+        return ResponseEntity.ok(user.getUsername());
     }
 
     /**
