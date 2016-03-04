@@ -12,7 +12,11 @@ import javax.validation.constraints.NotNull;
 @MappedSuperclass
 public abstract class AModel extends AnEntity{
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3289023988626537358L;
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @NotNull
     private long id;

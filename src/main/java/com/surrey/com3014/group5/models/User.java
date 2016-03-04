@@ -1,6 +1,9 @@
 package com.surrey.com3014.group5.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -9,22 +12,24 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name="USER")
+@JsonIgnoreProperties({"password"})
 public class User extends AMutableModel{
+	private static final long serialVersionUID = -2664947283441061553L;
 
-    @Column(unique = true, nullable = false, updatable = false)
-    @NotNull
+	@Column(unique = true, nullable = false, updatable = false)
+    @NotBlank(message = "Username must not be null or empty")
     private String username;
 
     @Column(unique = false, nullable = false)
-    @NotNull
+    @NotNull(message = "Password must not be null or empty")
     private String password;
 
     @Column(unique = true, nullable = false)
-    @NotNull
+    @NotBlank(message = "Email must not be null or empty")
     private String email;
 
     @Column(unique = false, nullable = false)
-    @NotNull
+    @NotBlank(message = "Name must not be null or empty")
     private String name;
 
     public User() { }

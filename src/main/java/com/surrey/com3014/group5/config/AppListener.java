@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * Created by spyro on 23-Feb-16.
  */
 @Component
-public class AppListener implements ApplicationListener{
+public class AppListener implements ApplicationListener<ApplicationEvent>{
 
     private static final Logger LOGGER = Logger.getLogger(AppListener.class);
 

@@ -6,12 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
+
 /**
- * Created by spyro on 21-Feb-16.
+ * Spring MVC controller to handle user registration and management.
+ *
+ * @author Aung Thu Moe
+ * @author Spyros Balkonis
  */
 @RestController
 @RequestMapping("/users")
@@ -35,107 +38,82 @@ public class UserController {
      * Creating new user.
      */
     @RequestMapping(method = RequestMethod.POST, value = "/create")
+    @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<String> create(@ModelAttribute("user") User user) {
-        LOGGER.debug(user.toString());
-        String userId = "";
-        try {
-            user = userService.create(user);
-        }
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.toString());
-        }
-        return ResponseEntity.ok(user.getUsername());
+    public User create(@ModelAttribute("user") User user) {
+        user = userService.create(user);
+        return user;
     }
 
     /**
      * Delete the user given the id
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteById")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public String deleteById(long id) {
-        try {
-            User user = new User(id);
-            userService.delete(user);
-        }
-        catch (Exception ex) {
-            return "Error deleting the user:" + ex.toString();
-        }
-        return "User successfully deleted!";
+    public void deleteById(long id) {
+        User user = userService.findOne(id);
+        userService.delete(user);
     }
 
     /**
      * Delete the user given the username
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteByUsername")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public String deleteByUsername(String username) {
-        try {
-            User user = userService.findByUsername(username);
-            userService.delete(user);
+    public void deleteByUsername(String username) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw new EntityNotFoundException("Entity with username: " + username + " not found");
         }
-        catch (Exception ex) {
-            return "Error deleting the user:" + ex.toString();
-        }
-        return "User successfully deleted!";
+        userService.delete(user);
     }
 
     /**
-     *Update the user
+     * Update the user
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public String updateUser(long id, String password, String email, String name) {
-        try {
-            User user = userService.findOne(id);
-            //String encodedPassword = getPasswordEncoder().encode(password);
-            user.setPassword(password);
-            user.setEmail(email);
-            user.setName(name);
-            userService.update(user);
-        }
-        catch (Exception ex) {
-            return "Error updating the user: " + ex.toString();
-        }
-        return "User succesfully updated!";
+    public void updateUser(long id, String password, String email, String name) {
+        User user = userService.findOne(id);
+        //String encodedPassword = getPasswordEncoder().encode(password);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setName(name);
+        userService.update(user);
     }
 
     /**
      * Get by username
      */
     @RequestMapping(method = RequestMethod.GET, value = "/getByUsername")
+    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public String getByUsername(String username) {
-        String userId = "";
-        try {
-            User user = userService.findByUsername(username);
-            userId = String.valueOf(user.getId());
+    public User getByUsername(String username) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw new EntityNotFoundException("Entity with username: " + username + " not found");
         }
-        catch (Exception ex) {
-            return "User not found";
-        }
-        return "The user id is: " + userId;
+        return user;
     }
 
     /**
      * Get by email
      */
     @RequestMapping("/getByEmail")
+    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public String getByEmail(String email) {
-        String userId = "";
-        try {
-            User user = userService.findByEmail(email);
-            userId = String.valueOf(user.getId());
+    public User getByEmail(String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            throw new EntityNotFoundException("Entity with email: " + email + "not found");
         }
-        catch (Exception ex) {
-            return "User not found";
-        }
-        return "The user id is: " + userId;
+        return user;
     }
 
     public IUserService getUserService() {
         return userService;
     }
-
 }

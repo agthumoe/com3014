@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public abstract class ImmutableService <T extends ADateStampedModel> extends BaseService<T> implements IImmutableService<T> {
 
-    public ImmutableService(IDao dao){
+    public ImmutableService(IDao<T> dao){
         super(dao);
     }
 

@@ -11,9 +11,9 @@ import javax.persistence.EntityNotFoundException;
  */
 public abstract class BaseService <T extends AnEntity> implements IService<T>{
 
-    private final IDao dao;
+    private final IDao<T> dao;
 
-    public BaseService(IDao dao){
+    public BaseService(IDao<T> dao){
         this.dao = dao;
     }
 
@@ -23,7 +23,7 @@ public abstract class BaseService <T extends AnEntity> implements IService<T>{
     }
 
     @Override
-    public Iterable findAll() {
+    public Iterable<T> findAll() {
         return this.getDao().findAll();
     }
 
@@ -56,7 +56,7 @@ public abstract class BaseService <T extends AnEntity> implements IService<T>{
         this.getDao().delete(t);
     }
 
-    public IDao getDao() {
+    public IDao<T> getDao() {
         return dao;
     }
 }

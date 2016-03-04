@@ -9,7 +9,7 @@ public interface IService<T extends AnEntity> {
 
     <S extends T> S create(S s);
 
-    Iterable findAll();
+    Iterable<T> findAll();
 
     T findOne(long id);
 

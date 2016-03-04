@@ -16,7 +16,11 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class AMutableModel extends ADateStampedModel{
 
-    @Column
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2617383166882423052L;
+	@Column
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date lastModified;

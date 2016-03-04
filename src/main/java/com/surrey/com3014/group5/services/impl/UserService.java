@@ -38,6 +38,7 @@ public class UserService extends MutableService<User> implements IUserService {
         return userDao;
     }
 
+    // redundant autowired??
     @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -45,7 +46,9 @@ public class UserService extends MutableService<User> implements IUserService {
 
     @Override
     public <S extends User> S create(S s) {
-        s.setPassword(BCrypt.hashpw(s.getPassword(), BCrypt.gensalt())); //Password hashed and salt added.
+    	if (!(null == s.getName() || s.getName().trim().equals(""))) {
+    		s.setPassword(BCrypt.hashpw(s.getPassword(), BCrypt.gensalt())); //Password hashed and salt added.
+    	}
         return super.create(s);
     }
 

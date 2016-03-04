@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class MutableService<T extends AMutableModel> extends ImmutableService<T> implements IMutableService<T> {
 
-    public MutableService(IDao dao){
+    public MutableService(IDao<T> dao){
         super(dao);
     }
 
