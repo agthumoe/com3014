@@ -1,18 +1,17 @@
 package com.surrey.com3014.group5.models;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by spyro on 21-Feb-16.
+ * Spring MVC model to represent user
  */
 @Entity
 @Table(name="USER")
-@JsonIgnoreProperties({"password"})
 public class User extends AMutableModel{
 	private static final long serialVersionUID = -2664947283441061553L;
 
@@ -22,6 +21,7 @@ public class User extends AMutableModel{
 
     @Column(unique = false, nullable = false)
     @NotNull(message = "Password must not be null or empty")
+    @JsonIgnore
     private String password;
 
     @Column(unique = true, nullable = false)

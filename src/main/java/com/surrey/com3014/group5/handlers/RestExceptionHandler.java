@@ -1,6 +1,9 @@
 package com.surrey.com3014.group5.handlers;
 
-import com.surrey.com3014.group5.messages.ErrorJsonInfo;
+import com.surrey.com3014.group5.messages.ErrorMessage;
+import com.surrey.com3014.group5.messages.ValidationErrorMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,13 +17,13 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 /**
- * This class handles exception and responds with proper Http status and json message.
+ * This class handles exception and constracts a proper error message.
  *
  * @author Aung Thu Moe
  */
 @ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers"})
 public class RestExceptionHandler extends ResponseEntityExceptionHandler{
-//    private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     /**
      * This method handles {@link DataIntegrityViolationException}
@@ -30,8 +33,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected ErrorJsonInfo handleDataIntegrityConstraintViolationException(DataIntegrityViolationException ex) {
-        return new ErrorJsonInfo(HttpStatus.BAD_REQUEST, ex, ex.getRootCause().getMessage());
+    protected ErrorMessage handleDataIntegrityConstraintViolationException(DataIntegrityViolationException ex) {
+        LOGGER.debug(ex.getMessage());
+        LOGGER.debug(ex.getCause().getMessage());
+        return new ErrorMessage(HttpStatus.BAD_REQUEST, ex, ex.getRootCause().getMessage());
+
     }
 
     /**
@@ -42,10 +48,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected ErrorJsonInfo handleConstraintViolationException(ConstraintViolationException ex) {
-        final ErrorJsonInfo error = new ErrorJsonInfo(HttpStatus.BAD_REQUEST, ex);
+    protected ValidationErrorMessage handleConstraintViolationException(ConstraintViolationException ex) {
+        final ValidationErrorMessage error = new ValidationErrorMessage(HttpStatus.BAD_REQUEST, ex);
         for (ConstraintViolation<?> v: ex.getConstraintViolations()) {
-            error.addErrorMessage(v.getPropertyPath().toString(), v.getMessage());
+            error.addMessage(v.getPropertyPath().toString(), v.getMessage());
         }
         return error;
     }
@@ -53,7 +59,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = EntityNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     @ResponseBody
-    protected ErrorJsonInfo handleEntityNotFoundException(EntityNotFoundException ex) {
-        return new ErrorJsonInfo(HttpStatus.NOT_FOUND, ex, ex.getMessage());
+    protected ErrorMessage handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new ErrorMessage(HttpStatus.NOT_FOUND, ex, ex.getMessage());
     }
 }
