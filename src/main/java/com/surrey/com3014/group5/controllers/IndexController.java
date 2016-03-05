@@ -18,7 +18,9 @@ public class IndexController {
     }
 
     @RequestMapping("/register")
-    public String register() {
+    public String register(Model model) {
+        model.addAttribute("title", "Tron Game | User Registration");
+        model.addAttribute("description", "This is user registration page for Tron game");
         return "register";
     }
 

@@ -11,15 +11,15 @@
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <c:choose>
-    <c:when test="${empty post.title}">
+    <c:when test="${empty title}">
         <title>Tron Game | Group 5</title>
     </c:when>
     <c:otherwise>
-        <title>${post.title}</title>
+        <title>${title}</title>
     </c:otherwise>
 </c:choose>
-<c:if test="${!empty post.description}">
-    <meta name="description" content="${post.description}">
+<c:if test="${!empty description}">
+    <meta name="description" content="${description}">
 </c:if>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">

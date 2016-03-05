@@ -6,13 +6,28 @@
     <%@include file="../template/browserupgrade.jsp"%>
     <body>
         <div class="container">
-            <form action="/users/create" method="post">
-                Username: <input type="text" name="username"><br>
-                Password: <input type="password" name="password"><br>
-                Name: <input type="text" name="name"><br>
-                Email: <input type="email" name="email"><br>
-                <input type="submit" value="Submit">
-            </form>
+            <h1 class="col-sm-offset-3 col-sm-6 well">Registration Form</h1>
+            <div class="col-sm-offset-3 col-sm-6 well">
+                <form action="/users/create" method="post">
+                    <fieldset class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                </form>
+            </div>
         </div>
         <%@include file="../template/scripts.jsp"%>
     </body>
