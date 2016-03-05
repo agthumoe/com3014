@@ -46,10 +46,10 @@ Create ```database.properties``` file with the following codes in the ```resourc
         <head>
             <!-- Include all necessary tags in the html head tag -->
             <%@include file="../template/head.jsp" %>
+            <!-- Add any extra css files here -->
         </head>
         <!-- Include browserhappy tag to show warning for very old browser -->
         <%@include file="../template/browserupgrade.jsp"%>
-        <!-- Add any extra css files here -->
         <body>
             <!-- Add your site or application content here -->
             
