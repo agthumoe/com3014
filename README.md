@@ -11,7 +11,7 @@ Tron game development as part of com3014 group coursework
 * ```bower install``` to install web components
 
 ## Configure database
-Create ```database.properties``` files with the following code in the ```resources/META-INF/resources/properties``` folder.
+Create ```database.properties``` file with the following codes in the ```resources/META-INF/resources/properties``` folder.
 
     # YOUR MYSQL URL (following is the default so will probably work for everyone)
     spring.datasource.url= jdbc:mysql://localhost:3306/trondb
@@ -39,3 +39,22 @@ Create ```database.properties``` files with the following code in the ```resourc
 * ```mvn clean spring-boot:run``` to compile and run the application
 * go to ```//localhost:8080/```
 * MySQL runs on: localhost:3306, with username/password: root/root
+
+## Default jsp view file using templates
+    <!DOCTYPE html>
+    <html class="no-js" lang="en">
+        <head>
+            <!-- Include all necessary tags in the html head tag -->
+            <%@include file="../template/head.jsp" %>
+        </head>
+        <!-- Include browserhappy tag to show warning for very old browser -->
+        <%@include file="../template/browserupgrade.jsp"%>
+        <!-- Add any extra css files here -->
+        <body>
+            <!-- Add your site or application content here -->
+            
+            <!-- Include all necessary javascript library files -->
+            <%@include file="../template/scripts.jsp"%>
+            <!-- Add any extra javascript files here -->
+        </body>
+    </html>
