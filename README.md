@@ -10,8 +10,8 @@ Tron game development as part of com3014 group coursework
 ## Install web components
 * ```bower install``` to install web components
 
-## Configure database configuration
-Create ```database.properties``` file with the following code in the ```resources/META-INF/resources/properties``` folder.
+## Configure database
+Create ```database.properties``` files with the following code in the ```resources/META-INF/resources/properties``` folder.
 
     # YOUR MYSQL URL (following is the default so will probably work for everyone)
     spring.datasource.url= jdbc:mysql://localhost:3306/trondb
