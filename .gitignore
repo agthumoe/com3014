@@ -123,4 +123,5 @@ bower_components
 ######################
 !gradle/wrapper/gradle-wrapper.jar
 
-
+# Ignore database configuration
+database.properties

@@ -2,6 +2,8 @@ package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.models.User;
 import com.surrey.com3014.group5.services.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ import javax.persistence.EntityNotFoundException;
 @RequestMapping("/users")
 public class UserController {
 
-//    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final IUserService userService;
 
@@ -40,6 +42,7 @@ public class UserController {
     @ResponseBody
     public User create(@ModelAttribute("user") User user) {
         user = userService.create(user);
+        LOGGER.debug("user created -> " + user.toString());
         return user;
     }
 
