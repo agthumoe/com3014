@@ -26,5 +26,5 @@
 
 <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/main.css">
-<script src="bower_components/modernizr/bin/modernizr"></script>
+<script src="bower_components/modernizr-built/dist/modernizr.min.js"></script>
 
