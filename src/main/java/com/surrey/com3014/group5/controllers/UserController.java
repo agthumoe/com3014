@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -37,23 +38,25 @@ public class UserController {
     /**
      * Creating new user.
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/create")
+    @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public User create(@ModelAttribute("user") User user) {
+    public User create(@ModelAttribute("user") User user, HttpServletResponse response) {
         user = userService.create(user);
         LOGGER.debug("user created -> " + user.toString());
+        response.setHeader("Location", "/users/" + user.getId());
         return user;
     }
 
     /**
      * Delete the user given the id
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/deleteById")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void deleteById(long id) {
+    public void deleteById(@PathVariable("id") long id, HttpServletResponse response) {
         User user = userService.findOne(id);
+        response.setHeader("Location", "/users");
         userService.delete(user);
     }
 
@@ -74,10 +77,10 @@ public class UserController {
     /**
      * Update the user
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/update")
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void updateUser(long id, String password, String email, String name) {
+    public void updateUser(@PathVariable("id") long id, String password, String email, String name) {
         User user = userService.findOne(id);
         //String encodedPassword = getPasswordEncoder().encode(password);
         user.setPassword(password);

@@ -6,7 +6,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 /**
  * Spring MVC model to represent user
  */
@@ -15,21 +16,26 @@ import javax.validation.constraints.NotNull;
 public class User extends AMutableModel{
 	private static final long serialVersionUID = -2664947283441061553L;
 
-	@Column(unique = true, nullable = false, updatable = false)
     @NotBlank(message = "Username must not be null or empty")
+    @Pattern(regexp = "^[a-z0-9]*$")
+    @Size(min = 1, max = 50)
+	@Column(unique = true, nullable = false, updatable = false)
     private String username;
 
-    @Column(unique = false, nullable = false)
-    @NotNull(message = "Password must not be null or empty")
     @JsonIgnore
+    @NotNull(message = "Password must not be null or empty")
+    @Size(min = 60, max = 60)
+    @Column(unique = false, nullable = false)
     private String password;
 
-    @Column(unique = true, nullable = false)
     @NotBlank(message = "Email must not be null or empty")
+    @Size(max = 100)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = false, nullable = false)
     @NotBlank(message = "Name must not be null or empty")
+    @Size(max = 100)
+    @Column(unique = false, nullable = false)
     private String name;
 
     public User() { }

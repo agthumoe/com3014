@@ -8,6 +8,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import java.net.UnknownHostException;
 
 /**
  * Main application
@@ -16,7 +19,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @ComponentScan
 @EnableAutoConfiguration
-@PropertySource(value = {"classpath:META-INF/resources/properties/application.properties", "classpath:META-INF/resources/properties/database.properties"})
+@PropertySource(value = {"classpath:META-INF/application.properties", "classpath:META-INF/database.properties"})
 public class Application extends SpringBootServletInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class.getName());
 
@@ -25,9 +28,11 @@ public class Application extends SpringBootServletInitializer {
         return application.sources(Application.class);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         LOGGER.info("starting tron application");
-        SpringApplication.run(Application.class, args);
+        Environment env = SpringApplication.run(Application.class, args).getEnvironment();
+        LOGGER.info("Access URLs:\n----------------------------------------------------------\n\t" +
+                "Local: \t\thttp://127.0.0.1:8080\n");
     }
 
 }

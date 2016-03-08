@@ -1,0 +1,10 @@
+
+  ${AnsiColor.GREEN}████████╗██████╗  ██████╗ ███╗   ██╗
+  ${AnsiColor.GREEN}╚══██╔══╝██╔══██╗██╔═══██╗████╗  ██║
+  ${AnsiColor.GREEN}   ██║   ██████╔╝██║   ██║██╔██╗ ██║
+  ${AnsiColor.GREEN}   ██║   ██╔══██╗██║   ██║██║╚██╗██║
+  ${AnsiColor.GREEN}   ██║   ██║  ██║╚██████╔╝██║ ╚████║
+  ${AnsiColor.GREEN}   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+
+
+${AnsiColor.BRIGHT_BLUE}:: COM3014 - Group5 🤓  :: Running Spring Boot ${spring-boot.version} ::
