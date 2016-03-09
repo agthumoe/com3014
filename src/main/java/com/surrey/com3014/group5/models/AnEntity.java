@@ -8,9 +8,5 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 public abstract class AnEntity implements Serializable{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -158342729603651283L;
 }

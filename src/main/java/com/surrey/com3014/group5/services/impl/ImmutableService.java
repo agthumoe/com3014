@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.services.impl;
 
-import com.surrey.com3014.group5.daos.IDao;
 import com.surrey.com3014.group5.models.ADateStampedModel;
+import com.surrey.com3014.group5.repositories.Repository;
 import com.surrey.com3014.group5.services.IImmutableService;
 
 import java.util.Date;
@@ -11,14 +11,14 @@ import java.util.Date;
  */
 public abstract class ImmutableService <T extends ADateStampedModel> extends BaseService<T> implements IImmutableService<T> {
 
-    public ImmutableService(IDao<T> dao){
-        super(dao);
+    public ImmutableService(Repository<T> repository){
+        super(repository);
     }
 
     @Override
     public <S extends T> S create(S s) {
         s.setCreatedDate(new Date());
-        return (S) this.getDao().save(s);
+        return (S) this.getRepository().save(s);
     }
 
     @Override
@@ -26,6 +26,6 @@ public abstract class ImmutableService <T extends ADateStampedModel> extends Bas
         for(S as : s){
             as.setCreatedDate(new Date());
         }
-        return this.getDao().save(s);
+        return this.getRepository().save(s);
     }
 }

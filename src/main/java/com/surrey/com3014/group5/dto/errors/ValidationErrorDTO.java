@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.messages;
+package com.surrey.com3014.group5.dto.errors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ValidationErrorMessage extends ErrorMessage {
+public class ValidationErrorDTO extends ErrorDTO {
 
     private static final long serialVersionUID = -5490389937935689092L;
     /**
@@ -31,7 +31,7 @@ public class ValidationErrorMessage extends ErrorMessage {
      * @param status Http response status
      * @param exception the exception which has been thrown
      */
-    public ValidationErrorMessage(HttpStatus status, Throwable exception) {
+    public ValidationErrorDTO(HttpStatus status, Throwable exception) {
         super(status, exception, null);
         this.messages = new HashMap<>();
     }

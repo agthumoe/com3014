@@ -7,5 +7,5 @@ import com.surrey.com3014.group5.models.AMutableModel;
  */
 public interface IMutableService<T extends AMutableModel> extends IImmutableService<T>{
 
-    public <S extends T> S update(S s);
+    <S extends T> S update(S s);
 }

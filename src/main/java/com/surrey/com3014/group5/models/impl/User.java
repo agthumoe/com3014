@@ -1,7 +1,8 @@
-package com.surrey.com3014.group5.models;
+package com.surrey.com3014.group5.models.impl;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.surrey.com3014.group5.models.AMutableModel;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name="USER")
-public class User extends AMutableModel{
+public class User extends AMutableModel {
 	private static final long serialVersionUID = -2664947283441061553L;
 
     @NotBlank(message = "Username must not be null or empty")

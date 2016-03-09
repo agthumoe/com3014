@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.services.impl;
 
-import com.surrey.com3014.group5.daos.IDao;
 import com.surrey.com3014.group5.models.AMutableModel;
+import com.surrey.com3014.group5.repositories.Repository;
 import com.surrey.com3014.group5.services.IMutableService;
 
 import java.util.Date;
@@ -11,8 +11,8 @@ import java.util.Date;
  */
 public class MutableService<T extends AMutableModel> extends ImmutableService<T> implements IMutableService<T> {
 
-    public MutableService(IDao<T> dao){
-        super(dao);
+    public MutableService(Repository<T> repository){
+        super(repository);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class MutableService<T extends AMutableModel> extends ImmutableService<T>
     @Override
     public <S extends T> S update(S s) {
         s.setLastModified(new Date());
-        return (S) this.getDao().save(s);
+        return (S) this.getRepository().save(s);
     }
 }

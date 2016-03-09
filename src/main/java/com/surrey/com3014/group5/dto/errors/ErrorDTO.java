@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.messages;
+package com.surrey.com3014.group5.dto.errors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ErrorMessage implements Serializable {
+public class ErrorDTO implements Serializable {
     private static final long serialVersionUID = 2882194645276083077L;
     /**
      * Http status code
@@ -41,7 +41,7 @@ public class ErrorMessage implements Serializable {
      * @param exception the exception which has been thrown
      * @param message detailed error message
      */
-    public ErrorMessage(HttpStatus status, Throwable exception, String message) {
+    public ErrorDTO(HttpStatus status, Throwable exception, String message) {
         this.status = status.value();
         this.error = status.getReasonPhrase();
         this.exception = exception;

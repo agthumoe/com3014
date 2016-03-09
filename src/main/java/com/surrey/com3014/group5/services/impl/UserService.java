@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.services.impl;
 
-import com.surrey.com3014.group5.daos.UserDao;
-import com.surrey.com3014.group5.models.User;
+import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,31 +17,30 @@ public class UserService extends MutableService<User> implements IUserService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Autowired
-    public UserService(UserDao userDao){
-        super(userDao);
+    public UserService(UserRepository userRepository){
+        super(userRepository);
     }
 
     @Override
     public User findByUsername(String username) {
-        return this.getUserDao().findByUsername(username);
+        return this.getUserRepository().findByUsername(username);
     }
 
     @Override
     public User findByEmail(String email) {
-        return this.getUserDao().findByEmail(email);
+        return this.getUserRepository().findByEmail(email);
     }
 
-    public UserDao getUserDao() {
-        return userDao;
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 
-    // redundant autowired??
     @Autowired
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override

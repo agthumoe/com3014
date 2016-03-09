@@ -12,9 +12,6 @@ import javax.validation.constraints.NotNull;
 @MappedSuperclass
 public abstract class AModel extends AnEntity{
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 3289023988626537358L;
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.models.User;
+import com.surrey.com3014.group5.models.impl.User;
 
 /**
  * Created by spyro on 23-Feb-16.

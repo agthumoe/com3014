@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.controllers;
 
-import com.surrey.com3014.group5.models.User;
+import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
