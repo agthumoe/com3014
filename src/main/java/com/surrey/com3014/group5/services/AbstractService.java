@@ -4,6 +4,7 @@ import com.surrey.com3014.group5.models.Entity;
 import com.surrey.com3014.group5.repositories.Repository;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 /**
  * @author Spyros Balkonis
@@ -27,9 +28,9 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
     }
 
     @Override
-    public T findOne(long id) {
+    public Optional<T> findOne(long id) {
         if(this.exists(id)) {
-            return (T) this.getRepository().findOne(id);
+            return Optional.ofNullable(getRepository().findOne(id));
         }else {
             throw new EntityNotFoundException("Entity with id: " + id + " not found");
         }

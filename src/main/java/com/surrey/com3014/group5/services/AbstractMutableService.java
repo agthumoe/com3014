@@ -31,6 +31,6 @@ public class AbstractMutableService<T extends MutableModel> extends AbstractImmu
     @Override
     public <S extends T> S update(S s) {
         s.setLastModified(new Date());
-        return (S) this.getRepository().save(s);
+        return this.getRepository().save(s);
     }
 }

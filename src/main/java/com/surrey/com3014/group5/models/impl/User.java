@@ -9,6 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Spring MVC model to represent user
@@ -27,7 +29,7 @@ public class User extends MutableModel {
 
     @JsonIgnore
     @NotNull(message = "Password must not be null or empty")
-    @Size(min = 60, max = 60)
+    @Size(min = 5, max = 60)
     @Column(unique = false, nullable = false)
     private String password;
 
@@ -41,13 +43,26 @@ public class User extends MutableModel {
     @Column(unique = false, nullable = false)
     private String name;
 
-    public User() { }
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "permission", joinColumns = {
+        @JoinColumn(name = "userId", nullable = false, updatable = false)},
+        inverseJoinColumns = {
+            @JoinColumn(name = "authorityId",
+                nullable = false, updatable = false)})
+    private Set<Authority> authorities = new HashSet<>(0);
+
+    public User() {
+        super();
+    }
 
     public User(long id) {
+        super();
         this.setId(id);
     }
 
     public User(String username, String password, String email, String name) {
+        super();
         this.username = username;
         this.password = password;
         this.email = email;
@@ -84,6 +99,14 @@ public class User extends MutableModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Authority> getAuthorities() {
+        return this.authorities;
+    }
+
+    public void addAuthority(Authority authority) {
+        this.authorities.add(authority);
     }
 
     @Override

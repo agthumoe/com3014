@@ -11,9 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Aung Thu Moe
  */
 @Controller
-public class IndexController {
+public class MainController {
 
-    @RequestMapping("/")
+    @RequestMapping({"/", "index"})
     public String index(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
         model.addAttribute("name", name);
         return "index";
@@ -36,6 +36,21 @@ public class IndexController {
 
         return model;
 
+    }
+
+    @RequestMapping(value = "/login")
+    public String loginPage(
+        @RequestParam(value = "error", required = false) String error,
+        @RequestParam(value = "logout", required = false) String logout,
+        Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Invalid username and password!");
+        }
+
+        if (logout != null) {
+            model.addAttribute("msg", "You've been logged out successfully.");
+        }
+        return "login";
     }
 
 }
