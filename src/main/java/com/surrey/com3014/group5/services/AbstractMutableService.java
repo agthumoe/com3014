@@ -1,17 +1,16 @@
-package com.surrey.com3014.group5.services.impl;
+package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.models.AMutableModel;
+import com.surrey.com3014.group5.models.MutableModel;
 import com.surrey.com3014.group5.repositories.Repository;
-import com.surrey.com3014.group5.services.IMutableService;
 
 import java.util.Date;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
-public class MutableService<T extends AMutableModel> extends ImmutableService<T> implements IMutableService<T> {
+public class AbstractMutableService<T extends MutableModel> extends AbstractImmutableService<T> implements MutableService<T> {
 
-    public MutableService(Repository<T> repository){
+    public AbstractMutableService(Repository<T> repository){
         super(repository);
     }
 

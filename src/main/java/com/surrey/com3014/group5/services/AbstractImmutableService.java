@@ -1,17 +1,16 @@
-package com.surrey.com3014.group5.services.impl;
+package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.models.ADateStampedModel;
+import com.surrey.com3014.group5.models.DateStampedModel;
 import com.surrey.com3014.group5.repositories.Repository;
-import com.surrey.com3014.group5.services.IImmutableService;
 
 import java.util.Date;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
-public abstract class ImmutableService <T extends ADateStampedModel> extends BaseService<T> implements IImmutableService<T> {
+public abstract class AbstractImmutableService<T extends DateStampedModel> extends AbstractService<T> implements ImmutableService<T> {
 
-    public ImmutableService(Repository<T> repository){
+    public AbstractImmutableService(Repository<T> repository){
         super(repository);
     }
 

@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.services.IUserService;
+import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,10 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private final IUserService userService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(IUserService userService){
+    public UserController(UserService userService){
         this.userService = userService;
     }
 
@@ -117,7 +117,7 @@ public class UserController {
         return user;
     }
 
-    public IUserService getUserService() {
+    public UserService getUserService() {
         return userService;
     }
 }

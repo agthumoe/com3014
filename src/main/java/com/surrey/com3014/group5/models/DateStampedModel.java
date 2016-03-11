@@ -9,10 +9,10 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
 @MappedSuperclass
-public class ADateStampedModel extends AModel{
+public class DateStampedModel extends Model {
 
 	private static final long serialVersionUID = 7177871077863701747L;
 	@Column(updatable = false)

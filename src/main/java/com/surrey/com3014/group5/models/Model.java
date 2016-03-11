@@ -7,10 +7,10 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
 @MappedSuperclass
-public abstract class AModel extends AnEntity{
+public abstract class Model extends Entity {
 
 	private static final long serialVersionUID = 3289023988626537358L;
 	@Id
@@ -31,9 +31,9 @@ public abstract class AModel extends AnEntity{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AModel aModel = (AModel) o;
+        Model model = (Model) o;
 
-        return getId() == aModel.getId();
+        return getId() == model.getId();
 
     }
 

@@ -2,19 +2,21 @@ package com.surrey.com3014.group5.models.impl;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.surrey.com3014.group5.models.AMutableModel;
+import com.surrey.com3014.group5.models.MutableModel;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 /**
  * Spring MVC model to represent user
+ * @author Spyros Balkonis
  */
 @Entity
-@Table(name="USER")
-public class User extends AMutableModel {
+@Table(name="user")
+public class User extends MutableModel {
 	private static final long serialVersionUID = -2664947283441061553L;
 
     @NotBlank(message = "Username must not be null or empty")

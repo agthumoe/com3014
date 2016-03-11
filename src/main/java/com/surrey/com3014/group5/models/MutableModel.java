@@ -9,12 +9,12 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  *
  * A model that can change over time
  */
 @MappedSuperclass
-public abstract class AMutableModel extends ADateStampedModel{
+public abstract class MutableModel extends DateStampedModel {
 
 	private static final long serialVersionUID = 2617383166882423052L;
 	@Column

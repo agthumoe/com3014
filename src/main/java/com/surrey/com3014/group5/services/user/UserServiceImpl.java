@@ -1,8 +1,8 @@
-package com.surrey.com3014.group5.services.impl;
+package com.surrey.com3014.group5.services.user;
 
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
-import com.surrey.com3014.group5.services.IUserService;
+import com.surrey.com3014.group5.services.AbstractMutableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +10,17 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
 @Service("userService")
-public class UserService extends MutableService<User> implements IUserService {
+public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository){
+    public UserServiceImpl(UserRepository userRepository){
         super(userRepository);
     }
 

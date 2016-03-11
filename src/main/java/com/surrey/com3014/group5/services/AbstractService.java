@@ -1,19 +1,18 @@
-package com.surrey.com3014.group5.services.impl;
+package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.models.AnEntity;
+import com.surrey.com3014.group5.models.Entity;
 import com.surrey.com3014.group5.repositories.Repository;
-import com.surrey.com3014.group5.services.IService;
 
 import javax.persistence.EntityNotFoundException;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
-public abstract class BaseService <T extends AnEntity> implements IService<T>{
+public abstract class AbstractService<T extends Entity> implements Service<T> {
 
     private final Repository<T> repository;
 
-    public BaseService(Repository<T> repository){
+    public AbstractService(Repository<T> repository){
         this.repository = repository;
     }
 

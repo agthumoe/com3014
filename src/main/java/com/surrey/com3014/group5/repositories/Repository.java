@@ -1,12 +1,12 @@
 package com.surrey.com3014.group5.repositories;
 
-import com.surrey.com3014.group5.models.AnEntity;
-import org.springframework.data.repository.CrudRepository;
+import com.surrey.com3014.group5.models.Entity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
 @NoRepositoryBean
-public interface Repository<T extends AnEntity> extends CrudRepository<T, Long> {
+public interface Repository<T extends Entity> extends JpaRepository<T, Long> {
 }

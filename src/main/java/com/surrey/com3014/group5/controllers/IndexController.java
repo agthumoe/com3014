@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Created by aungthumoe on 21/02/2016.
+ * @author Aung Thu Moe
  */
 @Controller
 public class IndexController {

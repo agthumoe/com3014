@@ -1,11 +1,11 @@
 package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.models.AnEntity;
+import com.surrey.com3014.group5.models.Entity;
 
 /**
- * Created by spyro on 23-Feb-16.
+ * @author Spyros Balkonis
  */
-public interface IService<T extends AnEntity> {
+public interface Service<T extends Entity> {
 
     <S extends T> S create(S s);
 

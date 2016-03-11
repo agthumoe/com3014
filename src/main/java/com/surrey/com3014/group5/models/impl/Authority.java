@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.models.impl;
 
-import com.surrey.com3014.group5.models.AModel;
+import com.surrey.com3014.group5.models.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -10,5 +10,5 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "authority")
-public class Authority extends AModel {
+public class Authority extends Model {
 }
