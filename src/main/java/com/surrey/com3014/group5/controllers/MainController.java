@@ -40,7 +40,7 @@ public class MainController {
 
     @RequestMapping(value = "/login")
     public String loginPage(
-        @RequestParam(value = "error", required = false) String error,
+        @RequestParam(value = "errors", required = false) String error,
         @RequestParam(value = "logout", required = false) String logout,
         Model model) {
         if (error != null) {

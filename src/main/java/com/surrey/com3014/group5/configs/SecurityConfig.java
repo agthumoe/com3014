@@ -3,7 +3,6 @@ package com.surrey.com3014.group5.configs;
 import com.surrey.com3014.group5.security.SecureAuthenticationProvider;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,13 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private ApplicationContext context;
 
     @Autowired
     private UserService userService;
-
-    private SecureAuthenticationProvider provider;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth, SecureAuthenticationProvider secureAuthenticationProvider) throws Exception {
@@ -46,26 +41,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SecureAuthenticationProvider secureAuthenticationProvider() {
-        this.provider = new SecureAuthenticationProvider(userService);
-        return this.provider;
+        return new SecureAuthenticationProvider(userService);
     }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .antMatchers("/admin/**").hasAuthority("admin")
             .antMatchers("/user/**").hasAuthority("user")
-            .antMatchers("/users/**").hasAuthority("admin")
-            .antMatchers("/register").permitAll()
+            .antMatchers("/api/register").permitAll()
+//            .antMatchers("/api/**").authenticated()
             .antMatchers("/").permitAll()
             .antMatchers("/index").permitAll()
         .and()
             .logout()
+            .logoutUrl("/api/logout")
             .logoutSuccessUrl("/")
             .permitAll()
         .and()
             .formLogin()
             .loginPage("/login")
-            .failureUrl("/login?error")
+            .loginProcessingUrl("/api/login")
             .usernameParameter("username")
             .passwordParameter("password")
             .permitAll();

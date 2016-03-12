@@ -50,7 +50,7 @@
     </c:if>
 
     <form name='loginForm'
-          action="/login" method="post">
+          action="api/login" method="post">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <table>
             <tr>

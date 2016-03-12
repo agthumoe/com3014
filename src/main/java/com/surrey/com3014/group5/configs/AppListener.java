@@ -7,6 +7,7 @@ import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -42,6 +43,7 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
             User admin = new User("admin", "password", "admin@localhost", "admin");
             this.userService.create(admin);
             LOGGER.debug("onApplicationEvent() user Admin created");
+            admin.addAuthority(userAuth);
             admin.addAuthority(adminAuth);
             this.userService.update(admin);
 
