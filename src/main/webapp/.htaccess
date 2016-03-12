@@ -79,10 +79,10 @@
 # ######################################################################
 
 # ----------------------------------------------------------------------
-# | Custom error messages/pages                                        |
+# | Custom errors messages/pages                                        |
 # ----------------------------------------------------------------------
 
-# Customize what Apache returns to the client in case of an error.
+# Customize what Apache returns to the client in case of an errors.
 # https://httpd.apache.org/docs/current/mod/core.html#errordocument
 
 ErrorDocument 404 /404.html
@@ -93,7 +93,7 @@ ErrorDocument 404 /404.html
 
 # Disable the pattern matching based on filenames.
 #
-# This setting prevents Apache from returning a 404 error as the result
+# This setting prevents Apache from returning a 404 errors as the result
 # of a rewrite when the directory with the same name does not exist.
 #
 # https://httpd.apache.org/docs/current/content-negotiation.html#multiviews
@@ -686,7 +686,7 @@ AddDefaultCharset utf-8
 
 # Prevent Apache from adding a trailing footer line containing
 # information about the server to the server-generated documents
-# (e.g.: error messages, directory listings, etc.)
+# (e.g.: errors messages, directory listings, etc.)
 #
 # https://httpd.apache.org/docs/current/mod/core.html#serversignature
 

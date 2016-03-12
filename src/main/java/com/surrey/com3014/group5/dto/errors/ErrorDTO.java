@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 
 /**
- * This class is the based template to display error message in json format.<br>
+ * This class is the based template to display errors message in json format.<br>
  * The message contains Http status and its representation, the exception thrown,
- * and the error message.
+ * and the errors message.
  *
  * @author Aung Thu Moe
  */
@@ -36,10 +36,10 @@ public class ErrorDTO implements Serializable {
     private final String message;
 
     /**
-     * Create error message.
+     * Create errors message.
      * @param status Http response status
      * @param exception the exception which has been thrown
-     * @param message detailed error message
+     * @param message detailed errors message
      */
     public ErrorDTO(HttpStatus status, Throwable exception, String message) {
         this.status = status.value();
@@ -74,8 +74,8 @@ public class ErrorDTO implements Serializable {
     }
 
     /**
-     * Get detailed error message of the exception
-     * @return detailed error message
+     * Get detailed errors message of the exception
+     * @return detailed errors message
      */
     public String getMessage() {
         return message;

@@ -23,10 +23,6 @@ public class Authority extends DateStampedModel implements GrantedAuthority {
     @Column
     private String type;
 
-    public String getType() {
-        return type;
-    }
-
     public void setType(String type) {
         this.type = type;
     }
@@ -35,4 +31,5 @@ public class Authority extends DateStampedModel implements GrantedAuthority {
     public String getAuthority(){
         return type;
     }
+
 }

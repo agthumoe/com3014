@@ -1,8 +1,10 @@
 package com.surrey.com3014.group5.services.user;
 
 import com.surrey.com3014.group5.exceptions.NotFoundException;
+import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
+import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +76,15 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
         } else {
             throw new BadCredentialsException("User authentication failed");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> getUserWithAuthorities() {
+        Optional<User> userOptional = getUserRepository().findByUsername(SecurityUtils.getCurrentLogin());
+        if (userOptional.isPresent()) {
+            return userOptional;
+        }
+        throw new NotFoundException("User has not login yet");
     }
 
 }

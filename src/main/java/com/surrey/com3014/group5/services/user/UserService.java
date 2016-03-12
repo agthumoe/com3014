@@ -21,4 +21,6 @@ public interface UserService extends MutableService<User> {
     UserRepository getUserRepository();
 
     UsernamePasswordAuthenticationToken authenticate(final String username, final String password);
+
+    Optional<User> getUserWithAuthorities();
 }

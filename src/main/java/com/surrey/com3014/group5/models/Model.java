@@ -1,5 +1,7 @@
 package com.surrey.com3014.group5.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * @author Spyros Balkonis
  */
 @MappedSuperclass
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class Model extends Entity {
 
 	private static final long serialVersionUID = 3289023988626537358L;

@@ -3,6 +3,7 @@ package com.surrey.com3014.group5.models.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.surrey.com3014.group5.models.MutableModel;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -21,8 +22,8 @@ import java.util.Set;
 public class User extends MutableModel {
 	private static final long serialVersionUID = -2664947283441061553L;
 
-    @NotBlank(message = "Username must not be null or empty")
     @Pattern(regexp = "^[a-z0-9]*$")
+    @NotBlank(message = "Username must not be null or empty")
     @Size(min = 1, max = 50)
 	@Column(unique = true, nullable = false, updatable = false)
     private String username;
@@ -33,8 +34,9 @@ public class User extends MutableModel {
     @Column(unique = false, nullable = false)
     private String password;
 
+    @Email
     @NotBlank(message = "Email must not be null or empty")
-    @Size(max = 100)
+    @Size(min = 5, max = 100)
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -67,6 +69,11 @@ public class User extends MutableModel {
         this.password = password;
         this.email = email;
         this.name = name;
+    }
+
+    public User(String username, String password, String email, String name, final Set<Authority> authorities) {
+        this(username, password, email, name);
+        this.authorities = new HashSet<>(authorities);
     }
 
     public String getUsername() {

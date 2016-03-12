@@ -17,7 +17,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 /**
- * This class handles exception and constracts a proper error message.
+ * This class handles exception and constracts a proper errors message.
  *
  * @author Aung Thu Moe
  */
@@ -28,7 +28,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     /**
      * This method handles {@link DataIntegrityViolationException}
      * @param ex DataIntegrityViolationException
-     * @return error message in json format
+     * @return errors message in json format
      */
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -43,7 +43,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     /**
      * This method handles {@link ConstraintViolationException}
      * @param ex ConstraintViolationException
-     * @return error message in json format
+     * @return errors message in json format
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)

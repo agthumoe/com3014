@@ -11,7 +11,7 @@
     </h2>
 </c:if>
 <!-- csrt support -->
-<form action="/logout" method="post">
+<form action="api/logout" method="post">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="submit" value="SignOut"/>
 </form>
