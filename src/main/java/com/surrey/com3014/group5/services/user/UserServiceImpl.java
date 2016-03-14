@@ -1,14 +1,15 @@
 package com.surrey.com3014.group5.services.user;
 
+import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.surrey.com3014.group5.services.authority.AuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,30 +18,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.surrey.com3014.group5.configs.SecurityConfig.*;
+
 /**
  * @author Spyros Balkonis
  */
 @Service("userService")
 public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final PasswordEncoder passwordEncoder;
+//    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthorityService authorityService;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository){
         super(userRepository);
-        this.passwordEncoder = passwordEncoder;
     }
 
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return getUserRepository().findByUsername(username);
+    public User findByUsername(String username) {
+        Optional<User> userOptional = getUserRepository().findByUsername(username);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "User with username: " + username + " does not exist.");
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return getUserRepository().findByEmail(email);
+    public User findByEmail(String email) {
+        Optional<User> userOptional = getUserRepository().findByEmail(email);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "User with email: " + email + " does not exist.");
     }
 
     public UserRepository getUserRepository() {
@@ -57,34 +72,52 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
 
     @Override
     public boolean validate(User user) {
-        Optional<User> userFromDatabase = findByEmail(user.getEmail());
-        if (userFromDatabase.isPresent()) {
-            return passwordEncoder.matches(user.getPassword(), userFromDatabase.get().getPassword());
-        }
-        throw new NotFoundException("The requested user does not exist");
+        User userFromDatabase = findByEmail(user.getEmail());
+        return passwordEncoder.matches(user.getPassword(), userFromDatabase.getPassword());
     }
 
     @Override
     @Transactional
     public UsernamePasswordAuthenticationToken authenticate(final String username, final String password) {
-        Optional<User> user = this.findByUsername(username);
-        if (!user.isPresent()) {
-            throw new NotFoundException("The requested user with username: " + username + " does not exist");
-        }
-        if (this.passwordEncoder.matches(password, user.get().getPassword())) {
-            return new UsernamePasswordAuthenticationToken(username, password, user.get().getAuthorities());
+        User user = this.findByUsername(username);
+        if (this.passwordEncoder.matches(password, user.getPassword())) {
+            return new UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
         } else {
             throw new BadCredentialsException("User authentication failed");
         }
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities() {
+    public User getUserWithAuthorities() {
         Optional<User> userOptional = getUserRepository().findByUsername(SecurityUtils.getCurrentLogin());
         if (userOptional.isPresent()) {
-            return userOptional;
+            return userOptional.get();
         }
-        throw new NotFoundException("User has not login yet");
+        throw new NotFoundException(HttpStatus.UNAUTHORIZED, "No user has been authenticated yet");
     }
 
+    @Override
+    public User createUserWithAuthorities(UserDTO userDTO) {
+        User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getName());
+        for (String authority: userDTO.getAuthorities()) {
+            Optional<Authority> authorityOptional = authorityService.findByType(authority);
+            if (authorityOptional.isPresent()) {
+                user.addAuthority(authorityOptional.get());
+            } else {
+                throw new NotFoundException("Authority provided does not exist in the system");
+            }
+        }
+        return create(user);
+    }
+
+    @Override
+    public User create(UserDTO userDTO) {
+        User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getName());
+        Optional<Authority> authorityOptional = authorityService.findByType(USER);
+        if (authorityOptional.isPresent()) {
+            user.addAuthority(authorityOptional.get());
+            return this.create(user);
+        }
+        throw new NotFoundException("default authority: " + USER + " ,does not exist in the system!");
+    }
 }

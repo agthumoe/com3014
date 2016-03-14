@@ -8,7 +8,7 @@
         <div class="container">
             <h1 class="col-sm-offset-3 col-sm-6 well">Registration Form</h1>
             <div class="col-sm-offset-3 col-sm-6 well">
-                <form action="/api/v1/register" method="post">
+                <form action="/api/register" method="post">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <fieldset class="form-group">
                         <label for="username">Username</label>

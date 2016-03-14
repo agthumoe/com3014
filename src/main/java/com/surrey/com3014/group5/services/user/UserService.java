@@ -1,20 +1,23 @@
 package com.surrey.com3014.group5.services.user;
 
+import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.services.MutableService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
-import java.util.Optional;
 
 /**
  * @author Spyros Balkonis
  */
 public interface UserService extends MutableService<User> {
 
-    Optional<User> findByUsername(String username);
+    User create(UserDTO userDTO);
 
-    Optional<User> findByEmail(String email);
+    User createUserWithAuthorities(UserDTO userDTO);
+
+    User findByUsername(String username);
+
+    User findByEmail(String email);
 
     boolean validate(User user);
 
@@ -22,5 +25,5 @@ public interface UserService extends MutableService<User> {
 
     UsernamePasswordAuthenticationToken authenticate(final String username, final String password);
 
-    Optional<User> getUserWithAuthorities();
+    User getUserWithAuthorities();
 }

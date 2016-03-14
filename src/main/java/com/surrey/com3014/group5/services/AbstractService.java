@@ -1,10 +1,9 @@
 package com.surrey.com3014.group5.services;
 
+import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.Entity;
 import com.surrey.com3014.group5.repositories.Repository;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author Spyros Balkonis
@@ -28,11 +27,11 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
     }
 
     @Override
-    public Optional<T> findOne(long id) {
+    public T findOne(long id) {
         if(this.exists(id)) {
-            return Optional.ofNullable(getRepository().findOne(id));
+            return getRepository().findOne(id);
         }else {
-            throw new EntityNotFoundException("Entity with id: " + id + " not found");
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "Entity with id: " + id + " not found");
         }
     }
 

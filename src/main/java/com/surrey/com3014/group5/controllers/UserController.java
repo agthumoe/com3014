@@ -1,8 +1,8 @@
 package com.surrey.com3014.group5.controllers;
 
+import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -29,11 +28,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthorityService authorityService;
-
     @ModelAttribute("user")
-    public User setupUser(){
+    public User setupUser() {
         return new User();
     }
 
@@ -43,11 +39,10 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public User create(@ModelAttribute("user") User user, HttpServletResponse response) {
-        user = userService.create(user);
-        LOGGER.debug("user created -> " + user.toString());
+    public void create(@ModelAttribute("user") UserDTO userDTO, HttpServletResponse response) {
+        User user = userService.createUserWithAuthorities(userDTO);
+        LOGGER.debug("user created with provided authority -> " + user.toString());
         response.setHeader("Location", "/users/" + user.getId());
-        return user;
     }
 
     /**
@@ -56,12 +51,8 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public User read(@PathVariable("id") long id) {
-        Optional<User> user = userService.findOne(id);
-        if (user.isPresent()) {
-            return user.get();
-        }
-        throw new NotFoundException("The requested user with username does not exist");
+    public UserDTO read(@PathVariable("id") long id) {
+        return new UserDTO(userService.findOne(id));
     }
 
     /**
@@ -70,20 +61,16 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public User read(
+    public UserDTO read(
         @RequestParam(value = "username", required = false) String username,
         @RequestParam(value = "email", required = false) String email) {
-        Optional<User> user = Optional.empty();
         if (!(username == null || "".equals(username.trim()))) {
-            user = userService.findByUsername(username);
+            return new UserDTO(userService.findByUsername(username));
         }
         if (!(email == null || "".equals(email.trim()))) {
-            user = userService.findByEmail(email);
+            return new UserDTO(userService.findByEmail(email));
         }
-        if (user.isPresent()) {
-            return user.get();
-        }
-        throw new NotFoundException("The requested user does not exist");
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist");
     }
 
     /**
@@ -93,14 +80,9 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
     public void delete(@PathVariable("id") long id, HttpServletResponse response) {
-        Optional<User> userOptional = userService.findOne(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            response.setHeader("Location", "/api/v1/users");
-            userService.delete(user);
-        }
-
-        throw new NotFoundException("The requested user does not exist");
+        User user = userService.findOne(id);
+        response.setHeader("Location", "/api/users");
+        userService.delete(user);
     }
 
     /**
@@ -110,15 +92,11 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
     public void update(@PathVariable("id") long id, String password, String email, String name) {
-        Optional<User> userOptional = userService.findOne(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setPassword(password);
-            user.setEmail(email);
-            user.setName(name);
-            userService.update(user);
-        }
-        throw new NotFoundException("The requested user does not exist");
+        User user = userService.findOne(id);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setName(name);
+        userService.update(user);
     }
 
 }

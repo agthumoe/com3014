@@ -2,17 +2,18 @@ package com.surrey.com3014.group5.handlers;
 
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.dto.errors.ValidationErrorDTO;
+import com.surrey.com3014.group5.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -56,10 +57,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
         return error;
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    @ResponseBody
-    protected ErrorDTO handleEntityNotFoundException(EntityNotFoundException ex) {
-        return new ErrorDTO(HttpStatus.NOT_FOUND, ex, ex.getMessage());
+    @ExceptionHandler(value = NotFoundException.class)
+    protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
+        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex, ex.getMessage()), ex.getHttpStatus());
     }
 }
