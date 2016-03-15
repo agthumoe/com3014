@@ -1,15 +1,14 @@
 ### PROJECT DESCRIPTION
 A Tron based game with a baisc user management system, game lobby, live chat, leaderboards, and clans.
 
-
 ### TECHNOLOGIES
-# Management
+##### Management
 Bower
 Maven
 Swagger
 SASS
 
-# Libraries
+###### Libraries
 AngularJS
 jQuery
 CraftJS
@@ -19,7 +18,7 @@ Spring Security
 Hibernate
 Log4J
 
-# Servers
+##### Servers
 MySQL
 Apache Tomcat
 
