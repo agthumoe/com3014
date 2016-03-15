@@ -24,7 +24,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="../../assets/styles/main.css">
-<script src="../../bower_components/modernizr-built/dist/modernizr.min.js"></script>
+<script src="../../assets/bower_components/modernizr-built/dist/modernizr.min.js"></script>
 
