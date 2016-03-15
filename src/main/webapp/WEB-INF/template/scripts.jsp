@@ -6,9 +6,9 @@
   Date: 05/03/2016
   Time: 16:19
 --%>
-<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../../bower_components/jquery/dist/jquery.min.js"></script>
-<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../../bower_components/json3/lib/json3.js"></script>
-<script src="../../scripts/main.js"></script>
+<script src="../../assets/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="../../assets/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="../../assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../../assets/bower_components/json3/lib/json3.js"></script>
+<script src="../../assets/scripts/main.js"></script>
 
