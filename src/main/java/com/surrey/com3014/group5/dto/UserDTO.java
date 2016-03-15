@@ -99,6 +99,10 @@ public class UserDTO {
         this.authorities = authorities;
     }
 
+    public void addAuthority(String authority) {
+        this.authorities.add(authority);
+    }
+
     @Override
     public String toString() {
         return "UserDTO{" +

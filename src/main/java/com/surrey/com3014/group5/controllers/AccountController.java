@@ -1,20 +1,16 @@
 package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.dto.UserDTO;
-import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 /**
  * @author Aung Thu Moe
@@ -27,48 +23,28 @@ public class AccountController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthorityService authorityService;
-
-    @ModelAttribute("user")
-    public User setupUser(){
-        return new User();
+    @ModelAttribute("user_dto")
+    public UserDTO setupUser(){
+        return new UserDTO();
     }
 
+    @ApiOperation(value = "Register new user.", notes = "Create new user with default authority USER")
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public User register(@ModelAttribute("user") User user, HttpServletResponse response) {
-        Optional<Authority> userAuthority = authorityService.findByType("user");
-        if (!userAuthority.isPresent()) {
-            throw new NullPointerException("user authority does not exist");
-        }
-        // clear any predefined authority from user request
-        user.getAuthorities().clear();
-        // set to user authority as default
-        user.addAuthority(userAuthority.get());
-        user = userService.create(user);
+    public void register(@ModelAttribute("user_dto") UserDTO userDTO, HttpServletResponse response) {
+        User user = userService.create(userDTO);
         LOGGER.debug("user created -> " + user.toString());
-        response.setHeader("Location", "/api/v1/users/" + user.getId());
-        return user;
-    }
-
-    @RequestMapping(value = "/authenticate", method = RequestMethod.GET)
-    public String isAuthenticated(HttpServletRequest request) {
-        LOGGER.debug("REST request to check if the current user is authenticated");
-        return request.getRemoteUser();
+        response.setHeader("Location", "/api/users/" + user.getId());
     }
 
     /**
      * GET  /account -> get the current user.
      */
-    @RequestMapping(value = "/account",
-        method = RequestMethod.GET)
-    public ResponseEntity<UserDTO> getAccount() {
-        Optional<User> userOptional = userService.getUserWithAuthorities();
-        if (userOptional.isPresent()) {
-            return ResponseEntity.ok(new UserDTO(userOptional.get()));
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @RequestMapping(value = "/account", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public UserDTO getAccount() {
+        return new UserDTO(userService.getUserWithAuthorities());
     }
 }

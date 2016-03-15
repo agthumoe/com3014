@@ -21,6 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String ADMIN = "ADMIN";
+    public static final String USER = "USER";
+
     @Autowired
     private UserService userService;
 
@@ -47,8 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers("/admin/**").hasAuthority("admin")
-            .antMatchers("/user/**").hasAuthority("user")
+            .antMatchers("/admin/**").hasAuthority(ADMIN)
+            .antMatchers("/user/**").hasAuthority(USER)
             .antMatchers("/api/register").permitAll()
 //            .antMatchers("/api/**").authenticated()
             .antMatchers("/").permitAll()

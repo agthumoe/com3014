@@ -1,6 +1,7 @@
 {
   "name": "Tron",
   "version": "1.0.0",
+  "description": "Tron Game development as part of COM3014 module.",
   "author": [
     "Chris Doherty",
     "Aung Thu Moe",

@@ -7,12 +7,12 @@ import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import static com.surrey.com3014.group5.configs.SecurityConfig.*;
 /**
  * @author Aung Thu Moe
  */
@@ -31,12 +31,12 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
             LOGGER.debug("onApplicationEvent STARTING: " + applicationEvent.getClass().getSimpleName());
 
             Authority adminAuth = new Authority();
-            adminAuth.setType("admin");
+            adminAuth.setType(ADMIN);
             this.authorityService.create(adminAuth);
             LOGGER.debug("onApplicationEvent() Admin Authority created");
 
             Authority userAuth = new Authority();
-            userAuth.setType("user");
+            userAuth.setType(USER);
             this.authorityService.create(userAuth);
             LOGGER.debug("onApplicationEvent() User Authority created");
 
