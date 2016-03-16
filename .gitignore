@@ -2,7 +2,8 @@
 # Project Specific
 ######################
 /src/main/webapp/dist
-/src/main/webapp/assets/styles/**.css**
+/src/main/webapp/assets/styles/*.css
+/src/main/webapp/assets/styles/*.css.map
 ######################
 # Node
 ######################

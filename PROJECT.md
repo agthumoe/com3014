@@ -22,4 +22,5 @@ Log4J
 MySQL
 Apache Tomcat
 
-
+### References
+* [favicon icon source](http://www.favicon.cc/?action=icon&file_id=15276)
