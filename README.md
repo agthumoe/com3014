@@ -64,4 +64,4 @@ Create ```database.properties``` file with the following codes in the ```resourc
     </html>
 
 ## ERD
-![Entity Relationship Diagram](https://agthumoe@bitbucket.org/com3014/documentations.git/raw/master/images/ERD.jpg)
+![Entity Relationship Diagram](https://agthumoe@bitbucket.org/com3014/documentations.git/raw/master/images/ERD.png)
