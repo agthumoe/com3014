@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -60,5 +61,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ExceptionHandler(value = NotFoundException.class)
     protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
         return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex, ex.getMessage()), ex.getHttpStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    protected ResponseEntity<?> handleAnyException(HttpServletRequest request, Throwable ex) {
+        HttpStatus status = getStatus(request);
+        return new ResponseEntity<>(new ErrorDTO(status, ex, ex.getMessage()), status);
+    }
+
+    private HttpStatus getStatus(HttpServletRequest request) {
+        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+        if (statusCode == null) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return HttpStatus.valueOf(statusCode);
     }
 }

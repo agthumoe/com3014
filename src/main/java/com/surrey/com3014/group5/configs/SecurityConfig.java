@@ -54,10 +54,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/users/**").hasAuthority(ADMIN)
             .antMatchers("/user/**").hasAuthority(USER)
             .antMatchers("/assets/**").permitAll()
+            .antMatchers("/bower_components/**").permitAll()
+            .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/api/register**").permitAll()
+            .antMatchers("/scripts/**").permitAll()
             .antMatchers("/").permitAll()
-            .antMatchers("/index").permitAll()
-            .anyRequest().authenticated()
+            .antMatchers("/v2/api-docs").permitAll()
+//            .anyRequest().denyAll()
         .and()
             .logout()
             .logoutUrl("/api/logout")
@@ -65,10 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
         .and()
             .formLogin()
-            .loginPage("/login")
             .loginProcessingUrl("/api/login")
             .usernameParameter("username")
             .passwordParameter("password")
-            .permitAll();
+            .permitAll()
+        .and().csrf().disable();
     }
 }

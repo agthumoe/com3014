@@ -13,12 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class MainController {
 
-    @RequestMapping({"/", "index"})
-    public String index(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "index";
-    }
-
     @RequestMapping("/register")
     public String register(Model model) {
         model.addAttribute("title", "Tron Game | User Registration");

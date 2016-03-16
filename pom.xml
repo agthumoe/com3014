@@ -16,7 +16,21 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Tron</name>
-    <description>Tron Game development as part of COM3014 module.</description>
+    <description>A Tron based game with a baisc user management system, game lobby, live chat, leaderboards, and clans.</description>
+    <developers>
+        <developer>
+            <name>Aung Thu Moe</name>
+        </developer>
+        <developer>
+            <name>Chris Doherty</name>
+        </developer>
+        <developer>
+            <name>Spyridon Balkonis</name>
+        </developer>
+        <developer>
+            <name>Anthony Webb</name>
+        </developer>
+    </developers>
 
     <prerequisites>
         <maven>3.0.0</maven>
@@ -116,12 +130,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -136,6 +144,33 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>nl.geodienstencentrum.maven</groupId>
+                <artifactId>sass-maven-plugin</artifactId>
+                <version>2.16</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>update-stylesheets</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <source>
+                                <directory>${basedir}/src/main/webapp/assets/scss</directory>
+                                <includes>
+                                    <include>*.scss</include>
+                                </includes>
+                            </source>
+                            <destination>${project.basedir}/src/main/webapp/assets/styles</destination>
+                        </resource>
+                    </resources>
                 </configuration>
             </plugin>
         </plugins>

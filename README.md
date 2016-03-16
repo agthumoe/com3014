@@ -35,6 +35,10 @@ Create ```database.properties``` file with the following codes in the ```resourc
     # The SQL dialect makes Hibernate generate better SQL for the chosen database
     spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5Dialect
 
+## Compile SASS files
+* [SASS compiler plugin](http://www.geodienstencentrum.nl/sass-maven-plugin/plugin-info.html) has already been in the ```pom.xml``` file. So, SASS files should be compiled automatically during maven build. Please check the given link for more details and dependencies.
+* In order to enable auto compilation whenever you have updated SASS files, just run ```mvn sass:watch``` from terminal or from your favourite IDE.
+
 ## Run application
 * ```mvn clean spring-boot:run``` to compile and run the application
 * go to ```//localhost:8080/```
