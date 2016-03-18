@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.models.impl;
 
-import com.surrey.com3014.group5.models.DateStampedModel;
+import com.surrey.com3014.group5.models.Model;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
@@ -12,7 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "authority")
-public class Authority extends DateStampedModel implements GrantedAuthority {
+public class Authority extends Model implements GrantedAuthority {
 
     private static final long serialVersionUID = -8735115732090836845L;
 

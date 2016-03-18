@@ -4,7 +4,7 @@ import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.repositories.AuthorityRepository;
 import com.surrey.com3014.group5.repositories.Repository;
-import com.surrey.com3014.group5.services.AbstractImmutableService;
+import com.surrey.com3014.group5.services.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
  * @author Aung Thu Moe
  */
 @Service
-public class AuthorityServiceImpl extends AbstractImmutableService<Authority> implements AuthorityService {
+public class AuthorityServiceImpl extends AbstractService<Authority> implements AuthorityService {
 
     @Autowired
     public AuthorityServiceImpl(Repository<Authority> repository) {

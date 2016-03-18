@@ -20,7 +20,6 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ValidationErrorDTO extends ErrorDTO {
 
-    private static final long serialVersionUID = -5490389937935689092L;
     /**
      * Specific details about the validation errors message in key, value pairs.
      */
@@ -29,10 +28,9 @@ public class ValidationErrorDTO extends ErrorDTO {
     /**
      * Create a new validation errors message.
      * @param status Http response status
-     * @param exception the exception which has been thrown
      */
-    public ValidationErrorDTO(HttpStatus status, Throwable exception) {
-        super(status, exception, null);
+    public ValidationErrorDTO(HttpStatus status) {
+        super(status, null);
         this.messages = new HashMap<>();
     }
 

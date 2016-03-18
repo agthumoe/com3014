@@ -45,13 +45,11 @@ public class User extends MutableModel {
     @Column(unique = false, nullable = false)
     private String name;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "permission", joinColumns = {
-        @JoinColumn(name = "userId", nullable = false, updatable = false)},
-        inverseJoinColumns = {
-            @JoinColumn(name = "authorityId",
-                nullable = false, updatable = false)})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "permission",
+        joinColumns = {@JoinColumn(name = "userId", nullable = false, updatable = false)},
+        inverseJoinColumns = {@JoinColumn(name = "authorityId", nullable = false, updatable = false)})
     private Set<Authority> authorities = new HashSet<>(0);
 
     public User() {

@@ -22,11 +22,11 @@ public abstract class MutableModel extends DateStampedModel {
     @LastModifiedDate
     private Date lastModified;
 
-    public Date getLastModified() {
+    public Date getLastModifiedDate() {
         return lastModified;
     }
 
-    public void setLastModified(Date lastModified) {
+    public void setLastModifiedDate(Date lastModified) {
         this.lastModified = lastModified;
     }
 }

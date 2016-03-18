@@ -24,3 +24,4 @@ Apache Tomcat
 
 ### References
 * [favicon icon source](http://www.favicon.cc/?action=icon&file_id=15276)
+* [Custom 404 page](https://w3layouts.com/poses-404-page-not-found-mobile-web-template/)

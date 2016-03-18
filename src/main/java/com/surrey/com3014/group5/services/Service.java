@@ -2,6 +2,8 @@ package com.surrey.com3014.group5.services;
 
 import com.surrey.com3014.group5.models.Entity;
 
+import java.util.Optional;
+
 /**
  * @author Spyros Balkonis
  */
@@ -11,7 +13,7 @@ public interface Service<T extends Entity> {
 
     Iterable<T> findAll();
 
-    T findOne(long id);
+    Optional<T> findOne(long id);
 
     boolean exists(long id);
 

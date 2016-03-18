@@ -1,6 +1,7 @@
 package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.dto.UserDTO;
+import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -8,9 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  * @author Aung Thu Moe
@@ -23,28 +27,33 @@ public class AccountController {
     @Autowired
     private UserService userService;
 
-    @ModelAttribute("user_dto")
-    public UserDTO setupUser(){
-        return new UserDTO();
-    }
-
     @ApiOperation(value = "Register new user.", notes = "Create new user with default authority USER")
     @RequestMapping(method = RequestMethod.POST, value = "/register")
-    @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public void register(@ModelAttribute("user_dto") UserDTO userDTO, HttpServletResponse response) {
+    public ResponseEntity<?> register(@RequestBody UserDTO userDTO) throws URISyntaxException {
+        Optional<User> maybeUser = userService.findByUsername(userDTO.getUsername());
+        if (maybeUser.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "username already registered"));
+        }
+        maybeUser = userService.findByEmail(userDTO.getEmail());
+        if (maybeUser.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "email already registered"));
+        }
         User user = userService.create(userDTO);
         LOGGER.debug("user created -> " + user.toString());
-        response.setHeader("Location", "/api/users/" + user.getId());
+        return ResponseEntity.created(new URI("/api/users/" + user.getId())).body(new UserDTO(user));
     }
 
     /**
-     * GET  /account -> get the current user.
+     * GET  /account -> get the current login user.
      */
     @RequestMapping(value = "/account", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public UserDTO getAccount() {
-        return new UserDTO(userService.getUserWithAuthorities());
+    public ResponseEntity<?> getAccount() {
+        Optional<User> maybeUser = userService.getCurrentLogin();
+        if (maybeUser.isPresent()) {
+            return ResponseEntity.ok(new UserDTO(maybeUser.get()));
+        }
+        return new ResponseEntity<>("No user has been authenticated yet", HttpStatus.UNAUTHORIZED);
     }
 }

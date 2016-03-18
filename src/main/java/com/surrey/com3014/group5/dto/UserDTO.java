@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import org.hibernate.validator.constraints.Email;
@@ -8,22 +8,26 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * @author Aung Thu Moe
  */
-public class UserDTO {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class UserDTO implements Serializable{
+
     public static final int PASSWORD_MIN_LENGTH = 8;
     public static final int PASSWORD_MAX_LENGTH = 60;
+    private static final long serialVersionUID = 4730655544039668683L;
 
     @Pattern(regexp = "^[a-z0-9]*$")
     @NotBlank
     @Size(min = 1, max = 50)
     private String username;
 
-    @JsonIgnore
     @NotBlank
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
@@ -35,28 +39,19 @@ public class UserDTO {
 
     @Size(max = 100)
     private String name;
-    private List<String> authorities;
+
+    private List<String> authorities = new ArrayList<>();
 
     public UserDTO() {
         super();
     }
 
-    public UserDTO(String username, String password, String email, String name, List<String> authorities) {
+    public UserDTO (User user) {
         super();
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.name = name;
-        this.authorities = authorities;
-    }
-
-    public UserDTO(final User user) {
-        this(
-            user.getUsername(),
-            null,
-            user.getEmail(),
-            user.getName(),
-            user.getAuthorities().stream().map(Authority::getAuthority).collect(Collectors.toList()));
+        this.setName(user.getName());
+        this.setEmail(user.getEmail());
+        this.setUsername(user.getUsername());
+        this.password = null;
     }
 
     public String getUsername() {
@@ -112,5 +107,11 @@ public class UserDTO {
             ", name='" + name + '\'' +
             ", authorities=" + authorities +
             '}';
+    }
+
+    public static UserDTO createUserDTOWithAuthorities(User user) {
+        UserDTO userDTO = new UserDTO(user);
+        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getAuthority).collect(Collectors.toList()));
+        return userDTO;
     }
 }

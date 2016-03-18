@@ -13,13 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class MainController {
 
-    @RequestMapping("/register")
-    public String register(Model model) {
-        model.addAttribute("title", "Tron Game | User Registration");
-        model.addAttribute("description", "This is user registration page for Tron game");
-        return "register";
-    }
-
     @RequestMapping(value = "/admin**", method = RequestMethod.GET)
     public ModelAndView adminPage() {
 
@@ -30,21 +23,6 @@ public class MainController {
 
         return model;
 
-    }
-
-    @RequestMapping(value = "/login")
-    public String loginPage(
-        @RequestParam(value = "errors", required = false) String error,
-        @RequestParam(value = "logout", required = false) String logout,
-        Model model) {
-        if (error != null) {
-            model.addAttribute("error", "Invalid username and password!");
-        }
-
-        if (logout != null) {
-            model.addAttribute("msg", "You've been logged out successfully.");
-        }
-        return "login";
     }
 
 }

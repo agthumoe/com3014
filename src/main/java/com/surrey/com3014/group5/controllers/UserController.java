@@ -1,17 +1,32 @@
 package com.surrey.com3014.group5.controllers;
 
+import com.surrey.com3014.group5.configs.SecurityConfig;
+import com.surrey.com3014.group5.dto.ManagedUserDTO;
 import com.surrey.com3014.group5.dto.UserDTO;
+import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
+import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -28,6 +43,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthorityService authorityService;
+
     @ModelAttribute("user")
     public User setupUser() {
         return new User();
@@ -37,66 +55,118 @@ public class UserController {
      * Creating new user.
      */
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public void create(@ModelAttribute("user") UserDTO userDTO, HttpServletResponse response) {
+    public ResponseEntity<?> create(@RequestBody UserDTO userDTO) throws URISyntaxException {
+        Optional<User> maybeUser = userService.findByUsername(userDTO.getUsername());
+        if (maybeUser.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "username already registered"));
+        }
+        maybeUser = userService.findByEmail(userDTO.getEmail());
+        if (maybeUser.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "email already registered"));
+        }
         User user = userService.createUserWithAuthorities(userDTO);
-        LOGGER.debug("user created with provided authority -> " + user.toString());
-        response.setHeader("Location", "/users/" + user.getId());
+        LOGGER.debug("new user created with the provided authority -> " + user.toString());
+        return ResponseEntity.created(new URI("/api/users/" + user.getId())).body(new ManagedUserDTO(user));
     }
 
     /**
      * Get by id
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public UserDTO read(@PathVariable("id") long id) {
-        return new UserDTO(userService.findOne(id));
+    public ResponseEntity<?> read(@PathVariable("id") long id) {
+        Optional<User> maybeUser = userService.findOne(id);
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            user.getAuthorities().size();
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "User with the requested id does not exist"));
     }
 
     /**
-     * Get by username or email
+     * Update the user
      */
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
+    @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
-    public UserDTO read(
-        @RequestParam(value = "username", required = false) String username,
-        @RequestParam(value = "email", required = false) String email) {
-        if (!(username == null || "".equals(username.trim()))) {
-            return new UserDTO(userService.findByUsername(username));
+    @Transactional
+    public ResponseEntity<?> update(@RequestBody ManagedUserDTO managedUserDTO) {
+        Optional<User> existingUser = userService.findByEmail(managedUserDTO.getEmail());
+        if (existingUser.isPresent() && (existingUser.get().getId() != managedUserDTO.getId())) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "email already registered"));
         }
-        if (!(email == null || "".equals(email.trim()))) {
-            return new UserDTO(userService.findByEmail(email));
+
+        Optional<User> maybeUser = userService.findOne(managedUserDTO.getId());
+        if (!maybeUser.isPresent()) {
+            return new ResponseEntity<>("User with the provided ID does not exist", HttpStatus.NOT_FOUND);
         }
-        throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist");
+        User user = maybeUser.get();
+        user.setEmail(managedUserDTO.getEmail());
+        user.setName(managedUserDTO.getName());
+        user.getAuthorities().clear();
+        for (String authority: managedUserDTO.getAuthorities()) {
+            Optional<Authority> authorityOptional = authorityService.findByType(authority);
+            if (!authorityOptional.isPresent()) {
+                throw new NotFoundException("Authority provided does not exist in the system");
+            }
+            user.addAuthority(authorityOptional.get());
+        }
+        if (user.getAuthorities().size() == 0) { // to make sure every user has at least USER access
+            user.addAuthority(authorityService.findByType(SecurityConfig.USER).get());
+        }
+        user = userService.update(user);
+        return ResponseEntity.ok(new ManagedUserDTO(user));
     }
 
     /**
      * Delete the user given the id
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void delete(@PathVariable("id") long id, HttpServletResponse response) {
-        User user = userService.findOne(id);
-        response.setHeader("Location", "/api/users");
-        userService.delete(user);
+    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+        Optional<User> maybeUser = userService.findOne(id);
+        if (maybeUser.isPresent()) {
+            userService.delete(maybeUser.get());
+            return ResponseEntity.noContent().build();
+        }
+        return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
     }
 
     /**
-     * Update the user
+     * Get by username or email
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(method = RequestMethod.GET, value = "/filter")
     @ResponseBody
-    public void update(@PathVariable("id") long id, String password, String email, String name) {
-        User user = userService.findOne(id);
-        user.setPassword(password);
-        user.setEmail(email);
-        user.setName(name);
-        userService.update(user);
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> filteredBy(
+        @RequestParam(value = "username", required = false) String username,
+        @RequestParam(value = "email", required = false) String email) {
+        Optional<User> maybeUser = userService.findByUsername(username);
+        User user = null;
+        if (maybeUser.isPresent()) {
+            user = maybeUser.get();
+            user.getAuthorities().size();
+            return ResponseEntity.ok(new ManagedUserDTO(user));
+        }
+        maybeUser = userService.findByEmail(email);
+        if (maybeUser.isPresent()) {
+            user = maybeUser.get();
+            user.getAuthorities().size();
+            return ResponseEntity.ok(new ManagedUserDTO(user));
+        }
+        return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
     }
 
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getAll() {
+        List<User> users = userService.getAll();
+        List<ManagedUserDTO> managedUsers = new ArrayList<>();
+        for (User user : users) {
+            managedUsers.add(new ManagedUserDTO(user));
+        }
+        return ResponseEntity.ok(managedUsers);
+    }
 }

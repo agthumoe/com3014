@@ -2,7 +2,6 @@ package com.surrey.com3014.group5.dto.errors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
@@ -16,8 +15,7 @@ import java.io.Serializable;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ErrorDTO implements Serializable {
-    private static final long serialVersionUID = 2882194645276083077L;
+public class ErrorDTO {
     /**
      * Http status code
      */
@@ -26,10 +24,7 @@ public class ErrorDTO implements Serializable {
      * String representation of status code
      */
     private final String error;
-    /**
-     * Root cause of the problem
-     */
-    private final Throwable exception;
+
     /**
      * Specific details about the exception
      */
@@ -38,16 +33,13 @@ public class ErrorDTO implements Serializable {
     /**
      * Create errors message.
      * @param status Http response status
-     * @param exception the exception which has been thrown
      * @param message detailed errors message
      */
-    public ErrorDTO(HttpStatus status, Throwable exception, String message) {
+    public ErrorDTO(HttpStatus status, String message) {
         this.status = status.value();
-        this.error = status.getReasonPhrase();
-        this.exception = exception;
         this.message = message;
+        this.error = status.getReasonPhrase();
     }
-
     /**
      * Get Http status code
      * @return Http status code
@@ -62,15 +54,6 @@ public class ErrorDTO implements Serializable {
      */
     public final String getError() {
         return error;
-    }
-
-    /**
-     * Get the root cause of the problem or exception in string representation
-     * @return exception which has been thrown
-     */
-    @JsonProperty("exception")
-    public final String getException() {
-        return exception.getClass().toString();
     }
 
     /**

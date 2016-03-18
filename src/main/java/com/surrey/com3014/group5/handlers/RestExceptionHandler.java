@@ -38,7 +38,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     protected ErrorDTO handleDataIntegrityConstraintViolationException(DataIntegrityViolationException ex) {
         LOGGER.debug(ex.getMessage());
         LOGGER.debug(ex.getCause().getMessage());
-        return new ErrorDTO(HttpStatus.BAD_REQUEST, ex, ex.getRootCause().getMessage());
+        return new ErrorDTO(HttpStatus.BAD_REQUEST, ex.getRootCause().getMessage());
 
     }
 
@@ -51,7 +51,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     protected ValidationErrorDTO handleConstraintViolationException(ConstraintViolationException ex) {
-        final ValidationErrorDTO error = new ValidationErrorDTO(HttpStatus.BAD_REQUEST, ex);
+        final ValidationErrorDTO error = new ValidationErrorDTO(HttpStatus.BAD_REQUEST);
         for (ConstraintViolation<?> v: ex.getConstraintViolations()) {
             error.addMessage(v.getPropertyPath().toString(), v.getMessage());
         }
@@ -60,14 +60,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
 
     @ExceptionHandler(value = NotFoundException.class)
     protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
-        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex, ex.getMessage()), ex.getHttpStatus());
+        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex.getMessage()), ex.getHttpStatus());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
     protected ResponseEntity<?> handleAnyException(HttpServletRequest request, Throwable ex) {
         HttpStatus status = getStatus(request);
-        return new ResponseEntity<>(new ErrorDTO(status, ex, ex.getMessage()), status);
+        return new ResponseEntity<>(new ErrorDTO(status, ex.getMessage()), status);
     }
 
     private HttpStatus getStatus(HttpServletRequest request) {

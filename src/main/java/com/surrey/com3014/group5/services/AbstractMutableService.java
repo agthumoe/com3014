@@ -16,21 +16,21 @@ public class AbstractMutableService<T extends MutableModel> extends AbstractImmu
 
     @Override
     public <S extends T> S create(S s) {
-        s.setLastModified(new Date());
+        s.setLastModifiedDate(new Date());
         return super.create(s);
     }
 
     @Override
     public <S extends T> Iterable<S> create(Iterable<S> s) {
         for(S as : s){
-            as.setLastModified(new Date());
+            as.setLastModifiedDate(new Date());
         }
         return super.create(s);
     }
 
     @Override
     public <S extends T> S update(S s) {
-        s.setLastModified(new Date());
+        s.setLastModifiedDate(new Date());
         return this.getRepository().save(s);
     }
 }

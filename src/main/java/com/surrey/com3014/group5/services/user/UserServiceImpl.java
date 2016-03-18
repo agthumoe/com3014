@@ -1,5 +1,6 @@
 package com.surrey.com3014.group5.services.user;
 
+import com.surrey.com3014.group5.configs.SecurityConfig;
 import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
@@ -16,12 +17,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.surrey.com3014.group5.configs.SecurityConfig.*;
 
 /**
  * @author Spyros Balkonis
+ * @author Aung Thu Moe
  */
 @Service("userService")
 public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
@@ -41,21 +44,13 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
 
 
     @Override
-    public User findByUsername(String username) {
-        Optional<User> userOptional = getUserRepository().findByUsername(username);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new NotFoundException(HttpStatus.NOT_FOUND, "User with username: " + username + " does not exist.");
+    public Optional<User> findByUsername(String username) {
+        return getUserRepository().findByUsername(username);
     }
 
     @Override
-    public User findByEmail(String email) {
-        Optional<User> userOptional = getUserRepository().findByEmail(email);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new NotFoundException(HttpStatus.NOT_FOUND, "User with email: " + email + " does not exist.");
+    public Optional<User> findByEmail(String email) {
+        return getUserRepository().findByEmail(email);
     }
 
     public UserRepository getUserRepository() {
@@ -72,14 +67,21 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
 
     @Override
     public boolean validate(User user) {
-        User userFromDatabase = findByEmail(user.getEmail());
-        return passwordEncoder.matches(user.getPassword(), userFromDatabase.getPassword());
+        Optional<User> maybeUser = findByEmail(user.getEmail());
+        if (maybeUser.isPresent()) {
+            return passwordEncoder.matches(user.getPassword(), maybeUser.get().getPassword());
+        }
+        throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with username: " + user.getUsername() + ", does not exist!");
     }
 
     @Override
     @Transactional
     public UsernamePasswordAuthenticationToken authenticate(final String username, final String password) {
-        User user = this.findByUsername(username);
+        Optional<User> maybeUser = this.findByUsername(username);
+        if (!maybeUser.isPresent()) {
+            throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with username: " + username + ", does not exist!");
+        }
+        User user = maybeUser.get();
         if (this.passwordEncoder.matches(password, user.getPassword())) {
             return new UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
         } else {
@@ -88,12 +90,8 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     }
 
     @Transactional(readOnly = true)
-    public User getUserWithAuthorities() {
-        Optional<User> userOptional = getUserRepository().findByUsername(SecurityUtils.getCurrentLogin());
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new NotFoundException(HttpStatus.UNAUTHORIZED, "No user has been authenticated yet");
+    public Optional<User> getCurrentLogin() {
+        return getUserRepository().findByUsername(SecurityUtils.getCurrentLogin());
     }
 
     @Override
@@ -107,6 +105,10 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
                 throw new NotFoundException("Authority provided does not exist in the system");
             }
         }
+        // at least every user will have USER role by default
+        if (user.getAuthorities().size() == 0) {
+            user.addAuthority(authorityService.findByType(SecurityConfig.USER).get());
+        }
         return create(user);
     }
 
@@ -119,5 +121,10 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
             return this.create(user);
         }
         throw new NotFoundException("default authority: " + USER + " ,does not exist in the system!");
+    }
+
+    @Override
+    public List<User> getAll() {
+        return getUserRepository().findAll();
     }
 }
