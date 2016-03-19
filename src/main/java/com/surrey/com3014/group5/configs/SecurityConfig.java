@@ -3,16 +3,20 @@ package com.surrey.com3014.group5.configs;
 import com.surrey.com3014.group5.security.SecureAuthenticationProvider;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * @author Aung Thu Moe
@@ -33,6 +37,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
+    }
+
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -49,10 +64,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.authorizeRequests()
             .antMatchers("/admin/**").hasAuthority(ADMIN)
             .antMatchers("/api/users/**").hasAuthority(ADMIN)
             .antMatchers("/user/**").hasAuthority(USER)
+            .antMatchers("/api/lobby/**").hasAnyAuthority(USER)
             .antMatchers("/assets/**").permitAll()
             .antMatchers("/bower_components/**").permitAll()
             .antMatchers("/swagger-ui/**").permitAll()
@@ -60,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/scripts/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/v2/api-docs").permitAll()
-//            .anyRequest().denyAll()
+            //            .anyRequest().denyAll()
         .and()
             .logout()
             .logoutUrl("/api/logout")
@@ -73,5 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .passwordParameter("password")
             .permitAll()
         .and().csrf().disable();
+
+        http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
     }
 }
