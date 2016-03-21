@@ -11,8 +11,7 @@ angular
         $routeProvider
             .when('/', {
                 templateUrl: 'scripts/app/views/home.html',
-                controller: 'HomeController',
-                controllerAs: 'main'
+                controller: 'HomeController'
             })
             .otherwise({
                 redirectTo: "/"

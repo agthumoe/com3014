@@ -16,7 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Aung Thu Moe
@@ -32,34 +35,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth, SecureAuthenticationProvider secureAuthenticationProvider) throws Exception {
-        auth.authenticationProvider(secureAuthenticationProvider);
-    }
+    AuthenticationEntryPoint authenticationEntryPoint;
 
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
+    @Autowired
+    AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    @Bean
-    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
-        return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
-    }
+    @Autowired
+    SecureAuthenticationProvider secureAuthenticationProvider;
 
+    @Autowired
+    SessionRegistry sessionRegistry;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public TextEncryptor textEncryptor() {
-        return Encryptors.noOpText();
-    }
-
-    @Bean
-    public SecureAuthenticationProvider secureAuthenticationProvider() {
-        return new SecureAuthenticationProvider(userService);
+    @PostConstruct
+    public void init() {
+        this.authenticationManagerBuilder.authenticationProvider(secureAuthenticationProvider);
     }
 
     @Override
@@ -77,7 +66,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/scripts/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/v2/api-docs").permitAll()
+            .antMatchers("/login").permitAll()
             //            .anyRequest().denyAll()
+//        .and()
+//            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
         .and()
             .logout()
             .logoutUrl("/api/logout")
@@ -91,6 +83,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
         .and().csrf().disable();
 
-        http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
+        http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry);
     }
 }

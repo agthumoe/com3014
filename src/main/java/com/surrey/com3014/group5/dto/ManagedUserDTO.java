@@ -3,6 +3,7 @@ package com.surrey.com3014.group5.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
+import io.swagger.annotations.ApiModel;
 
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 /**
  * @author Aung Thu Moe
  */
+@ApiModel("ManagedUserDTO")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ManagedUserDTO extends UserDTO {
     private static final long serialVersionUID = 696087880996602691L;
