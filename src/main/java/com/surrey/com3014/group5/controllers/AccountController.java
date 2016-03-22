@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -54,9 +51,6 @@ public class AccountController {
         return ResponseEntity.created(new URI("/api/users/" + user.getId())).body(new UserDTO(user));
     }
 
-    /**
-     * GET  /account -> get the current login user.
-     */
     @ApiOperation(value = "Get current login user", response = UserDTO.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, response = UserDTO.class, message = "success"),

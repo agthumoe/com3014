@@ -13,6 +13,10 @@ angular
                 templateUrl: 'scripts/app/views/home.html',
                 controller: 'HomeController'
             })
+            .when('/lobby', {
+                templateUrl: 'scripts/app/views/lobby.html',
+                controller: 'LobbyController'
+            })
             .otherwise({
                 redirectTo: "/"
             });
