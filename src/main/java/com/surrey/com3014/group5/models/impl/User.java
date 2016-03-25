@@ -52,12 +52,16 @@ public class User extends MutableModel {
         inverseJoinColumns = {@JoinColumn(name = "authorityId", nullable = false, updatable = false)})
     private Set<Authority> authorities = new HashSet<>(0);
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Leaderboard leaderboard;
 
     public User() {
         super();
+    }
+
+    public User(Leaderboard leaderboard) {
+        super();
+        this.leaderboard = leaderboard;
     }
 
     public User(long id) {

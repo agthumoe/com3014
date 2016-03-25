@@ -20,11 +20,12 @@ public class DateStampedModel extends Model {
     @CreatedDate
     private Date createdDate;
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public DateStampedModel() {
+        super();
+        this.createdDate = new Date();
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 }

@@ -16,15 +16,11 @@ public abstract class AbstractImmutableService<T extends DateStampedModel> exten
 
     @Override
     public <S extends T> S create(S s) {
-        s.setCreatedDate(new Date());
         return this.getRepository().save(s);
     }
 
     @Override
     public <S extends T> Iterable<S> create(Iterable<S> s) {
-        for(S as : s){
-            as.setCreatedDate(new Date());
-        }
         return this.getRepository().save(s);
     }
 }

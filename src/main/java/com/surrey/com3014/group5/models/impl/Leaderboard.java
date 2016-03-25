@@ -11,11 +11,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "leaderboard")
 public class Leaderboard extends MutableModel{
+    private static final long serialVersionUID = 5668537543274150457L;
 
-    private static final long serialVersionUID = -2664947233441065553L;
-
-    @OneToOne(mappedBy = "leaderboard", cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", nullable = false, updatable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private User user;
 
     @Column(nullable = false)
@@ -31,9 +30,11 @@ public class Leaderboard extends MutableModel{
     private double ratio = 0.000;
 
     public Leaderboard() {
+        super();
     }
 
     public Leaderboard(User user, long wins, long losses, double ratio){
+        super();
         this.user = user;
         this.wins = wins;
         this.losses = losses;
@@ -41,6 +42,7 @@ public class Leaderboard extends MutableModel{
     }
 
     public Leaderboard(User user, long wins, long losses){
+        super();
         this.user = user;
         this.wins = wins;
         this.losses = losses;
@@ -48,6 +50,7 @@ public class Leaderboard extends MutableModel{
     }
 
     public Leaderboard(User user){
+        super();
         this.user = user;
         this.wins = 0;
         this.losses = 0;
