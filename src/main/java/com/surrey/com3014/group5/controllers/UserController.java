@@ -6,8 +6,10 @@ import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
+import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
+import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,9 @@ public class UserController {
     @Autowired
     private AuthorityService authorityService;
 
+    @Autowired
+    private LeaderboardService leaderboardService;
+
     @ModelAttribute("user")
     public User setupUser() {
         return new User();
@@ -62,6 +67,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "email already registered"));
         }
         User user = userService.createUserWithAuthorities(userDTO);
+        Leaderboard leaderboard = new Leaderboard(user);
+        leaderboardService.create(leaderboard);
         LOGGER.debug("new user created with the provided authority -> " + user.toString());
         return ResponseEntity.created(new URI("/api/users/" + user.getId())).body(new ManagedUserDTO(user));
     }

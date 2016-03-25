@@ -3,6 +3,8 @@ package com.surrey.com3014.group5.controllers;
 import com.surrey.com3014.group5.dto.StatusDTO;
 import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
+import com.surrey.com3014.group5.models.impl.Leaderboard;
+import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -33,6 +35,8 @@ public class LobbyController {
     @Autowired
     private SessionRegistry sessionRegistry;
 
+    private LeaderboardService leaderboardService;
+
     @ApiOperation(value = "Get all online users")
     @ApiResponses(value = {
         @ApiResponse(code = 200, response = List.class, message = "success"),
@@ -50,6 +54,7 @@ public class LobbyController {
         @ApiResponse(code = 200, response = StatusDTO.class, message = "success"),
         @ApiResponse(code=401, message = "Unauthorized", response = ErrorDTO.class)
     })
+
     @RequestMapping(method = RequestMethod.GET, value = "/users/by_username/{username}")
     @ResponseBody
     @Transactional(readOnly = true)
@@ -64,5 +69,21 @@ public class LobbyController {
         return ResponseEntity.ok(new StatusDTO(username, StatusDTO.OFFLINE));
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/leaderboard")
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getLeaderboard(){
+        List<Leaderboard> leaderboards = getLeaderboardService().findAllByOrderByRatioDesc();
 
+        return ResponseEntity.ok(leaderboards);
+    }
+
+    public LeaderboardService getLeaderboardService() {
+        return leaderboardService;
+    }
+
+    @Autowired
+    public void setLeaderboardService(LeaderboardService leaderboardService) {
+        this.leaderboardService = leaderboardService;
+    }
 }

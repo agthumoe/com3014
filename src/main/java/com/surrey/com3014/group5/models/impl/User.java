@@ -52,6 +52,10 @@ public class User extends MutableModel {
         inverseJoinColumns = {@JoinColumn(name = "authorityId", nullable = false, updatable = false)})
     private Set<Authority> authorities = new HashSet<>(0);
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Leaderboard leaderboard;
+
     public User() {
         super();
     }
@@ -67,6 +71,16 @@ public class User extends MutableModel {
         this.password = password;
         this.email = email;
         this.name = name;
+        this.leaderboard = new Leaderboard(this);
+    }
+
+    public User(String username, String password, String email, String name, Leaderboard leaderboard) {
+        super();
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.leaderboard =leaderboard;
     }
 
     public User(String username, String password, String email, String name, final Set<Authority> authorities) {
@@ -104,6 +118,14 @@ public class User extends MutableModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
+    }
+
+    public void setLeaderboard(Leaderboard leaderboard) {
+        this.leaderboard = leaderboard;
     }
 
     public Set<Authority> getAuthorities() {

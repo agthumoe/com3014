@@ -1,9 +1,7 @@
 package com.surrey.com3014.group5.services;
 
-import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.Entity;
 import com.surrey.com3014.group5.repositories.Repository;
-import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 

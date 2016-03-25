@@ -13,7 +13,9 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class ChatController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+
     @MessageMapping("/websocket/tracker")
     @SendTo("/topic/global.chat")
     public Greeting greeting(HelloMessage message) throws Exception {
