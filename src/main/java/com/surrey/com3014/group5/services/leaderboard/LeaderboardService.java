@@ -5,6 +5,7 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.MutableService;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Spyros Balkonis
@@ -12,7 +13,7 @@ import java.util.List;
 public interface LeaderboardService extends MutableService<Leaderboard>{
 
 
-    Leaderboard findByUser(User user);
+    Optional<Leaderboard> findByUser(User user);
 
     List<Leaderboard> findAllByOrderByRatioDesc();
 

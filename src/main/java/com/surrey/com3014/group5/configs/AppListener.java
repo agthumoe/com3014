@@ -1,8 +1,10 @@
 package com.surrey.com3014.group5.configs;
 
 import com.surrey.com3014.group5.models.impl.Authority;
+import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
+import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,9 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
     private UserService userService;
     @Autowired
     private AuthorityService authorityService;
+
+    @Autowired
+    private LeaderboardService leaderboardService;
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
@@ -55,6 +60,8 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
             user.addAuthority(userAuth);
             this.userService.update(user);
             LOGGER.debug("onApplicationEvent() User updated");
+//            Leaderboard leaderboard = new Leaderboard(admin);
+//            leaderboardService.create(leaderboard);
         }
     }
 }

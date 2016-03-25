@@ -4,11 +4,13 @@ import com.surrey.com3014.group5.configs.SecurityConfig;
 import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.exceptions.NotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
+import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
+import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -38,6 +40,9 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     private AuthorityService authorityService;
 
     @Autowired
+    private LeaderboardService leaderboardService;
+
+    @Autowired
     public UserServiceImpl(UserRepository userRepository){
         super(userRepository);
     }
@@ -62,7 +67,11 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     	if (!(null == s.getName() || s.getName().trim().equals(""))) {
     		s.setPassword(passwordEncoder.encode(s.getPassword())); //Password hashed and salt added.
     	}
-        return super.create(s);
+        Leaderboard leaderboard = new Leaderboard(s);
+        s.setLeaderboard(leaderboard);
+        s = super.create(s);
+        leaderboardService.create(leaderboard);
+        return s;
     }
 
     @Override

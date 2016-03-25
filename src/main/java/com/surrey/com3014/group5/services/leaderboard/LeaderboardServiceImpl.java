@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -30,12 +31,12 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
     }
 
     @Override
-    public Leaderboard create(Leaderboard leaderboard){
-        return this.getRepository().save(leaderboard);
+    public <S extends Leaderboard> S create(S s){
+        return super.create(s);
     }
 
     @Override
-    public Leaderboard findByUser(User user) {
+    public Optional<Leaderboard> findByUser(User user) {
         return this.getLeaderboardRepository().findByUser(user);
     }
 

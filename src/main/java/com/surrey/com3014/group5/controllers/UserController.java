@@ -44,9 +44,6 @@ public class UserController {
     @Autowired
     private AuthorityService authorityService;
 
-    @Autowired
-    private LeaderboardService leaderboardService;
-
     @ModelAttribute("user")
     public User setupUser() {
         return new User();
@@ -67,8 +64,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(new ErrorDTO(HttpStatus.BAD_REQUEST, "email already registered"));
         }
         User user = userService.createUserWithAuthorities(userDTO);
-        Leaderboard leaderboard = new Leaderboard(user);
-        leaderboardService.create(leaderboard);
         LOGGER.debug("new user created with the provided authority -> " + user.toString());
         return ResponseEntity.created(new URI("/api/users/" + user.getId())).body(new ManagedUserDTO(user));
     }
