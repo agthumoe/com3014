@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 public class Leaderboard extends MutableModel{
     private static final long serialVersionUID = 5668537543274150457L;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column(nullable = false)
@@ -46,7 +46,11 @@ public class Leaderboard extends MutableModel{
         this.user = user;
         this.wins = wins;
         this.losses = losses;
-        this.ratio = this.wins / this.losses;
+        if(this.losses != 0) {
+            this.ratio = this.wins / this.losses;
+        }else {
+            this.ratio = this.wins;
+        }
     }
 
     public Leaderboard(User user){
