@@ -21,7 +21,7 @@
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/global.chat', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
+                    showGreeting(greeting.body);
                 });
             });
         }
@@ -34,9 +34,9 @@
             console.log("Disconnected");
         }
 
-        function sendName() {
-            var name = document.getElementById('name').value;
-            stompClient.send("/websocket/tracker", {}, JSON.stringify({ 'name': name }));
+        function sendMessage() {
+            var message = document.getElementById('msg').value;
+            stompClient.send("/websocket/tracker", {}, JSON.stringify({ 'message': message }));
         }
 
         function showGreeting(message) {
@@ -57,8 +57,8 @@
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
     </div>
     <div id="conversationDiv">
-        <label>What is your name?</label><input type="text" id="name" />
-        <button id="sendName" onclick="sendName();">Send</button>
+        <label>Type your message</label><input type="text" id="msg" />
+        <button id="sendMessage" onclick="sendMessage();">Send</button>
         <p id="response"></p>
     </div>
 </div>
