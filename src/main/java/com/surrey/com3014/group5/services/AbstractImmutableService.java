@@ -15,11 +15,6 @@ public abstract class AbstractImmutableService<T extends DateStampedModel> exten
     }
 
     @Override
-    public <S extends T> S create(S s) {
-        return this.getRepository().save(s);
-    }
-
-    @Override
     public <S extends T> Iterable<S> create(Iterable<S> s) {
         return this.getRepository().save(s);
     }

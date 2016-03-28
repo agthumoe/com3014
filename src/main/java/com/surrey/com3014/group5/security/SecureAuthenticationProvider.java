@@ -7,26 +7,24 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Aung Thu Moe
  */
+@Component
 public class SecureAuthenticationProvider implements AuthenticationProvider {
-    private UserService userService;
-
     @Autowired
-    public SecureAuthenticationProvider(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
         try {
-            return this.getUserService().authenticate(name, password);
-        } catch (Exception uafe) {
-            throw new BadCredentialsException("Bad credentials", uafe);
+            return this.userService.authenticate(name, password);
+        } catch (Exception e) {
+            throw new BadCredentialsException("Bad credentials", e);
         }
     }
 
@@ -35,12 +33,4 @@ public class SecureAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
-    public UserService getUserService() {
-        return userService;
-    }
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 }

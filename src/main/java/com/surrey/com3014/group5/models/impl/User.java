@@ -1,20 +1,21 @@
 package com.surrey.com3014.group5.models.impl;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.surrey.com3014.group5.models.MutableModel;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.surrey.com3014.group5.dto.Password.PASSWORD_MAX_LENGTH;
+import static com.surrey.com3014.group5.dto.Password.PASSWORD_MIN_LENGTH;
+
 /**
- * Spring MVC model to represent user
+ * Spring MVC model to represent users
  * @author Spyros Balkonis
  */
 @Entity
@@ -29,9 +30,9 @@ public class User extends MutableModel {
     private String username;
 
     @JsonIgnore
-    @NotNull(message = "Password must not be null or empty")
-    @Size(min = 5, max = 60)
-    @Column(unique = false, nullable = false)
+    @NotBlank(message = "Password must not be null or empty")
+    @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
+    @Column(nullable = false)
     private String password;
 
     @Email
@@ -42,8 +43,11 @@ public class User extends MutableModel {
 
     @NotBlank(message = "Name must not be null or empty")
     @Size(max = 100)
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private boolean enabled = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -59,36 +63,22 @@ public class User extends MutableModel {
         super();
     }
 
-    public User(Leaderboard leaderboard) {
+    public User(String username, String password, String email, String name, boolean enabled) {
         super();
-        this.leaderboard = leaderboard;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.enabled = enabled;
     }
 
-    public User(long id) {
-        super();
+    public User(long id, String username, String password, String email, String name, boolean enabled) {
+        this(username, password, email, name, enabled);
         this.setId(id);
     }
 
-    public User(String username, String password, String email, String name) {
-        super();
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.name = name;
-        this.leaderboard = new Leaderboard(this);
-    }
-
-    public User(String username, String password, String email, String name, Leaderboard leaderboard) {
-        super();
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.name = name;
-        this.leaderboard =leaderboard;
-    }
-
-    public User(String username, String password, String email, String name, final Set<Authority> authorities) {
-        this(username, password, email, name);
+    public User(long id, String username, String password, String email, String name, boolean enabled, final Set<Authority> authorities) {
+        this(id, username, password, email, name, enabled);
         this.authorities = new HashSet<>(authorities);
     }
 
@@ -98,6 +88,14 @@ public class User extends MutableModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getPassword() {

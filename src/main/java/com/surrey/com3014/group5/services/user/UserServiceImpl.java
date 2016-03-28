@@ -1,9 +1,8 @@
 package com.surrey.com3014.group5.services.user;
 
-import com.surrey.com3014.group5.configs.SecurityConfig;
-import com.surrey.com3014.group5.dto.UserDTO;
-import com.surrey.com3014.group5.exceptions.NotFoundException;
-import com.surrey.com3014.group5.models.impl.Authority;
+import com.surrey.com3014.group5.exceptions.BadRequestException;
+import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
+import com.surrey.com3014.group5.exceptions.UnauthorizedException;
 import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
@@ -11,9 +10,9 @@ import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.surrey.com3014.group5.configs.SecurityConfig.*;
-
 /**
  * @author Spyros Balkonis
  * @author Aung Thu Moe
@@ -31,13 +28,10 @@ import static com.surrey.com3014.group5.configs.SecurityConfig.*;
 @Service("userService")
 public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
 
-//    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthorityService authorityService;
 
     @Autowired
     private LeaderboardService leaderboardService;
@@ -64,9 +58,7 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
 
     @Override
     public <S extends User> S create(S s) {
-    	if (!(null == s.getName() || s.getName().trim().equals(""))) {
-    		s.setPassword(passwordEncoder.encode(s.getPassword())); //Password hashed and salt added.
-    	}
+        s.setPassword(passwordEncoder.encode(s.getPassword())); //Password hashed and salt added.
         Leaderboard leaderboard = new Leaderboard(s);
         s.setLeaderboard(leaderboard);
         s = super.create(s);
@@ -75,12 +67,12 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     }
 
     @Override
-    public boolean validate(User user) {
-        Optional<User> maybeUser = findByEmail(user.getEmail());
+    public boolean validate(long id, String password) {
+        Optional<User> maybeUser = findOne(id);
         if (maybeUser.isPresent()) {
-            return passwordEncoder.matches(user.getPassword(), maybeUser.get().getPassword());
+            return passwordEncoder.matches(password, maybeUser.get().getPassword());
         }
-        throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with username: " + user.getUsername() + ", does not exist!");
+        return false;
     }
 
     @Override
@@ -88,52 +80,40 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     public UsernamePasswordAuthenticationToken authenticate(final String username, final String password) {
         Optional<User> maybeUser = this.findByUsername(username);
         if (!maybeUser.isPresent()) {
-            throw new NotFoundException(HttpStatus.NOT_FOUND, "The requested user with username: " + username + ", does not exist!");
+            throw new ResourceNotFoundException();
         }
         User user = maybeUser.get();
+        if (!user.isEnabled()) {
+            throw new UnauthorizedException();
+        }
         if (this.passwordEncoder.matches(password, user.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(username, password, user.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
         } else {
-            throw new BadCredentialsException("User authentication failed");
+            throw new BadRequestException();
         }
     }
 
     @Transactional(readOnly = true)
     public Optional<User> getCurrentLogin() {
-        return getUserRepository().findByUsername(SecurityUtils.getCurrentLogin());
-    }
-
-    @Override
-    public User createUserWithAuthorities(UserDTO userDTO) {
-        User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getName());
-        for (String authority: userDTO.getAuthorities()) {
-            Optional<Authority> authorityOptional = authorityService.findByType(authority);
-            if (authorityOptional.isPresent()) {
-                user.addAuthority(authorityOptional.get());
-            } else {
-                throw new NotFoundException("Authority provided does not exist in the system");
-            }
-        }
-        // at least every user will have USER role by default
-        if (user.getAuthorities().size() == 0) {
-            user.addAuthority(authorityService.findByType(SecurityConfig.USER).get());
-        }
-        return create(user);
-    }
-
-    @Override
-    public User create(UserDTO userDTO) {
-        User user = new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getEmail(), userDTO.getName());
-        Optional<Authority> authorityOptional = authorityService.findByType(USER);
-        if (authorityOptional.isPresent()) {
-            user.addAuthority(authorityOptional.get());
-            return this.create(user);
-        }
-        throw new NotFoundException("default authority: " + USER + " ,does not exist in the system!");
+        return getUserRepository().findByUsername(SecurityUtils.getCurrentUsername());
     }
 
     @Override
     public List<User> getAll() {
         return getUserRepository().findAll();
+    }
+
+    @Override
+    public void updatePassword(User user) {
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+    }
+
+    @Override
+    public boolean validate(String password) {
+        Optional<User> maybeUser = findByUsername(SecurityUtils.getCurrentUsername());
+        if (maybeUser.isPresent()) {
+            return passwordEncoder.matches(password, maybeUser.get().getPassword());
+        }
+        return false;
     }
 }

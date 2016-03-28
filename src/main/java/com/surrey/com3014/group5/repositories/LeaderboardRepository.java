@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Spyros Balkonis
+ * @author Aung Thu Moe
  */
 @org.springframework.stereotype.Repository
 public interface LeaderboardRepository extends Repository<Leaderboard>{

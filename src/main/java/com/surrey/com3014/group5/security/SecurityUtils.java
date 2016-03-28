@@ -1,5 +1,6 @@
 package com.surrey.com3014.group5.security;
 
+import com.surrey.com3014.group5.models.impl.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+
+import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 
 /**
  * @author Aung Thu Moe
@@ -18,16 +21,18 @@ public final class SecurityUtils {
     }
 
     /**
-     * Get the login of the current user.
+     * Get the login of the current users.
      */
-    public static String getCurrentLogin() {
+    public static String getCurrentUsername() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-        UserDetails springSecurityUser = null;
         String userName = null;
         if(authentication != null) {
             if (authentication.getPrincipal() instanceof UserDetails) {
-                springSecurityUser = (UserDetails) authentication.getPrincipal();
+                UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                userName = springSecurityUser.getUsername();
+            } else if (authentication.getPrincipal() instanceof User) {
+                User springSecurityUser = (User) authentication.getPrincipal();
                 userName = springSecurityUser.getUsername();
             } else if (authentication.getPrincipal() instanceof String) {
                 userName = (String) authentication.getPrincipal();
@@ -36,17 +41,29 @@ public final class SecurityUtils {
         return userName;
     }
 
+    public static User getCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof User) {
+                return (User) authentication.getPrincipal();
+            }
+            throw new ClassCastException("Spring authentication returns " + authentication.getPrincipal().getClass().getName() + ", instead of User Class");
+        }
+        return null;
+    }
+
     /**
-     * Check if a user is authenticated.
+     * Check if a users is authenticated.
      *
-     * @return true if the user is authenticated, false otherwise
+     * @return true if the users is authenticated, false otherwise
      */
     public static boolean isAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Collection<? extends GrantedAuthority> authorities = securityContext.getAuthentication().getAuthorities();
         if (authorities != null) {
             for (GrantedAuthority authority : authorities) {
-                if (authority.getAuthority().equals("")) {
+                if (authority.getAuthority().equals(ANONYMOUS)) {
                     return false;
                 }
             }
@@ -56,7 +73,7 @@ public final class SecurityUtils {
 
 
     /**
-     * If the current user has a specific security role.
+     * If the current users has a specific security role.
      */
     public static boolean isUserInRole(String role) {
         SecurityContext securityContext = SecurityContextHolder.getContext();

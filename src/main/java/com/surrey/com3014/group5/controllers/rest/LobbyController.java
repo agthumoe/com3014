@@ -1,7 +1,6 @@
-package com.surrey.com3014.group5.controllers;
+package com.surrey.com3014.group5.controllers.rest;
 
 import com.surrey.com3014.group5.dto.StatusDTO;
-import com.surrey.com3014.group5.dto.UserDTO;
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;

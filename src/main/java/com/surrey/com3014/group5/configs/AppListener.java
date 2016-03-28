@@ -1,20 +1,17 @@
 package com.surrey.com3014.group5.configs;
 
 import com.surrey.com3014.group5.models.impl.Authority;
-import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.services.authority.AuthorityService;
-import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import static com.surrey.com3014.group5.configs.SecurityConfig.*;
 /**
  * @author Aung Thu Moe
  */
@@ -24,44 +21,35 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private AuthorityService authorityService;
 
     @Autowired
-    private LeaderboardService leaderboardService;
+    @Qualifier("adminAuthority")
+    private Authority adminAuthority;
+
+    @Autowired
+    @Qualifier("userAuthority")
+    private Authority userAuthority;
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if(applicationEvent instanceof ContextRefreshedEvent){
             LOGGER.debug("onApplicationEvent STARTING: " + applicationEvent.getClass().getSimpleName());
 
-            Authority adminAuth = new Authority();
-            adminAuth.setType(ADMIN);
-            this.authorityService.create(adminAuth);
-            LOGGER.debug("onApplicationEvent() Admin Authority created");
-
-            Authority userAuth = new Authority();
-            userAuth.setType(USER);
-            this.authorityService.create(userAuth);
-            LOGGER.debug("onApplicationEvent() User Authority created");
-
-            User admin = new User("admin", "password", "admin@localhost", "admin");
+            User admin = new User("admin", "password", "admin@localhost.com", "Administrator", true);
             this.userService.create(admin);
-            LOGGER.debug("onApplicationEvent() user Admin created");
-            admin.addAuthority(userAuth);
-            admin.addAuthority(adminAuth);
+            LOGGER.debug("onApplicationEvent() users Admin created");
+            admin.addAuthority(userAuthority);
+            admin.addAuthority(adminAuthority);
             this.userService.update(admin);
 
-            LOGGER.debug("onApplicationEvent() user Admin updated");
+            LOGGER.debug("onApplicationEvent() users Admin updated");
 
-            User user = new User("user", "password", "user@localhost", "user");
+            User user = new User("user", "password", "users@localhost.com", "Generic User", false);
             this.userService.create(user);
             LOGGER.debug("onApplicationEvent() User created");
-            user.addAuthority(userAuth);
+            user.addAuthority(userAuthority);
             this.userService.update(user);
             LOGGER.debug("onApplicationEvent() User updated");
-//            Leaderboard leaderboard = new Leaderboard(admin);
-//            leaderboardService.create(leaderboard);
         }
     }
 }

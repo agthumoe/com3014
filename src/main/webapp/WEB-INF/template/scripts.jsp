@@ -8,5 +8,4 @@
 --%>
 <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
 <script src="../../bower_components/json3/lib/json3.js"></script>
-<script src="../../assets/scripts/main.js"></script>
-
+<script src="../../bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.min.js"></script>

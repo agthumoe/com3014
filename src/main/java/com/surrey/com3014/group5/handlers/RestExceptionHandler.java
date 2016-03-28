@@ -2,7 +2,6 @@ package com.surrey.com3014.group5.handlers;
 
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.dto.errors.ValidationErrorDTO;
-import com.surrey.com3014.group5.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,12 +23,13 @@ import javax.validation.ConstraintViolationException;
  *
  * @author Aung Thu Moe
  */
-@ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers"})
-public class RestExceptionHandler extends ResponseEntityExceptionHandler{
+@ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers.rest"})
+public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     /**
      * This method handles {@link DataIntegrityViolationException}
+     *
      * @param ex DataIntegrityViolationException
      * @return errors message in json format
      */
@@ -45,6 +45,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
 
     /**
      * This method handles {@link ConstraintViolationException}
+     *
      * @param ex ConstraintViolationException
      * @return errors message in json format
      */
@@ -53,16 +54,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @ResponseBody
     protected ValidationErrorDTO handleConstraintViolationException(ConstraintViolationException ex) {
         final ValidationErrorDTO error = new ValidationErrorDTO(HttpStatus.BAD_REQUEST);
-        for (ConstraintViolation<?> v: ex.getConstraintViolations()) {
+        for (ConstraintViolation<?> v : ex.getConstraintViolations()) {
             error.addMessage(v.getPropertyPath().toString(), v.getMessage());
         }
         return error;
     }
 
-    @ExceptionHandler(value = NotFoundException.class)
-    protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
-        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex.getMessage()), ex.getHttpStatus());
-    }
+//    @ExceptionHandler(value = NotFoundException.class)
+//    protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
+//        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex.getMessage()), ex.getHttpStatus());
+//    }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody

@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.services.authority;
 
-import com.surrey.com3014.group5.exceptions.NotFoundException;
+import com.surrey.com3014.group5.exceptions.HttpStatusException;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.repositories.AuthorityRepository;
 import com.surrey.com3014.group5.repositories.Repository;
@@ -27,7 +27,7 @@ public class AuthorityServiceImpl extends AbstractService<Authority> implements 
         if (authorities.isPresent()) {
             return authorities;
         }
-        throw new NotFoundException("Authority with type: " + type + " does not exist");
+        throw new HttpStatusException("Authority with type: " + type + " does not exist");
     }
 
     @Override

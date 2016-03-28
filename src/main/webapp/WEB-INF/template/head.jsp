@@ -12,10 +12,10 @@
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <c:choose>
     <c:when test="${empty title}">
-        <title>Tron Game | Group 5</title>
+        <title>Tron Game</title>
     </c:when>
     <c:otherwise>
-        <title>${title}</title>
+        <title>Tron Game | ${title}</title>
     </c:otherwise>
 </c:choose>
 <c:if test="${!empty description}">
@@ -23,7 +23,7 @@
 </c:if>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<link rel="stylesheet" href="../../bower_components/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="../../assets/styles/main.css">
 <script src="../../bower_components/modernizr-built/dist/modernizr.min.js"></script>
 

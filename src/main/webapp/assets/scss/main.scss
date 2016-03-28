@@ -1,4 +1,132 @@
 @import "../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
-@import "../../bower_components/font-awesome-sass/assets/stylesheets/font-awesome-sprockets";
-@import "../../bower_components/font-awesome-sass/assets/stylesheets/font-awesome-compass";
+@import "login";
 
+$border-color: #ddd;
+$border-width: 1px;
+$component-title-background-color: #F5F5F3;
+$border-radius-top: 4px 4px 0 0;
+$footer-height: 60px;
+$default-background-color: #f5f5f5;
+$message-time-color: #777777;
+$message-owner-color: #174f8c;
+$message-body-color: #000000;
+$message-background-color: #ffffff;
+.component {
+    border: 1px solid $border-color;
+    border-radius: $border-radius-base;
+    margin: 10px;
+}
+
+.component-title {
+    color: #14798c;
+    font-weight: bold;
+    background-color: $component-title-background-color;
+    border-bottom: 1px solid $border-color;
+    border-radius: $border-radius-top;
+    padding: 10px;
+    margin: 0;
+}
+
+.component-contents {
+    padding: 10px;
+}
+
+.status-online, .status-away {
+    @extend .small;
+}
+
+.status-online, .success {
+    color: $brand-success;
+}
+
+.status-offline, .danger {
+    color: $brand-danger;
+}
+
+.status-away, .warning {
+    color: $brand-warning;
+}
+
+.list-user {
+    list-style-type: none;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: $footer-height;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: $footer-height;
+    background-color: $default-background-color;
+    border-top: 1px solid #ddd;
+    > .container > .text-muted {
+        margin: $footer-height/3 0;
+    }
+}
+
+.notification {
+    position: fixed;
+    z-index: 9999;
+}
+
+.notification.top-right {
+    right: 10px;
+    top: $navbar-height + 10;
+}
+
+.chat-box {
+    .messages {
+        .message {
+            @extend .small;
+            margin: 5px;
+            padding: 5px 10px;
+            border: 1px solid $border-color;
+            border-radius: $border-radius-small;
+            background-color: $message-background-color;
+
+        }
+        .time {
+            @extend .pull-right;
+            color: $message-time-color;
+            font-size: smaller;
+        }
+        .owner {
+            color: $message-owner-color;
+            font-weight: bold;
+        }
+        .message-body {
+            color: $message-body-color;
+        }
+    }
+
+    .message-input {
+        margin: 10px 5px;
+    }
+}
+
+.panel > .panel-heading > .row {
+    padding: 0;
+    margin: 0;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.panel {
+    min-width: 800px;
+}
+
+.form-padding-20-40 {
+    padding: 20px 40px;
+}

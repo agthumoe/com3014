@@ -13,16 +13,24 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class MainController {
 
-    @RequestMapping(value = "/admin**", method = RequestMethod.GET)
-    public ModelAndView adminPage() {
-
-        ModelAndView model = new ModelAndView();
-        model.addObject("title", "Spring Security Hello World");
-        model.addObject("message", "This is protected page - Admin Page!");
-        model.setViewName("admin");
-
-        return model;
-
+    @RequestMapping({"/", "index"})
+    public String index(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "index";
     }
 
+    @RequestMapping("/help")
+    public String help() {
+        return "help";
+    }
+
+    @RequestMapping("/game")
+    public String game() {
+        return "game";
+    }
+
+    @RequestMapping(value = "/lobby")
+    public String getLobbyPage() {
+        return "lobby";
+    }
 }

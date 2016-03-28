@@ -1,23 +1,17 @@
 package com.surrey.com3014.group5.configs;
 
+import com.surrey.com3014.group5.security.AuthenticationFailureHandler;
 import com.surrey.com3014.group5.security.SecureAuthenticationProvider;
-import com.surrey.com3014.group5.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
+
+import static com.surrey.com3014.group5.security.AuthoritiesConstants.*;
 
 import javax.annotation.PostConstruct;
 
@@ -28,23 +22,20 @@ import javax.annotation.PostConstruct;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String ADMIN = "ADMIN";
-    public static final String USER = "USER";
-
-    @Autowired
-    private UserService userService;
-
     @Autowired
     AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    AuthenticationManagerBuilder authenticationManagerBuilder;
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Autowired
-    SecureAuthenticationProvider secureAuthenticationProvider;
+    private SecureAuthenticationProvider secureAuthenticationProvider;
 
     @Autowired
-    SessionRegistry sessionRegistry;
+    private SessionRegistry sessionRegistry;
+
+    @Autowired
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
     @PostConstruct
     public void init() {
@@ -55,9 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-            .antMatchers("/admin/**").hasAuthority(ADMIN)
+          .antMatchers("/admin/**").hasAuthority(ADMIN)
             .antMatchers("/api/users/**").hasAuthority(ADMIN)
-            .antMatchers("/user/**").hasAuthority(USER)
+            .antMatchers("/game/**").hasAuthority(USER)
             .antMatchers("/api/lobby/**").hasAnyAuthority(USER)
             .antMatchers("/assets/**").permitAll()
             .antMatchers("/bower_components/**").permitAll()
@@ -68,20 +59,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/v2/api-docs").permitAll()
             .antMatchers("/login").permitAll()
 //            .anyRequest().authenticated()
-//        .and()
-//            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+        .and()
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
         .and()
             .logout()
             .logoutUrl("/api/logout")
-            .logoutSuccessUrl("/")
+            .logoutSuccessUrl("/account/login?logout")
+            .deleteCookies("JSESSIONID")
             .permitAll()
         .and()
             .formLogin()
+            .loginPage("/account/login")
             .loginProcessingUrl("/api/login")
+            .failureHandler(authenticationFailureHandler)
             .usernameParameter("username")
-            .passwordParameter("password")
+            .passwordParameter("currentPassword")
             .permitAll()
-        .and().csrf().disable();
+        .and()
+            .csrf().disable();
 
         http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry);
     }

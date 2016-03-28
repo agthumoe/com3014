@@ -100,16 +100,41 @@
         });
     </script>
 </head>
+<style>
+    .swagger-section .swagger-ui-wrap .btn-goback {
+        background: #669900;
+        background-image: -webkit-linear-gradient(top, #669900, #557f00);
+        background-image: -moz-linear-gradient(top, #669900, #557f00);
+        background-image: -ms-linear-gradient(top, #669900, #557f00);
+        background-image: -o-linear-gradient(top, #669900, #557f00);
+        background-image: linear-gradient(to bottom, #669900, #557f00);
+        -webkit-border-radius: 5;
+        -moz-border-radius: 5;
+        border-radius: 5px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 13px;
+        padding: 10px 15px 10px 20px;
+        text-decoration: none;
+    }
 
+    .swagger-section .swagger-ui-wrap .btn-goback:hover {
+        background: #619100;
+        background-image: -webkit-linear-gradient(top, #619100, #496e00);
+        background-image: -moz-linear-gradient(top, #619100, #496e00);
+        background-image: -ms-linear-gradient(top, #619100, #496e00);
+        background-image: -o-linear-gradient(top, #619100, #496e00);
+        background-image: linear-gradient(to bottom, #619100, #496e00);
+        text-decoration: none;
+    }
+</style>
 <body class="swagger-section">
 <div id='header'>
     <div class="swagger-ui-wrap">
         <a id="logo" href="http://swagger.io">swagger</a>
-        <form id='api_selector'>
-            <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-            <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
-            <div class='input'><a id="explore" href="#" data-sw-translate>Explore</a></div>
-        </form>
+        <div id='api_selector'>
+            <div class='input'><a class="btn-goback" href="/" data-sw-translate>Go Back</a></div>
+        </div>
     </div>
 </div>
 

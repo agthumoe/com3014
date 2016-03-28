@@ -18,7 +18,7 @@ public abstract class AbstractService<T extends Entity> implements Service<T> {
 
     @Override
     public <S extends T> S create(S s) {
-        return (S) this.getRepository().save(s);
+        return this.getRepository().save(s);
     }
 
     @Override
