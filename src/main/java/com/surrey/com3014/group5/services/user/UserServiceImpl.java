@@ -8,10 +8,7 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
-import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,8 +24,6 @@ import java.util.Optional;
  */
 @Service("userService")
 public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private PasswordEncoder passwordEncoder;

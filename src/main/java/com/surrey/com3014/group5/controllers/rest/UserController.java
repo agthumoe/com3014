@@ -5,16 +5,12 @@ import com.surrey.com3014.group5.dto.users.ManagedUserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -25,8 +21,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
