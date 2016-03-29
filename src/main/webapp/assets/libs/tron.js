@@ -9,30 +9,30 @@ $(function() {
                  * Defines the starting scene for the game.
                  */
                 startingScene: 'Main',
-                
+
                 /**
                  * Defines the timeout for explosions. Once timed out, explosion will destroy,
                  */
                 explosionTimeout: 1500,
-                
+
                 /**
                  * Defines the time a trail stays alive for.
                  */
                 trailTimeout: 10000,
-                
+
                 /**
                  * Defines whether logging is enabled or not.
                  */
-                logging: true, 
-                
+                logging: true,
+
                 /**
                  * Defines the default paths to look for images and audio files.
                  */
                 assetPaths: {
-                    audio: "audio/",
-                    images: "images/"
+                    audio: "../../assets/audio/",
+                    images: "../../assets/images/game/"
                 },
-                
+
                 /**
                  * Defines the default loading functions
                  */
@@ -50,38 +50,38 @@ $(function() {
                     }
                 }
             },
-            
+
             /**
              * A singular instance of Tron
              */
             _instance: null,
-            
+
             /**
              * Determines if the assets have been loaded or not.
              */
             _assetsLoaded: false,
-            
+
             /**
              * Flag to determine if components have been defined or not.
              */
             _componentsDefined: false,
-            
+
             /**
              * Determines if the game is paused or not.
              */
             _paused: false,
-            
+
             /**
-             * A reference to the canvas used to render the game. It's a DOM element, nothing 
+             * A reference to the canvas used to render the game. It's a DOM element, nothing
              * to do with Crafty.
              */
             _canvas: null,
-            
+
             /**
              * A log of all defined scenes
              */
             _scenes: [],
-            
+
             /**
              * Defines the assets of Tron
              */
@@ -134,65 +134,65 @@ $(function() {
                     Background: ["run_wild_edited.mp3"],
                     Explosion: ["explosion.mp3"]
                 }
-            }, 
-            
+            },
+
             /**
              * Tron.instance
              * Creates a new instance of the Tron game. Provides a method for accessing the Tron
              * signleton as we only ever really want 1 instance of the game in play. Anything else
              * would be silly.
-             * 
+             *
              * Games should be initialised with the init method once retrieved. This handles loading
              * of assets and setting up the canvas.
              */
-            instance: function () {  
+            instance: function () {
                 if (!Tron._instance) {
                     Tron._instance = Object.create(Tron);
                 }
-                
+
                 return Tron._instance;
             },
-            
+
             /**
              * Tron.init
              * Initialises the game by creating the game specific objects and
              * defining the map.
-             * 
+             *
              * @returns this
              */
             init: function(canvasID) {
                 Crafty.logginEnabled = Tron._config.logging;
-                
+
                 Crafty.log("Initialising Tron");
-                
+
                 this._setupCanvas(canvasID);
                 this._defineComponents();
                 this._loadAssets();
-                
+
                 return this;
             },
-            
+
             /**
              * Tron.start
              * Starts the game.
-             * 
+             *
              * @param h Height of the game window
              * @param w Width of the game window
              * @parama element The element to use for the game.
-             * 
+             *
              * @return this
              */
             start: function () {
                 Crafty.log('Starting Tron');
-                
+
                 this.enterScene('Main', this);
-                
+
                 return this;
             },
-            
+
             /**
              * Wrapper function to start a game of Tron safely ensuring all assets have been loaded.
-             * 
+             *
              * @param Tron game
              * @returns void
              */
@@ -202,76 +202,76 @@ $(function() {
                     setTimeout(Tron.startWhenLoaded, 1000, game);
                     return;
                 }
-                
+
                 game.start();
             },
-            
+
             /**
              * Tron.stop
              * Stops the game completely and optionally resets the game state.
-             * 
+             *
              * @param bool If true, clears the game state resetting everything.
              * @return this
              */
             unload: function (clearState) {
                 Crafty.log("Unloading game");
-                
+
                 // Default clear state to false if not set.
                 clearState = (typeof clearState === "undefined" ? false : clearState);
-                
+
                 Crafty.audio.stop();
                 Crafty.stop(clearState);
-                
+
                 return this;
             },
-            
+
             /**
              * Tron.pause
              * Pauses this game.
-             * 
+             *
              * @returns this
              */
             pause: function () {
                 Crafty.log("Pausing game");
-                
+
                 if (!this._paused) {
                     Crafty.pause();
                     this._paused = !this._paused;
                 }
-                
+
                 return this;
             },
-            
+
             /**
              * Tron.unpause
              * Unpauses a paused game.
-             * 
+             *
              * @returns this
              */
             unpause: function () {
                 Crafty.log("Unpausing game");
-                
+
                 if (this._paused) {
                     Crafty.pause();
                     this._paused = !this._paused;
                 }
-                
+
                 return this;
             },
-            
+
             /**
              * Tron.isPaused
              * Determines whether the game is paused or not.
-             * 
+             *
              * @return bool
              */
             isPaused: function () {
                 return this._paused;
             },
-            
+
             /**
              * Adds a scene to Tron
-             * 
+             *
              * @param string key
              * @param function scene
              * @returns this
@@ -280,10 +280,10 @@ $(function() {
                 Tron._scenes.push(key);
                 Crafty.defineScene(key, scene);
             },
-            
+
             /**
              * Enters the defined scene.
-             * 
+             *
              * @param string key
              * @returns void
              */
@@ -295,10 +295,10 @@ $(function() {
                     Crafty.enterScene(key, data);
                 }
             },
-            
+
             /**
              * Sets the global configuration.
-             * 
+             *
              * @param Object config
              * @returns void
              */
@@ -308,34 +308,34 @@ $(function() {
                     Tron._config[i] = config[i];
                 }
             },
-            
+
             /**
              * Tron._setupCanvas
              * Creates the canvas and initialises the game. Then pauses the game and waits for
              * it to start.
-             * 
+             *
              * @param string canvas
              * @returns void
              */
             _setupCanvas: function (canvasID) {
                 this._canvas = document.getElementById(canvasID);
-                
-                if (this._canvas 
+
+                if (this._canvas
                     && typeof this._canvas !== "undefined"
                     && this._canvas.attributes.hasOwnProperty('tron-height')
                     && this._canvas.attributes.hasOwnProperty('tron-width')) {
-                    
+
                     Crafty.log("Setting up canvas with predefined properties");
-                    
-                    Crafty.init(this._canvas.attributes.getNamedItem('tron-width').value * 1, 
-                        this._canvas.attributes.getNamedItem('tron-height').value * 1, 
+
+                    Crafty.init(this._canvas.attributes.getNamedItem('tron-width').value * 1,
+                        this._canvas.attributes.getNamedItem('tron-height').value * 1,
                             this._canvas);
                 } else {
                     Crafty.log("Setting up default canvas");
                     Crafty.init();
                 }
             },
-            
+
             /**
              * Loads all necessary images, sprites and audio files.
              */
@@ -354,7 +354,7 @@ $(function() {
                     }, onProgress, onError);
                 }
             },
-            
+
             /**
              * Tron._defineComponents
              * Defines the game objects used in Tron.
@@ -371,7 +371,7 @@ $(function() {
 
                     /**
                      * Defines a debug point used only when debugging things.
-                     * 
+                     *
                      * Relatively useful.
                      */
                     Crafty.c('DebugPoint', {
@@ -434,7 +434,7 @@ $(function() {
                         /**
                          * #.setPlayer
                          * Sets the player associated with this object.
-                         * 
+                         *
                          * @param player
                          * @return this
                          */
@@ -447,7 +447,7 @@ $(function() {
                         /**
                          * #.getPlayer
                          * Retrieves the player this Trail object is associated with.
-                         * 
+                         *
                          * @returns Player
                          */
                         getPlayer: function () {
@@ -457,7 +457,7 @@ $(function() {
                         /**
                          * #.isActive
                          * Determines if this object is active or not.
-                         * 
+                         *
                          * @returns bool
                          */
                         isActive: function () {
@@ -467,7 +467,7 @@ $(function() {
                         /**
                          * #.activate
                          * Activates this object making it collidable
-                         * 
+                         *
                          * @returns this
                          */
                         activate: function () {
@@ -564,7 +564,7 @@ $(function() {
                                 if(this.x > Crafty.viewport.width + this.h) {
                                     this.x = 0-this.h;
                                 }
-                                
+
                                 if(this.x < 0-this.h) {
                                     this.x = Crafty.viewport.width;
                                 }
@@ -576,7 +576,7 @@ $(function() {
                                 if(this.y < 0-this.h) {
                                     this.y = Crafty.viewport.height;
                                 }
-                                
+
                                 // Calculate the vectors for the direction of the object.
                                 this._vector.x = Math.sin(Crafty.math.degToRad(this._rotation));
                                 this._vector.y = -Math.cos(Crafty.math.degToRad(this._rotation));
@@ -592,9 +592,9 @@ $(function() {
 
                             Move: function (oldPosition) {
                                 if (!this.isLocked()) {
-                                    // If we're over a configurable magnitude we want to begin creating 
+                                    // If we're over a configurable magnitude we want to begin creating
                                     // a trail. Place the trail objects right behind the bike by negating
-                                    // the bikes vector and giving it a magnitude of 20, then adding 
+                                    // the bikes vector and giving it a magnitude of 20, then adding
                                     // the vector to the coordinates of the objects centre point.
                                     //
                                     // The centrepoint is tracked on a frame by frame basis.
@@ -615,9 +615,9 @@ $(function() {
 
                         /**
                          * #.lock
-                         * Sets the lock on this object to true. 
-                         * 
-                         * @param bool 
+                         * Sets the lock on this object to true.
+                         *
+                         * @param bool
                          * @return this
                          */
                         lock: function (lock) {
@@ -628,7 +628,7 @@ $(function() {
                         /**
                          * #.isLocked
                          * Determines if this object has been locked.
-                         * 
+                         *
                          * @return bool
                          */
                         isLocked: function () {
@@ -638,7 +638,7 @@ $(function() {
                         /**
                          * #.explode
                          * Explodes this object replacing itself with an explosion object.
-                         * 
+                         *
                          * @returns void
                          */
                         explode: function () {
@@ -652,7 +652,7 @@ $(function() {
                                 // Create a new explision object and offset it by 16 pixels moving it
                                 // up and left so it centres ove the top of the bike.
                                 //
-                                // We offset by 15 because the player is 32x23 and the explosion is 
+                                // We offset by 15 because the player is 32x23 and the explosion is
                                 // 64x64 so to centre one over the other we must move by 16.
                                 var e = Crafty.e('Explosion');
                                 e.attr({
@@ -669,7 +669,7 @@ $(function() {
                         /**
                          * #.removeTrail
                          * Removes a trail object from this Players trail.
-                         * 
+                         *
                          * @param Object the Trail object.
                          * @return this
                          */
@@ -719,9 +719,9 @@ $(function() {
 
                     /**
                      * Defines a controllable player.
-                     * 
+                     *
                      * This must be listed when calling Crafty.e after the playe type.
-                     * 
+                     *
                      * @example Crafty.e('CyanPlayer, ControllablePlayer')
                      */
                     Crafty.c('ControllablePlayer', {
@@ -732,7 +732,7 @@ $(function() {
                         required: "Player, Motion, Keyboard",
 
                         /**
-                         * Defines the magnitude used to multiply the movement vector to denote the 
+                         * Defines the magnitude used to multiply the movement vector to denote the
                          * maximum velocity the object can travel in in the x and y planes.
                          */
                         _maxMagnitude: 300,
@@ -769,7 +769,7 @@ $(function() {
                          */
                         events: {
                             KeyDown: function (e) {
-                                // If we're moving, and the key pressed is a directional change then 
+                                // If we're moving, and the key pressed is a directional change then
                                 // apply some rotation.
                                 if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
                                     this._keysPressed.RIGHT = true;
@@ -796,14 +796,14 @@ $(function() {
                                 if (e.keyCode === Crafty.keys.UP_ARROW) {
                                     this._keysPressed.UP = false;
                                 }
-                            },                        
+                            },
 
-                            EnterFrame: function () {     
+                            EnterFrame: function () {
                                 // Ensure the object hasn't been locked before manipulating it.
                                 if (!this.isLocked()) {
                                     // Handle rotation of the object. Prevent rotation if both arrows
                                     // are pushed down.
-                                    if (!(this._keysPressed.LEFT && this._keysPressed.RIGHT) 
+                                    if (!(this._keysPressed.LEFT && this._keysPressed.RIGHT)
                                             && (this._keysPressed.LEFT || this._keysPressed.RIGHT)) {
 
                                         if (this._keysPressed.LEFT) {
@@ -834,7 +834,7 @@ $(function() {
                                             this._magnitude-= this._magnitudeIncrement;
                                         }
 
-                                        // If magnitude is less than or equal to 1 we're at the smallest 
+                                        // If magnitude is less than or equal to 1 we're at the smallest
                                         // magnitude and want to stop the object moving. If not, we want
                                         // to apply the reduced magnitude and set the velocity accordingly.
                                         if (this._magnitude <= 1) {
@@ -858,7 +858,7 @@ $(function() {
                         /**
                          * #.isMoving
                          * Determines if this object is moving or not.
-                         * 
+                         *
                          * @returns bool
                          */
                         isMoving: function () {
@@ -940,7 +940,7 @@ $(function() {
                             },
 
                             Click: function (e) {
-                                if (this._audioID) { 
+                                if (this._audioID) {
                                     if (!this._paused) {
                                         this.pause();
                                     } else {
@@ -954,13 +954,13 @@ $(function() {
 
                         /**
                          * Sets the ID of the audio track this object will mute/pause when clicked.
-                         * 
+                         *
                          * @param string id
                          * @returns this
                          */
                         setAudioID: function (id) {
                             this._audioID = id;
-                            
+
                             var audioCookie = $.cookie(this._audioID);
                             if (audioCookie !== "undefined") {
                                 if (audioCookie === "false") {
@@ -970,7 +970,7 @@ $(function() {
 
                             return this;
                         },
-                        
+
                         /**
                          * #.pause
                          * Pauses the specified audio ID
@@ -983,7 +983,7 @@ $(function() {
 
                             $.cookie(this._audioID, false, {expires: 30});
                         },
-                        
+
                         /**
                          * #.unpause
                          * Unpauses the specified audio ID
@@ -1003,17 +1003,17 @@ $(function() {
                 }
             }
         };
-        
+
         Tron.addScene('LandingPage', function (game) {
             Crafty.background('rgb(40, 40, 40)');
-            
+
             Crafty.audio.play('Background', -1, 0.1);
-            
+
             Crafty.e('SpeakerControl').attr({
                 x: Crafty.viewport.width - 64,
                 y: 32
             }).setAudioID('Background');
-            
+
             Crafty.e('2D, Text, DOM').attr({
                 h: 50,
                 w: 400,
@@ -1023,14 +1023,14 @@ $(function() {
             .text('Lets play!')
             .textColor('rgba(255, 255, 255, 0.1)')
             .textFont({
-                font: 'Impact, Charcoal, sans-serif', 
+                font: 'Impact, Charcoal, sans-serif',
                 size: '30pt',
                 weight: 'bold'
             })
             .css({
                 'text-align': 'center',
             });
-            
+
             Crafty.log('Using Logo Measurements: 758, 302');
             Crafty.e('2D, HTML, Mouse').attr({
                 x: Crafty.viewport.width / 2 - 379,
@@ -1038,7 +1038,7 @@ $(function() {
                 h: 302,
                 w: 758
             })
-            .append('<img src="' 
+            .append('<img src="'
                 + Tron._config.assetPaths.images + 'logo_nobg.png" />')
             .bind('Click', function () {
                 Crafty.log('Clicked');
@@ -1048,7 +1048,7 @@ $(function() {
             .bind('MouseOver', function () {
                 this.css('cursor', 'pointer');
             });
-            
+
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
             Crafty.e("2D, Canvas, Particles").particles({
@@ -1058,11 +1058,11 @@ $(function() {
                 // Size of the particles and change of random size.
                 size: 30,
                 sizeRandom: 20,
-                
+
                 // Speed of particles and chance of random speed.
                 speed: 0.2,
                 speedRandom: 0.8,
-                
+
                 // Lifespan in frames
                 lifeSpan: 75,
                 lifeSpanRandom: 5,
@@ -1092,9 +1092,9 @@ $(function() {
                 // Will draw squares instead of circle gradients
                 fastMode: true,
 
-                // Defining gravity. 1 is strong gravity. 
+                // Defining gravity. 1 is strong gravity.
                 gravity: {
-                    x: 0, 
+                    x: 0,
                     y: 0
                 },
 
@@ -1103,11 +1103,11 @@ $(function() {
 
                 // Offset for the origin of the particles
                 originOffset: {
-                    x: Crafty.viewport.width / 2, 
+                    x: Crafty.viewport.width / 2,
                     y: Crafty.viewport.height / 2
                 },
-                
-                // Custom option. 
+
+                // Custom option.
                 // Renders particles behind everything else.
                 backgroundLayer: true,
             });
@@ -1117,17 +1117,17 @@ $(function() {
                 y: Crafty.viewport.height / 2 - 120,
                 rotation: 110
             });
-            
+
             Crafty.e('OrangePlayer').attr({
                 x: Crafty.viewport.width / 2 - 150,
                 y: Crafty.viewport.height / 2 + 110,
                 rotation: 340
             });
         });
-        
+
         Tron.addScene('Main', function () {
             Crafty.background('rgb(40, 40, 40) url("images/bg.png") center no-repeat');
-                    
+
             //Crafty.audio.play('Background', -1, 0.05);
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
@@ -1139,11 +1139,11 @@ $(function() {
                 // Size of the particles and change of random size.
                 size: 30,
                 sizeRandom: 20,
-                
+
                 // Speed of particles and chance of random speed.
                 speed: 0.2,
                 speedRandom: 0.8,
-                
+
                 // Lifespan in frames
                 lifeSpan: 75,
                 lifeSpanRandom: 5,
@@ -1173,9 +1173,9 @@ $(function() {
                 // Will draw squares instead of circle gradients
                 fastMode: true,
 
-                // Defining gravity. 1 is strong gravity. 
+                // Defining gravity. 1 is strong gravity.
                 gravity: {
-                    x: 0, 
+                    x: 0,
                     y: 0
                 },
 
@@ -1184,25 +1184,25 @@ $(function() {
 
                 // Offset for the origin of the particles
                 originOffset: {
-                    x: Crafty.viewport.width / 2, 
+                    x: Crafty.viewport.width / 2,
                     y: Crafty.viewport.height / 2
                 },
-                
-                // Custom option. 
+
+                // Custom option.
                 // Renders particles behind everything else.
                 backgroundLayer: true,
             });
-                    
+
             Crafty.e('CyanPlayer, ControllablePlayer').attr({
                 x: 100,
                 y: 100,
                 rotation: 90
-            }); 
+            });
         });
-        
+
         Tron.addScene('Debug', function () {
             Crafty.background('rgb(40, 40, 40) url("images/bg.png") center no-repeat');
-            
+
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
             Crafty.e("2D, Canvas, Particles").particles({
@@ -1212,11 +1212,11 @@ $(function() {
                 // Size of the particles and change of random size.
                 size: 30,
                 sizeRandom: 20,
-                
+
                 // Speed of particles and chance of random speed.
                 speed: 0.2,
                 speedRandom: 0.8,
-                
+
                 // Lifespan in frames
                 lifeSpan: 75,
                 lifeSpanRandom: 5,
@@ -1246,9 +1246,9 @@ $(function() {
                 // Will draw squares instead of circle gradients
                 fastMode: true,
 
-                // Defining gravity. 1 is strong gravity. 
+                // Defining gravity. 1 is strong gravity.
                 gravity: {
-                    x: 0, 
+                    x: 0,
                     y: 0
                 },
 
@@ -1257,11 +1257,11 @@ $(function() {
 
                 // Offset for the origin of the particles
                 originOffset: {
-                    x: Crafty.viewport.width / 2, 
+                    x: Crafty.viewport.width / 2,
                     y: Crafty.viewport.height / 2
                 },
-                
-                // Custom option. 
+
+                // Custom option.
                 // Renders particles behind everything else.
                 backgroundLayer: true,
             });

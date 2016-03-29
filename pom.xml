@@ -33,7 +33,7 @@
     </developers>
 
     <prerequisites>
-        <maven>3.0.0</maven>
+        <maven>3.2.5</maven>
     </prerequisites>
 
     <properties>
