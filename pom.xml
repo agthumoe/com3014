@@ -16,7 +16,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Tron</name>
-    <description>A Tron based game with a baisc user management system, game lobby, live chat, leaderboards, and clans.</description>
+    <description>A Tron based game with a baisc user management system, game lobby, live chat, leaderboards, and
+        clans.
+    </description>
     <developers>
         <developer>
             <name>Aung Thu Moe</name>
