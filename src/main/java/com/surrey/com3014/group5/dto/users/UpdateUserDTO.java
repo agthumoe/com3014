@@ -1,13 +1,13 @@
 package com.surrey.com3014.group5.dto.users;
 
-import com.surrey.com3014.group5.dto.CurrentPassword;
+import com.surrey.com3014.group5.dto.Verifiable;
 import com.surrey.com3014.group5.models.impl.User;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author Aung Thu Moe
  */
-public class UpdateUserDTO extends UserDTO implements CurrentPassword {
+public class UpdateUserDTO extends UserDTO implements Verifiable {
     private static final long serialVersionUID = -2623120141304335028L;
 
     @NotBlank

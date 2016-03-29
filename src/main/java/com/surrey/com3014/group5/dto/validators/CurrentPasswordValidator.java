@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.dto.validators;
 
-import com.surrey.com3014.group5.dto.CurrentPassword;
+import com.surrey.com3014.group5.dto.Verifiable;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,14 +17,14 @@ public class CurrentPasswordValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return CurrentPassword.class.isAssignableFrom(clazz);
+        return Verifiable.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        CurrentPassword currentPassword = (CurrentPassword) target;
-        if (!userService.validate(currentPassword.getCurrentPassword())) {
-            errors.rejectValue("currentPassword", "Invalid.currentPassword", "Invalid Current Password");
+        Verifiable verifiable = (Verifiable) target;
+        if (!userService.validate(verifiable.getCurrentPassword())) {
+            errors.rejectValue("currentPassword", "Invalid.currentPassword", "Invalid Current password");
         }
     }
 }

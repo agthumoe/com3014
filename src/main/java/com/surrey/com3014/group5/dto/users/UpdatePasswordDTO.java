@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.dto.users;
 
-import com.surrey.com3014.group5.dto.CurrentPassword;
-import com.surrey.com3014.group5.dto.Password;
+import com.surrey.com3014.group5.dto.Verifiable;
+import com.surrey.com3014.group5.dto.Credentials;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 /**
  * @author Aung Thu Moe
  */
-public class UpdatePasswordDTO implements Password, CurrentPassword {
+public class UpdatePasswordDTO implements Credentials, Verifiable {
     @NotBlank
     private String currentPassword;
     @NotBlank

@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.surrey.com3014.group5.dto.Password.PASSWORD_MAX_LENGTH;
-import static com.surrey.com3014.group5.dto.Password.PASSWORD_MIN_LENGTH;
+import static com.surrey.com3014.group5.dto.Credentials.PASSWORD_MAX_LENGTH;
+import static com.surrey.com3014.group5.dto.Credentials.PASSWORD_MIN_LENGTH;
 
 /**
  * Spring MVC model to represent users

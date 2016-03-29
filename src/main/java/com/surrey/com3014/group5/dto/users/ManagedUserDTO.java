@@ -1,21 +1,29 @@
 package com.surrey.com3014.group5.dto.users;
 
-import com.surrey.com3014.group5.dto.Password;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.surrey.com3014.group5.dto.Credentials;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.AuthoritiesConstants;
+import io.swagger.annotations.ApiModel;
+
 import java.util.Date;
 
 /**
  * @author Aung Thu Moe
  */
-public class ManagedUserDTO extends UserDTO implements Password {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@ApiModel
+public class ManagedUserDTO extends UserDTO implements Credentials {
     private static final long serialVersionUID = 8867610531231596079L;
     private Date createdDate;
     private Date lastModifiedDate;
     private boolean enabled;
     private boolean admin;
+    @JsonIgnore
     private String password;
+    @JsonIgnore
     private String confirmPassword;
 
     public ManagedUserDTO() {
