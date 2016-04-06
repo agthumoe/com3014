@@ -64,7 +64,7 @@
                             </c:choose>
                         </td>
                         <td class="text-right">
-                            <a href="#" role="button" class="btn btn-danger btn-xs">
+                            <a href="#" class="btn btn-danger btn-xs btn-delete" data-target-id="${user.id}">
                                 <i class="fa fa-trash"></i>
                             </a>
                             <a href="/admin/users/${user.id}" role="button" class="btn btn-warning btn-xs">
@@ -78,8 +78,60 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="delete-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete-modal-label">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="notification" class="alert alert-info alert-dismissible top-right notification" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+        aria-hidden="true">&times;</span></button>
+    <strong>Info!</strong> <span id="notification-message"></span>
+</div>
 <%@include file="../../template/footer.jsp" %>
 <%@include file="../../template/scripts.jsp" %>
+<script>
+    $(document).ready(function() {
+        var deleteModal = $('#delete-modal');
+        var notification = $('#notification');
+        deleteModal.modal({ show: false});
+        notification.hide();
+        $(".btn-delete").click(function() {
+            var id = $(this).data("target-id");
+            var btnDelete = $('#btn-delete-confirm');
+            btnDelete.click(function() {
+                $.ajax({
+                    url: '/api/users/' + id,
+                    type: 'DELETE',
+                    success: function() {
+                        deleteModal.modal("hide");
+                        $('#notification-message').html("User has been deleted!");
+                        notification.show();
+
+                    }
+                });
+            });
+            console.log("id: " + id);
+            deleteModal.modal('show');
+        });
+    });
+</script>
 </body>
 </html>
 

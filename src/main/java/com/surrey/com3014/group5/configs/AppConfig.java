@@ -15,6 +15,8 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import java.time.format.DateTimeFormatter;
+
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.ADMIN;
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.USER;
 
@@ -65,5 +67,10 @@ public class AppConfig {
         authority.setType(USER);
         this.authorityService.create(authority);
         return authority;
+    }
+
+    @Bean
+    public DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     }
 }

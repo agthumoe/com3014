@@ -9,13 +9,13 @@ public class ReplyMessageDTO extends MessageDTO {
     private static final long serialVersionUID = 8048419213604886550L;
 
     private String username;
-    private Date currentTime;
+    private String currentTime;
 
     public ReplyMessageDTO() {
         super();
     }
 
-    public ReplyMessageDTO(String username, Date currentTime, String message) {
+    public ReplyMessageDTO(String username, String currentTime, String message) {
         this.username = username;
         this.currentTime = currentTime;
         this.setMessage(message);
@@ -30,11 +30,11 @@ public class ReplyMessageDTO extends MessageDTO {
     }
 
 
-    public Date getCurrentTime() {
+    public String getCurrentTime() {
         return currentTime;
     }
 
-    public void setCurrentTime(Date currentTime) {
+    public void setCurrentTime(String currentTime) {
         this.currentTime = currentTime;
     }
 

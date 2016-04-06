@@ -44,7 +44,7 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
 
             LOGGER.debug("onApplicationEvent() users Admin updated");
 
-            User user = new User("user", "password", "users@localhost.com", "Generic User", false);
+            User user = new User("user", "password", "users@localhost.com", "Generic User", true);
             this.userService.create(user);
             LOGGER.debug("onApplicationEvent() User created");
             user.addAuthority(userAuthority);

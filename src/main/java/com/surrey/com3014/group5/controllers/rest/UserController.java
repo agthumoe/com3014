@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -71,9 +74,8 @@ public class UserController {
     @ResponseBody
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAll() {
-        throw new RuntimeException("Testing");
-//        List<User> users = userService.getAll();
-//        List<ManagedUserDTO> managedUsers = users.stream().map(ManagedUserDTO::new).collect(Collectors.toList());
-//        return ResponseEntity.ok(managedUsers);
+        List<User> users = userService.getAll();
+        List<ManagedUserDTO> managedUsers = users.stream().map(ManagedUserDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(managedUsers);
     }
 }
