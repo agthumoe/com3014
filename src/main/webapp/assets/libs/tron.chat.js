@@ -57,6 +57,7 @@ $(function () {
                 this._trackerURL = trackerURL;
                 this._historyURL = chatHistoryURL;
 
+                // Wrap the output div in a jquery object
                 this._output = $(outputID);
 
                 // Wrap the input ID in a jQuery object.
@@ -81,6 +82,8 @@ $(function () {
                     sc.subscribe(chatHistoryURL, function(message){
                         that.displayMessage(message.body);
                     });
+
+                    that._push('Hi, I just joined the chat');
                 });
 
                 // Register window unload functions so we disconnect properly.
@@ -107,11 +110,21 @@ $(function () {
              * @return void
              */
             send: function () {
-                this._stompClient.send(this._trackerURL, {}, JSON.stringify({
-                    message: this._input.val()
-                }));
-
+                this._push(this._input.val());
                 this._input.val('');
+            },
+
+            /**
+             * TronChat._push
+             * Pushes a specified message to the server
+             *
+             * @param m The message to send
+             * @return void
+             */
+            _push: function (m) {
+                this._stompClient.send(this._trackerURL, {}, JSON.stringify({
+                    message: m
+                }));
             },
 
             /**
@@ -123,11 +136,34 @@ $(function () {
              */
             displayMessage: function (message) {
                 var m = JSON.parse(message);
-                console.log(m);
-                var p = $('<p />');
-                p.html("CurrentTime: " + m.currentTime + ", Username: " + m.username + ", message: " + m.message);
-                this._output.prepend(p);
-            }
+                var div = $('<div />').addClass('message');
+
+                div.append($('<span />').addClass('owner').html(m.username + ': '));
+
+                div.append($('<span />').addClass('message-body').html(m.message));
+
+                var d = new Date(m.currentTime * 1000);
+                var dString = d.getDate() + '/' + d.getMonth() + '/' + d.getFullYear() + ' '
+                    + d.getHours() + ':' + d.getMinutes()
+                div.append($('<span />').addClass('time').html(dString));
+
+                this._output.prepend(div);
+            },
+
+            /**
+             * TronChat.setMessagesMaxHeight
+             * Sets the max-height css attribute to the specified height for messages. This inherently sets
+             * overflow to auto.
+             *
+             * @param height The height to set
+             * @return void
+             */
+            setMessagesMaxHeight: function (height) {
+                this._output.css({
+                    'overflow': 'auto',
+                    'max-height': height
+                });
+            },
         };
 
         window.TronChat = TronChat;
