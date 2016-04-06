@@ -49,29 +49,19 @@
             </table>
         </div>
         <div class="row well chat-box">
+
             <h2>Chat</h2>
-            <div class="messages">
-                <div class="message">
-                    <span class="owner">Bob: </span><span class="message-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed metus vel purus molestie
-                    dapibus condimentum iaculis mauris.</span><span class="time"> - [12/02/2016:13:30:48] </span>
-                </div>
-                <div class="message">
-                    <span class="owner">Bob: </span><span class="message-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed metus vel purus molestie
-                    dapibus condimentum iaculis mauris.</span><span class="time"> - [12/02/2016:13:30:48] </span>
-                </div>
-                <div class="message">
-                    <span class="owner">Bob: </span><span class="message-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed metus vel purus molestie
-                    dapibus condimentum iaculis mauris.</span><span class="time"> - [12/02/2016:13:30:48] </span>
-                </div>
-            </div><!-- ./messages -->
             <div class="message-input">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Type your message here...">
+                    <input id="chat-input" type="text" class="form-control" placeholder="Type your message here...">
                       <span class="input-group-btn">
                         <button class="btn btn-primary" type="button">Send</button>
                       </span>
                 </div><!-- /input-group -->
             </div>
+            <div id="messages" class="messages">
+            </div><!-- ./messages -->
+
         </div>
 
     </div>
@@ -101,5 +91,15 @@
 </div>
 <%@include file="../template/footer.jsp" %>
 <%@include file="../template/scripts.jsp" %>
+<script src="../../bower_components/sockjs/sockjs.min.js"></script>
+<script src="../../bower_components/stomp-websocket/lib/stomp.min.js"></script>
+<script src="../../assets/libs/tron.chat.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var chat = TronChat.create();
+        chat.init('#chat-input', '#messages', '/websocket/tracker', '/topic/global.chat');
+        chat.setMessagesMaxHeight(500);
+    });
+</script>
 </body>
 </html>
