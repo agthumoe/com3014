@@ -142,10 +142,7 @@ $(function () {
 
                 div.append($('<span />').addClass('message-body').html(m.message));
 
-                var d = new Date(m.currentTime * 1000);
-                var dString = d.getDate() + '/' + d.getMonth() + '/' + d.getFullYear() + ' '
-                    + d.getHours() + ':' + d.getMinutes()
-                div.append($('<span />').addClass('time').html(dString));
+                div.append($('<span />').addClass('time').html(m.currentTime));
 
                 this._output.prepend(div);
             },
