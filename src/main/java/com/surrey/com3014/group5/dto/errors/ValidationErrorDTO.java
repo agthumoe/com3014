@@ -20,6 +20,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ValidationErrorDTO extends ErrorDTO {
 
+    private static final long serialVersionUID = -8186359078166952706L;
     /**
      * Specific details about the validation errors message in key, value pairs.
      */

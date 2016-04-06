@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serializable;
+
 /**
  * This class is the based template to display errors message in json format.<br>
  * The message contains Http status and its representation, the exception thrown,
@@ -13,7 +15,8 @@ import org.springframework.http.HttpStatus;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ErrorDTO {
+public class ErrorDTO implements Serializable {
+    private static final long serialVersionUID = 3765168795033103018L;
     /**
      * Http status code
      */

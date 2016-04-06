@@ -40,10 +40,11 @@
         }
 
         function showGreeting(message) {
+            var message = JSON.parse(message);
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
+            p.appendChild(document.createTextNode("CurrentTime: " + message.currentTime + ", Username: " + message.username + ", message: " + message.message));
             response.appendChild(p);
         }
     </script>

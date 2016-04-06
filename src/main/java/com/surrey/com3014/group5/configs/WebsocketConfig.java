@@ -1,7 +1,5 @@
 package com.surrey.com3014.group5.configs;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -26,8 +24,6 @@ import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
-
-    private final Logger log = LoggerFactory.getLogger(WebsocketConfig.class);
 
     public static final String IP_ADDRESS = "IP_ADDRESS";
 
