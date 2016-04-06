@@ -37,11 +37,7 @@ public class ManagedUserDTO extends UserDTO implements Credentials {
         this.enabled = user.isEnabled();
         this.password = null;
         this.confirmPassword = null;
-        for (Authority authority: user.getAuthorities()) {
-            if (authority.getAuthority().equals(AuthoritiesConstants.ADMIN)) {
-                this.setAdmin(true);
-            }
-        }
+        user.getAuthorities().stream().filter(authority -> authority.getAuthority().equals(AuthoritiesConstants.ADMIN)).forEach(authority -> this.setAdmin(true));
     }
 
     public Date getCreatedDate() {

@@ -34,23 +34,23 @@ public class AppListener implements ApplicationListener<ApplicationEvent> {
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if(applicationEvent instanceof ContextRefreshedEvent){
             LOGGER.debug("onApplicationEvent STARTING: " + applicationEvent.getClass().getSimpleName());
-
-            User admin = new User("admin", "password", "admin@localhost.com", "Administrator", true);
-            this.userService.create(admin);
-            LOGGER.debug("onApplicationEvent() users Admin created");
-            admin.addAuthority(userAuthority);
-            admin.addAuthority(adminAuthority);
-            this.userService.update(admin);
-
-            LOGGER.debug("onApplicationEvent() users Admin updated");
-
-            User user = new User("user", "password", "users@localhost.com", "Generic User", true);
-            this.userService.create(user);
-            LOGGER.debug("onApplicationEvent() User created");
-            user.addAuthority(userAuthority);
-            this.userService.update(user);
-            LOGGER.debug("onApplicationEvent() User updated");
+            setupUser("admin", "password", "admin@localhost.com", "Administrator", true, true);
+            setupUser("user", "password", "users@localhost.com", "Generic User", true, false);
+            setupUser("alice", "password", "alice@localhost.com", "Alice", false, true);
+            setupUser("bob", "password", "bob@localhost.com", "Bob", false, false);
+            setupUser("chris", "password", "chris@localhost.com", "Chris", true, false);
+            setupUser("daniel", "password", "daniel@localhost.com", "Daniel", true, true);
+            setupUser("eric", "password", "eric@localhost.com", "Eric", true, false);
         }
+    }
+
+    private void setupUser(String username, String password, String email, String name, boolean enable, boolean isAdmin) {
+        User user = new User(username, password, email, name, enable);
+        user.addAuthority(userAuthority);
+        if (isAdmin) {
+            user.addAuthority(adminAuthority);
+        }
+        this.userService.create(user);
     }
 }
 

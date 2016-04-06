@@ -33,8 +33,8 @@ public class ChatController {
     @Autowired
     private DateTimeFormatter dateTimeFormatter;
 
-    @MessageMapping("/websocket/tracker")
-    @SendTo("/topic/global.chat")
+    @MessageMapping("/websocket/chat")
+    @SendTo("/channel/chat")
     public ReplyMessageDTO greeting(MessageDTO message, StompHeaderAccessor stompHeaderAccessor, Principal principal) throws Exception {
         LOGGER.debug("Username: " + SecurityUtils.getCurrentUsername() + ", SessionID: " + stompHeaderAccessor.getSessionId() + ", IPAddress: " + stompHeaderAccessor.getSessionAttributes().get(IP_ADDRESS).toString());
         User user = (User) ((Authentication) principal).getPrincipal();
