@@ -2,7 +2,6 @@ package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.dto.users.ManagedUserDTO;
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
-import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;

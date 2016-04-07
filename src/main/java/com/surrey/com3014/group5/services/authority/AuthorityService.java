@@ -4,8 +4,6 @@ import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.repositories.AuthorityRepository;
 import com.surrey.com3014.group5.services.Service;
 
-import java.util.Optional;
-
 /**
  * @author Aung Thu Moe
  */

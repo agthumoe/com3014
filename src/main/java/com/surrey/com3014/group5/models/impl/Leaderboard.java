@@ -13,8 +13,9 @@ import javax.validation.constraints.NotNull;
 public class Leaderboard extends MutableModel{
     private static final long serialVersionUID = 5668537543274150457L;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
+    @OrderBy("username")
     private User user;
 
     @Column(nullable = false)

@@ -12,11 +12,10 @@
 <div class="container">
     <div class="col-lg-8">
         <div class="row well">
-            <table class="table">
+            <table class="table" id="leaderboard-table">
                 <caption><h2>Leader Board</h2></caption>
                 <thead>
                 <tr>
-                    <th>#</th>
                     <th>Username</th>
                     <th>Win</th>
                     <th>Lost</th>
@@ -24,27 +23,6 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>10</td>
-                    <td>1</td>
-                    <td>10</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>8</td>
-                    <td>2</td>
-                    <td>4</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Larry</td>
-                    <td>12</td>
-                    <td>8</td>
-                    <td>1.5</td>
-                </tr>
                 </tbody>
             </table>
         </div>
@@ -85,5 +63,6 @@
         chat.setMessagesMaxHeight(500);
     });
 </script>
+<script src="../../assets/scripts/leaderboard.js"></script>
 </body>
 </html>

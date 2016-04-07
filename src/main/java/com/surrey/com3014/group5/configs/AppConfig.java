@@ -1,7 +1,5 @@
 package com.surrey.com3014.group5.configs;
 
-import com.surrey.com3014.group5.services.authority.AuthorityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +19,6 @@ import java.time.format.DateTimeFormatter;
  */
 @Configuration
 public class AppConfig {
-
-    @Autowired
-    private AuthorityService authorityService;
 
     @Bean
     public ServerProperties getServerProperties() {

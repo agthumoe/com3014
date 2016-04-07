@@ -5,6 +5,7 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.LeaderboardRepository;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +39,6 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
 
     @Override
     public List<Leaderboard> findAllByOrderByRatioDesc() {
-        return this.getLeaderboardRepository().findAllByOrderByRatioDesc();
+        return this.getLeaderboardRepository().findAllByOrderByRatioDescUserAsc(new PageRequest(0, 10));
     }
 }

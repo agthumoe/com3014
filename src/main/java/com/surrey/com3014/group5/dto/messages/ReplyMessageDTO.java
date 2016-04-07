@@ -1,7 +1,5 @@
 package com.surrey.com3014.group5.dto.messages;
 
-import java.util.Date;
-
 /**
  * @author Aung Thu Moe
  */
