@@ -118,7 +118,7 @@ $(function () {
                 });
 
                 setInterval(function () {
-                    that.activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "{}");
+                    that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "{}");
                 }, 5000);
 
                 // Register window unload functions so we disconnect properly.
