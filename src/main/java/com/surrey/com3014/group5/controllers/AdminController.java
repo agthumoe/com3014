@@ -4,6 +4,7 @@ import com.surrey.com3014.group5.dto.users.ManagedUserDTO;
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
 import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,8 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
-//    @Resource(name = "adminAuthority")
-    private Authority adminAuthority;
-
-//    @Resource(name = "userAuthority")
-    private Authority userAuthority;
+    @Autowired
+    private AuthorityService authorityService;
 
     @Resource(name = "duplicateUsernameValidator")
     private Validator duplicateUsernameValidator;
@@ -78,9 +76,9 @@ public class AdminController {
             return "admin/new";
         } else {
             User user = new User(managedUserDTO.getUsername(), managedUserDTO.getPassword(), managedUserDTO.getEmail(), managedUserDTO.getName(), managedUserDTO.isEnabled());
-            user.addAuthority(userAuthority);
+            user.addAuthority(authorityService.getUser());
             if (managedUserDTO.isAdmin()) {
-                user.addAuthority(adminAuthority);
+                user.addAuthority(authorityService.getAdmin());
             }
             userService.create(user);
             return "redirect:/index";
@@ -131,9 +129,9 @@ public class AdminController {
             user.setEnabled(managedUserDTO.isEnabled());
 
             user.getAuthorities().clear();
-            user.addAuthority(userAuthority);
+            user.addAuthority(authorityService.getUser());
             if (managedUserDTO.isAdmin()) {
-                user.addAuthority(adminAuthority);
+                user.addAuthority(authorityService.getAdmin());
             }
             // if password field is not blank, then update password
             if (!(managedUserDTO.getPassword() == null || "".equals(managedUserDTO.getPassword()))) {
