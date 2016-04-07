@@ -3,7 +3,6 @@ package com.surrey.com3014.group5.dto.users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.surrey.com3014.group5.dto.Credentials;
-import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.AuthoritiesConstants;
 import io.swagger.annotations.ApiModel;
@@ -32,7 +31,7 @@ public class ManagedUserDTO extends UserDTO implements Credentials {
 
     public ManagedUserDTO(User user) {
         super(user);
-        this.createdDate = user.getCreatedDate();
+        this.createdDate = user.getCreated();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.enabled = user.isEnabled();
         this.password = null;

@@ -94,7 +94,7 @@
 <script type="text/javascript">
     $(function () {
         var chat = TronChat.create();
-        chat.init('#chat-input', '#messages', '/websocket/chat', '/channel/chat');
+        chat.init('#chat-input', '#messages', '/queue/chat', '/topic/chat');
         chat.setMessagesMaxHeight(500);
     });
 </script>

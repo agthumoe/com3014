@@ -32,10 +32,10 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
-    @Resource(name = "adminAuthority")
+//    @Resource(name = "adminAuthority")
     private Authority adminAuthority;
 
-    @Resource(name = "userAuthority")
+//    @Resource(name = "userAuthority")
     private Authority userAuthority;
 
     @Resource(name = "duplicateUsernameValidator")

@@ -10,6 +10,7 @@ import java.util.Optional;
  * @author Aung Thu Moe
  */
 public interface AuthorityService extends Service<Authority> {
-    Optional<Authority> findByType(String type);
     AuthorityRepository getAuthorityRepository();
+    Authority getAdmin();
+    Authority getUser();
 }

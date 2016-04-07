@@ -1,6 +1,5 @@
 package com.surrey.com3014.group5.configs;
 
-import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -17,14 +16,12 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import java.time.format.DateTimeFormatter;
 
-import static com.surrey.com3014.group5.security.AuthoritiesConstants.ADMIN;
-import static com.surrey.com3014.group5.security.AuthoritiesConstants.USER;
-
 /**
  * @author Aung Thu Moe
  */
 @Configuration
 public class AppConfig {
+
     @Autowired
     private AuthorityService authorityService;
 
@@ -51,22 +48,6 @@ public class AppConfig {
     @Bean
     public TextEncryptor textEncryptor() {
         return Encryptors.noOpText();
-    }
-
-    @Bean(name = "adminAuthority")
-    public Authority adminAuthority() {
-        Authority authority = new Authority();
-        authority.setType(ADMIN);
-        this.authorityService.create(authority);
-        return authority;
-    }
-
-    @Bean(name = "userAuthority")
-    public Authority userAuthority() {
-        Authority authority = new Authority();
-        authority.setType(USER);
-        this.authorityService.create(authority);
-        return authority;
     }
 
     @Bean
