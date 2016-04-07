@@ -68,23 +68,10 @@
     <div class="col-lg-4">
         <div class="well">
             <h2>Online Users</h2>
-            <ul class="list-group">
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Mark <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Jacob <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Larry <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Bob <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Tom <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-online"></i> Harry <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-away"></i> James <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
-                <li class="list-group-item"><i class="fa fa-circle status-away"></i> Peter <a
-                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>
+            <ul id="online-users" class="list-group">
+                <!--<li class="list-group-item"><i class="fa fa-circle status-online"></i> Mark <a
+                    class="btn btn-xs btn-default pull-right" href="#" role="button"><i class="fa fa-bolt"></i></a></li>-->
+
             </ul>
         </div>
     </div>
@@ -97,7 +84,7 @@
 <script type="text/javascript">
     $(function () {
         var chat = TronChat.create();
-        chat.init('#chat-input', '#messages', '/websocket/tracker', '/topic/global.chat');
+        chat.init('#chat-input', '#messages');
         chat.setMessagesMaxHeight(500);
     });
 </script>

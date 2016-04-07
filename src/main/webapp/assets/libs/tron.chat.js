@@ -4,12 +4,22 @@ $(function () {
             /**
              * A reference to the SocKJS Socket
              */
-            _socket: null,
+            _chatSocket: null,
 
             /**
              * Reference to the StompClient
              */
-            _stompClient: null,
+            _chatStompClient: null,
+
+            /**
+             * Reference to the active users socket
+             */
+            _activeUsersSocket: null,
+
+            /**
+             * Reference to the active user stomp object.
+             */
+            _activeUsersStompClient: null,
 
             /**
              * jQuery object referencing the input field.
@@ -22,14 +32,29 @@ $(function () {
             _output: null,
 
             /**
+             * jquery object refrencing the online users wrapper.
+             */
+            _onlineUsers: null,
+
+            /**
              * The Tracker URL
              */
-            _trackerURL: null,
+            _trackerURL: '/websocket/tracker',
 
             /**
              * The chat history URL
              */
-            _historyURL: null,
+            _historyURL: '/topic/global.chat',
+
+            /**
+             * URL to connect to to show that we're active
+             */
+            _activeUsersTrackerURL: '/queue/activeUsers',
+
+            /**
+             * URL of the active users
+             */
+            _activeUsersURL: '/topic/activeUsers',
 
             /**
              * TronChat.create
@@ -51,17 +76,17 @@ $(function () {
              * @param chatHistoryURL URL of the chat history, we subscribe to this with Stomp
              * @return void
              */
-            init: function (inputID, outputID, trackerURL, chatHistoryURL) {
+            init: function (inputID, outputID, onlineUsersID) {
                 var that = this;
-
-                this._trackerURL = trackerURL;
-                this._historyURL = chatHistoryURL;
 
                 // Wrap the output div in a jquery object
                 this._output = $(outputID);
 
                 // Wrap the input ID in a jQuery object.
                 this._input = $(inputID);
+
+                // Wrap the online users div in jQuery object.
+                this._onlineUsers = $(onlineUsersID);
 
                 // Apply on enter send message.
                 this._input.keyup(function (e) {
@@ -72,23 +97,29 @@ $(function () {
                 });
 
                 // Open up a socket
-                this._socket = new SockJS(trackerURL);
-
-                // Stomp on the socket to make subscribing to new messages easier.
-                this._stompClient = Stomp.over(this._socket);
-                var sc = this._stompClient;
+                this._chatSocket = new SockJS(this._trackerURL);
+                this._chatStompClient = Stomp.over(this._chatSocket);
+                var sc = this._chatStompClient;
 
                 sc.connect({}, function(frame) {
-                    sc.subscribe(chatHistoryURL, function(message){
+                    sc.subscribe(that._chatHistoryURL, function(message){
                         that.displayMessage(message.body);
                     });
+                });
 
-                    that._push('Hi, I just joined the chat');
+                this._activeUsersSocket = new SockJS(this._activeUsersTrackerURL);
+                this._activeUsersStompClient = Stomp.over(this._activeUsersSocket);
+                var activeUsersStompClient = this._activeUsersStompClient;
+
+                activeUsersStompClient.connect({}, function () {
+                    activeUsersStompClient.subscribe(that._activeUsersURL, function (response) {
+                        console.log(response);
+                    });
                 });
 
                 // Register window unload functions so we disconnect properly.
-                window.onunload = this.disconnect;
-                window.onbeforeunload = this.disconnect;
+                window.onunload = that.disconnect;
+                window.onbeforeunload = that.disconnect;
             },
 
             /**
@@ -98,8 +129,8 @@ $(function () {
              * @return void
              */
             disconnect: function () {
-                if (this._stompClient !== null) {
-                    this._stompClient.disconnect();
+                if (this._chatStompClient !== null) {
+                    this._chatStompClient.disconnect();
                 }
             },
 
@@ -122,7 +153,7 @@ $(function () {
              * @return void
              */
             _push: function (m) {
-                this._stompClient.send(this._trackerURL, {}, JSON.stringify({
+                this._chatStompClient.send(this._trackerURL, {}, JSON.stringify({
                     message: m
                 }));
             },
