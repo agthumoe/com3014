@@ -13,16 +13,33 @@ INSERT INTO user VALUES(9, '2016-04-07', '2016-04-07', 'user8@localhost.com', b'
 INSERT INTO user VALUES(10, '2016-04-07', '2016-04-07', 'user9@localhost.com', b'0', 'user9', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user9');
 INSERT INTO user VALUES(11, '2016-04-07', '2016-04-07', 'user10@localhost.com', b'1', 'user10', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user10');
 
+-- admin --
 INSERT INTO permission VALUES(1, 1);
+INSERT INTO permission VALUES(1, 2);
+-- user1 --
 INSERT INTO permission VALUES(2, 1);
+INSERT INTO permission VALUES(2, 2);
+-- user2 --
 INSERT INTO permission VALUES(3, 2);
+-- user3 --
 INSERT INTO permission VALUES(4, 2);
-INSERT INTO permission VALUES(5, 1);
+-- user4 --
+INSERT INTO permission VALUES(5, 2);
+-- user5 --
 INSERT INTO permission VALUES(6, 1);
+INSERT INTO permission VALUES(6, 2);
+-- user6 --
+INSERT INTO permission VALUES(7, 1);
 INSERT INTO permission VALUES(7, 2);
-INSERT INTO permission VALUES(8, 1);
+-- user7 --
+INSERT INTO permission VALUES(8, 2);
+-- user8 --
+INSERT INTO permission VALUES(9, 1);
 INSERT INTO permission VALUES(9, 2);
-INSERT INTO permission VALUES(10, 1);
+-- user9 --
+INSERT INTO permission VALUES(10, 2);
+-- user10 --
+INSERT INTO permission VALUES(11, 1);
 INSERT INTO permission VALUES(11, 2);
 
 INSERT INTO leaderboard VALUES(1, '2016-04-07', '2016-04-07', 0, 0, 0, 1);
