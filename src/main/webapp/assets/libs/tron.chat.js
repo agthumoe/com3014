@@ -39,12 +39,12 @@ $(function () {
             /**
              * The Tracker URL
              */
-            _trackerURL: '/websocket/tracker',
+            _chatTrackerURL: '/queue/chat',
 
             /**
              * The chat history URL
              */
-            _historyURL: '/topic/global.chat',
+            _chatURL: '/topic/chat',
 
             /**
              * URL to connect to to show that we're active
@@ -97,12 +97,12 @@ $(function () {
                 });
 
                 // Open up a socket
-                this._chatSocket = new SockJS(this._trackerURL);
+                this._chatSocket = new SockJS(this._chatTrackerURL);
                 this._chatStompClient = Stomp.over(this._chatSocket);
                 var sc = this._chatStompClient;
 
                 sc.connect({}, function(frame) {
-                    sc.subscribe(that._chatHistoryURL, function(message){
+                    sc.subscribe(that._chatURL, function(message){
                         that.displayMessage(message.body);
                     });
                 });
@@ -153,7 +153,7 @@ $(function () {
              * @return void
              */
             _push: function (m) {
-                this._chatStompClient.send(this._trackerURL, {}, JSON.stringify({
+                this._chatStompClient.send(this._chatTrackerURL, {}, JSON.stringify({
                     message: m
                 }));
             },
