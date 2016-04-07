@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author Aung Thu Moe
@@ -27,21 +28,14 @@ public class ActiveUserService {
     });
 
     public void mark(String username) {
-        LOGGER.debug("new user came to lobby: " + username);
+        LOGGER.debug("User: {}, is still active " ,username);
         statsByUser.getUnchecked(username).mark();
     }
 
     public Set<String> getActiveUsers() {
         Set<String> active = Sets.newTreeSet();
-        for (String user : statsByUser.asMap().keySet()) {
-            // has the user checked in within the last 5 seconds?
-
-            active.add(user);
-//            if ((System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 5000) {
-//                active.add(user);
-//            }
-        }
-        LOGGER.debug("activeusers: {} ", active);
+        // has the user checked in within the last 15 seconds?
+        active.addAll(statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 15000).collect(Collectors.toList()));
         return active;
     }
 

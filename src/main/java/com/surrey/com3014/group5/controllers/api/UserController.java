@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.controllers.rest;
+package com.surrey.com3014.group5.controllers.api;
 
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.dto.users.ManagedUserDTO;

@@ -23,7 +23,7 @@ import javax.validation.ConstraintViolationException;
  *
  * @author Aung Thu Moe
  */
-@ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers.rest"})
+@ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers.api"})
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
