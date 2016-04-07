@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author Aung Thu Moe
@@ -29,12 +30,8 @@ public class ActiveUserService {
 
     public Set<String> getActiveUsers() {
         Set<String> active = Sets.newTreeSet();
-        for (String user : statsByUser.asMap().keySet()) {
-            // has the user checked in within the last 5 seconds?
-            if ((System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 5000) {
-                active.add(user);
-            }
-        }
+        // has the user checked in within the last 5 seconds?
+        active.addAll(statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 5000).collect(Collectors.toList()));
         return active;
     }
 
