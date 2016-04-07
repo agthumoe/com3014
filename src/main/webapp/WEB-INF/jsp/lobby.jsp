@@ -52,11 +52,8 @@
 
             <h2>Chat</h2>
             <div class="message-input">
-                <div class="input-group">
+                <div class="form-group">
                     <input id="chat-input" type="text" class="form-control" placeholder="Type your message here...">
-                      <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button">Send</button>
-                      </span>
                 </div><!-- /input-group -->
             </div>
             <div id="messages" class="messages">

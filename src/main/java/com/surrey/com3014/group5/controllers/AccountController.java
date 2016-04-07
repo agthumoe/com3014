@@ -6,9 +6,9 @@ import com.surrey.com3014.group5.dto.users.UpdateUserDTO;
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.exceptions.BadRequestException;
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
-import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
+import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +34,8 @@ public class AccountController {
     @Autowired
     private UserService userService;
 
-    @Resource(name = "userAuthority")
-    private Authority userAuthority;
+    @Autowired
+    private AuthorityService authorityService;
 
     @Resource(name = "duplicateUsernameValidator")
     private Validator duplicateUsernameValidator;
@@ -119,7 +119,7 @@ public class AccountController {
             return "account/register";
         } else {
             User user = new User(registerUserDTO.getUsername(), registerUserDTO.getPassword(), registerUserDTO.getEmail(), registerUserDTO.getName(), true);
-            user.addAuthority(userAuthority);
+            user.addAuthority(authorityService.getUser());
             userService.create(user);
             LOGGER.debug("New users registered: " + registerUserDTO.toString());
             return "redirect:/index";

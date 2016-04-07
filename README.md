@@ -24,7 +24,7 @@ Create ```database.properties``` file with the following codes in the ```resourc
     spring.datasource.validationQuery = SELECT 1
     
     # Show or not log for each sql query
-    spring.jpa.show-sql = true
+    spring.jpa.show-sql = false
     
     #create-drop: Recreate database everytime application is run. For production it is better to use: validate
     spring.jpa.hibernate.ddl-auto=create-drop

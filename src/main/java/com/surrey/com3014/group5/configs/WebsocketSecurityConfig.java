@@ -14,8 +14,8 @@ public class WebsocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
             .nullDestMatcher().authenticated()
-            .simpDestMatchers("/websocket/tracker").hasAuthority(USER)
-            .simpDestMatchers("/topic/**").authenticated() // block any messages directly sent to /topic
+            .simpDestMatchers("/queue/chat").hasAuthority(USER)
+            .simpDestMatchers("/topic/**").authenticated() // block any messages directly sent to /channel
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
             .anyMessage().denyAll();
     }

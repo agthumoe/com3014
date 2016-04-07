@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.surrey.com3014.group5.security.AuthoritiesConstants.ADMIN;
+import static com.surrey.com3014.group5.security.AuthoritiesConstants.USER;
+
 /**
  * @author Aung Thu Moe
  */
@@ -22,16 +25,25 @@ public class AuthorityServiceImpl extends AbstractService<Authority> implements 
     }
 
     @Override
-    public Optional<Authority> findByType(String type) {
-        Optional<Authority> authorities = getAuthorityRepository().findByType(type);
-        if (authorities.isPresent()) {
-            return authorities;
-        }
-        throw new HttpStatusException("Authority with type: " + type + " does not exist");
+    public AuthorityRepository getAuthorityRepository() {
+        return (AuthorityRepository) super.getRepository();
     }
 
     @Override
-    public AuthorityRepository getAuthorityRepository() {
-        return (AuthorityRepository) super.getRepository();
+    public Authority getAdmin() {
+        Optional<Authority> maybe = getAuthorityRepository().findByType(ADMIN);
+        if (maybe.isPresent()) {
+            return maybe.get();
+        }
+        throw new IllegalArgumentException("datasource is not properly setup");
+    }
+
+    @Override
+    public Authority getUser() {
+        Optional<Authority> maybe = getAuthorityRepository().findByType(USER);
+        if (maybe.isPresent()) {
+            return maybe.get();
+        }
+        throw new IllegalArgumentException("datasource is not properly setup");
     }
 }

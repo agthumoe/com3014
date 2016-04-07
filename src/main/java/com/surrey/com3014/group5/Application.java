@@ -2,12 +2,15 @@ package com.surrey.com3014.group5;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 import java.net.UnknownHostException;
 
@@ -29,9 +32,10 @@ public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws UnknownHostException {
         LOGGER.info("starting tron application");
-        SpringApplication.run(Application.class, args);
-        LOGGER.info("Access URLs:\n----------------------------------------------------------\n\t" +
-                "Local: \t\thttp://127.0.0.1:8080\n");
+        Environment env = SpringApplication.run(Application.class, args).getEnvironment();
+
+        LOGGER.info("Access URLs:\t\thttp://127.0.0.1:8080");
+        LOGGER.info("Active Profiles:\t\t{}", StringUtils.arrayToDelimitedString(env.getActiveProfiles(), ", "));
     }
 
 }
