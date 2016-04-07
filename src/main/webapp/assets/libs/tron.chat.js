@@ -117,6 +117,10 @@ $(function () {
                     });
                 });
 
+                setInterval(function () {
+                    that.activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "{}");
+                }, 5000);
+
                 // Register window unload functions so we disconnect properly.
                 window.onunload = that.disconnect;
                 window.onbeforeunload = that.disconnect;
