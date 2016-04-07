@@ -12,16 +12,6 @@ $(function () {
             _chatStompClient: null,
 
             /**
-             * Reference to the active users socket
-             */
-            _activeUsersSocket: null,
-
-            /**
-             * Reference to the active user stomp object.
-             */
-            _activeUsersStompClient: null,
-
-            /**
              * jQuery object referencing the input field.
              */
             _input: null,
@@ -32,11 +22,6 @@ $(function () {
             _output: null,
 
             /**
-             * jquery object refrencing the online users wrapper.
-             */
-            _onlineUsers: null,
-
-            /**
              * The Tracker URL
              */
             _chatTrackerURL: '/queue/chat',
@@ -45,16 +30,6 @@ $(function () {
              * The chat history URL
              */
             _chatURL: '/topic/chat',
-
-            /**
-             * URL to connect to to show that we're active
-             */
-            _activeUsersTrackerURL: '/queue/activeUsers',
-
-            /**
-             * URL of the active users
-             */
-            _activeUsersURL: '/topic/activeUsers',
 
             /**
              * TronChat.create
@@ -72,11 +47,9 @@ $(function () {
              *
              * @param inputID ID of the entity containing input text
              * @param outputID ID of entity where output will be placed.
-             * @param trackerURL URL of to send messages to
-             * @param chatHistoryURL URL of the chat history, we subscribe to this with Stomp
              * @return void
              */
-            init: function (inputID, outputID, onlineUsersID) {
+            init: function (inputID, outputID) {
                 var that = this;
 
                 // Wrap the output div in a jquery object
@@ -84,9 +57,6 @@ $(function () {
 
                 // Wrap the input ID in a jQuery object.
                 this._input = $(inputID);
-
-                // Wrap the online users div in jQuery object.
-                this._onlineUsers = $(onlineUsersID);
 
                 // Apply on enter send message.
                 this._input.keyup(function (e) {
@@ -106,20 +76,6 @@ $(function () {
                         that.displayMessage(message.body);
                     });
                 });
-
-                this._activeUsersSocket = new SockJS(this._activeUsersTrackerURL);
-                this._activeUsersStompClient = Stomp.over(this._activeUsersSocket);
-                var activeUsersStompClient = this._activeUsersStompClient;
-
-                activeUsersStompClient.connect({}, function () {
-                    activeUsersStompClient.subscribe(that._activeUsersURL, function (response) {
-                        console.log(response);
-                    });
-                });
-
-                setInterval(function () {
-                    that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "{}");
-                }, 5000);
 
                 // Register window unload functions so we disconnect properly.
                 window.onunload = that.disconnect;
