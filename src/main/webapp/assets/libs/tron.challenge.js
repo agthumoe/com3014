@@ -2,8 +2,8 @@ $(function () {
     (function (window) {
         var TronChallenge = {
             
-            _challengesQueue: '/queue/',
-            _challengesTopic: '/topic/',
+            _challengesQueue: '/queue/challenge',
+            _challengesTopic: '/topic/challenge',
             
             _challengeSocket: null,
             
@@ -29,9 +29,7 @@ $(function () {
                 TronChallenge.challengeStomp.send(TronChallenge._challengesQueue, {}, 
                     JSON.stringify({
                         command: 'CHALLENGE',
-                        data: {
-                            userID: userID
-                        }
+                        userID: userID
                     })
                 );
             },
