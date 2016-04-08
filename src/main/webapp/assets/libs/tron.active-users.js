@@ -35,6 +35,11 @@ $(function () {
              * Defines the interval at which the manual heart beat will be triggered.
              */
             _heartBeatInterval: 5000,
+            
+            /**
+             * A callback function when the challenge button is clicked
+             */
+            _challengeCallback: null,
 
             /**
              * TronActiveUsers.create
@@ -53,8 +58,10 @@ $(function () {
              * @param onlineUsersID The ID of the div containing online users.
              * @return void
              */
-            init: function (onlineUsersID) {
+            init: function (onlineUsersID, challengeCallback) {
                 var that = this;
+                
+                this._challengeCallback = challengeCallback;
 
                 // Wrap the online users div in jQuery object.
                 this._activeUsers = $(onlineUsersID);
@@ -111,7 +118,7 @@ $(function () {
                         })
                         .addClass('list-group-item')
                         .append(usersToAdd[i].name)
-                        .append(this._getChallengeHTML());
+                        .append(this._getChallengeHTML(usersToAdd[i].id));
                     this._activeUsers.append(li);
                 }
 
@@ -172,18 +179,24 @@ $(function () {
 
             /**
              * TronActiveUsers._getChallgeHTML
-             * Gets the challenge button HTML
+             * Gets the challenge button HTML. The callback is applied to this hyperlink and the 
+             * user Id passed in such that the received variable is the event variable and the
+             * data is accessible as follows:
+             *  
+             *      event.data.YOUR_DATA
              *
              * @return jQuery object containing the challenge anchor tag
              */
-            _getChallengeHTML: function () {
+            _getChallengeHTML: function (userID) {
                 return $('<a />')
                     .attr({
-                        href: '#',
-                        role: 'button'
+                        href: 'javascript:;',
+                        role: 'button',
+                        'data-user-id': userID
                     })
                     .addClass('btn btn-xs btn-default pull-right')
-                    .append($('<i />').addClass('fa fa-bolt'));
+                    .append($('<i />').addClass('fa fa-bolt'))
+                    .on('click', {userID: userID}, this._challengeCallback);
             }
         };
 

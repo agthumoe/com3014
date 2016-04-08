@@ -56,15 +56,20 @@
 <script src="../../bower_components/sockjs/sockjs.min.js"></script>
 <script src="../../bower_components/stomp-websocket/lib/stomp.min.js"></script>
 <script src="../../assets/libs/tron.chat.js"></script>
+<script src="../../assets/libs/tron.challenge.js"></script>
 <script src="../../assets/libs/tron.active-users.js"></script>
 <script type="text/javascript">
     $(function () {
+        TronChallenge.init();
+        
         var chat = TronChat.create();
         chat.init('#chat-input', '#messages');
         chat.setMessagesMaxHeight(500);
 
         var activeUsers = TronActiveUsers.create();
-        activeUsers.init("#online-users");
+        activeUsers.init("#online-users", function (e) {
+            TronChallenge.newChallenge(e.data.userID);
+        });
     });
 </script>
 <script src="../../assets/scripts/leaderboard.js"></script>
