@@ -29,7 +29,6 @@ public class ActiveUserService {
     });
 
     public void mark(User user) {
-        LOGGER.debug("User: {}, is still active " ,user);
         statsByUser.getUnchecked(user).mark();
     }
 

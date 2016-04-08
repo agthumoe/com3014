@@ -1,15 +1,15 @@
 $(function () {
     (function (window) {
         var TronChallenge = {
-            
+
             _challengesQueue: '/queue/challenge',
             _challengesTopic: '/topic/challenge',
-            
+
             _challengeSocket: null,
-            
+
             _challengeStomp: null,
-            
-            init: function () {                
+
+            init: function () {
                 TronChallenge._challengeSocket = new SockJS(this._challengesQueue);
                 TronChallenge._challengeStomp = Stomp.over(this._challengeSocket);
                 var challengeStomp = TronChallenge._challengeStomp;
@@ -20,29 +20,31 @@ $(function () {
                     });
                 });
             },
-            
+
             handleCommand: function (response) {
                 console.log(response);
             },
-            
+
             newChallenge: function (userID) {
-                TronChallenge.challengeStomp.send(TronChallenge._challengesQueue, {}, 
+                TronChallenge._challengeStomp.send(TronChallenge._challengesQueue, {},
                     JSON.stringify({
-                        command: 'CHALLENGE',
-                        userID: userID
+                        command: 'CHALLENGE.ACCEPT',
+                        data: {
+                            userID: userID
+                        }
                     })
                 );
             },
-            
+
             accept: function (challengeID) {
-                
+
             },
-            
+
             decline: function (challengeID) {
-                
+
             }
         };
-        
+
         window.TronChallenge = TronChallenge;
     })(window);
 });

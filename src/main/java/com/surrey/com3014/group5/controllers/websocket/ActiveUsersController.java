@@ -33,9 +33,12 @@ public class ActiveUsersController {
     private ActiveUserService activeUserService;
 
     @PostConstruct
+    private void init() {
+        broadcastActiveUsers();
+    }
+
     private void broadcastActiveUsers() {
         scheduler.scheduleAtFixedRate(() -> template.convertAndSend("/topic/activeUsers", activeUserService.getActiveUsers()), 5000);
-        LOGGER.debug("Broadcast activeUsers: {}", activeUserService.getActiveUsers());
     }
 
     @MessageMapping("/queue/activeUsers")

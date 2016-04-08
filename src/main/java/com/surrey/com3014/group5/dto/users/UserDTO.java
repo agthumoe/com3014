@@ -44,6 +44,7 @@ public class UserDTO implements Serializable {
         this.email = user.getEmail();
         this.name = user.getName();
     }
+
     public UserDTO(long id, String username, String email, String name) {
         this.id = id;
         this.username = username;

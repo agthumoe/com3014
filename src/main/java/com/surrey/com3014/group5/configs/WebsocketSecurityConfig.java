@@ -14,8 +14,7 @@ public class WebsocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
             .nullDestMatcher().authenticated()
-            .simpDestMatchers("/queue/chat").hasAuthority(USER)
-            .simpDestMatchers("/queue/activeUsers").hasAuthority(USER)
+            .simpDestMatchers("/queue/**").hasAuthority(USER)
             .simpDestMatchers("/topic/**").authenticated() // block any messages directly sent to /channel
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
             .anyMessage().denyAll();
