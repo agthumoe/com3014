@@ -15,7 +15,7 @@
 <%@include file="../template/scripts.jsp" %>
 <script type="text/javascript" src="../../bower_components/jquery.cookie/jquery.cookie.js"></script>
 <script type="text/javascript" src="../../assets/libs/crafty.modified.js"></script>
-<script type="text/javascript" src="../../assets/libs/tron.js"></script>
+<script type="text/javascript" src="../../assets/libs/tron.game.js"></script>
 <script type="text/javascript">
     $(function () {
         var tron = Tron.instance();
