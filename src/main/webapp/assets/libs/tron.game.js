@@ -1038,8 +1038,9 @@ $(function() {
                 h: 302,
                 w: 758
             })
-            .append('<img src="'
-                + Tron._config.assetPaths.images + 'logo_nobg.png" />')
+            .append($('<img />').attr({
+                src: Tron._config.assetPaths.images + 'logo_nobg.png',
+            }))
             .bind('Click', function () {
                 Crafty.log('Clicked');
                 Crafty.audio.stop();
