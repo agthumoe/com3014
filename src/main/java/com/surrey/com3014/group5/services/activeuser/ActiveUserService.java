@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * @author Aung Thu Moe
@@ -37,7 +36,7 @@ public class ActiveUserService {
     public List<UserDTO> getActiveUsers() {
         List<UserDTO> active = new ArrayList<>();
         // has the user checked in within the last 10 seconds?
-        statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 10000).forEach(user -> {
+        statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 5000).forEach(user -> {
             UserDTO userDTO = new UserDTO(user);
             active.add(userDTO);
         });

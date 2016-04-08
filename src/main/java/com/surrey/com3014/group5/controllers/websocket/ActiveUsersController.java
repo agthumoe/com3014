@@ -34,7 +34,7 @@ public class ActiveUsersController {
 
     @PostConstruct
     private void broadcastActiveUsers() {
-        scheduler.scheduleAtFixedRate(() -> template.convertAndSend("/topic/activeUsers", activeUserService.getActiveUsers()), 10000);
+        scheduler.scheduleAtFixedRate(() -> template.convertAndSend("/topic/activeUsers", activeUserService.getActiveUsers()), 5000);
         LOGGER.debug("Broadcast activeUsers: {}", activeUserService.getActiveUsers());
     }
 
@@ -43,6 +43,5 @@ public class ActiveUsersController {
         Principal principal = message.getHeaders().get(SimpMessageHeaderAccessor.USER_HEADER, Principal.class);
         User user = (User) ((Authentication) principal).getPrincipal();
         activeUserService.mark(user);
-        broadcastActiveUsers();
     }
 }

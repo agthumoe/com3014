@@ -10,7 +10,7 @@
     <jsp:param name="active" value="lobby"/>
 </jsp:include>
 <div class="container">
-    <div class="col-lg-8">
+    <div class="col-lg-8 col-md-8">
         <div class="row well">
             <table class="table" id="leaderboard-table">
                 <caption><h2>Leader Board</h2></caption>
@@ -40,7 +40,7 @@
         </div>
 
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4 col-md-4">
         <div class="well">
             <h2>Online Users</h2>
             <ul id="online-users" class="list-group">

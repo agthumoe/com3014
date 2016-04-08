@@ -31,4 +31,5 @@ public class MainController {
     public String getLobbyPage() {
         return "lobby";
     }
+
 }

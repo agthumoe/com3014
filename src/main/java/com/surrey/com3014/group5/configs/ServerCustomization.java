@@ -14,7 +14,6 @@ public class ServerCustomization extends ServerProperties {
     public void customize(ConfigurableEmbeddedServletContainer container) {
         super.customize(container);
         container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/404.html"));
-        container.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/500.html"));
     }
 
 }

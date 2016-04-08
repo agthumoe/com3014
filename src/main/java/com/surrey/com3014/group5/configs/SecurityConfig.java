@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.session.SessionRegistry;
@@ -43,48 +44,49 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+            .antMatchers("/bower_components/**")
+            .antMatchers("/assets/**")
+            .antMatchers("/swagger-ui/index.html");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http
 //            .csrf()
-//            .ignoringAntMatchers("/websocket/**")
+//            .ignoringAntMatchers("/topic/**")
+//            .ignoringAntMatchers("/queue/**")
 //        .and()
             .authorizeRequests()
             .antMatchers("/admin/**").hasAuthority(ADMIN)
-            .antMatchers("/api/users/**").hasAuthority(ADMIN)
             .antMatchers("/game/**").hasAuthority(USER)
             .antMatchers("/lobby/**").hasAuthority(USER)
-            .antMatchers("/api/lobby/**").hasAnyAuthority(USER)
-            .antMatchers("/websocket/chat").hasAuthority(ADMIN)
-            .antMatchers("/websocket/**").permitAll()
-            .antMatchers("/assets/**").permitAll()
-            .antMatchers("/bower_components/**").permitAll()
-            .antMatchers("/swagger-ui/**").permitAll()
-            .antMatchers("/api/register**").permitAll()
-            .antMatchers("/scripts/**").permitAll()
+            .antMatchers("/api/**").authenticated()
+            .antMatchers("/api/users/**").hasAuthority(ADMIN)
+            .antMatchers("/error**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/v2/api-docs").permitAll()
             .antMatchers("/login").permitAll()
-//            .anyRequest().authenticated()
         .and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
         .and()
             .logout()
-            .logoutUrl("/api/logout")
+            .logoutUrl("/logout")
             .logoutSuccessUrl("/account/login?logout")
             .deleteCookies("JSESSIONID")
             .permitAll()
         .and()
             .formLogin()
             .loginPage("/account/login")
-            .loginProcessingUrl("/api/login")
+            .loginProcessingUrl("/login")
             .failureHandler(authenticationFailureHandler)
             .usernameParameter("username")
             .passwordParameter("currentPassword")
             .permitAll()
         .and()
-            .csrf().disable();
-
+            .csrf().disable(); // disable csrf for the time being
         http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry);
     }
 }

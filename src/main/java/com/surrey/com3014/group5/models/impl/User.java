@@ -41,9 +41,7 @@ public class User extends MutableModel {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "Name must not be null or empty")
     @Size(max = 100)
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)

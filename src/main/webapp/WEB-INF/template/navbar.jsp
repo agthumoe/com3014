@@ -22,7 +22,7 @@
 				<ul class="nav navbar-nav">
 					<c:choose>
 						<c:when test="${param.active == 'game_info'}">
-							<li class="active"><a href="/">Game Info</a></li>
+							<li class="active"><a href="#">Game Info</a></li>
 						</c:when>
 						<c:otherwise>
 							<li><a href="/">Game Info</a></li>
@@ -80,7 +80,7 @@
 											User Management</a></li>
 								</sec:authorize>
 								<li role="separator" class="divider"></li>
-								<li><a href="/api/logout"><i class="fa fa-sign-out"></i>
+								<li><a href="/logout"><i class="fa fa-sign-out"></i>
 										Logout</a></li>
 							</ul></li>
 					</sec:authorize>
