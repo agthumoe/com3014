@@ -102,7 +102,7 @@ $(function () {
                 console.log(this._activeUsersCache);
 
                 // Add the users to the DOM and to the internal cache so we can track them easily.
-                for(var i in usersToAdd) {
+                for (var i in usersToAdd) {
                     this._activeUsersCache.push(usersToAdd[i].username);
 
                     var li = $('<li />')
@@ -110,17 +110,17 @@ $(function () {
                             "data-username": usersToAdd[i].username
                         })
                         .addClass('list-group-item')
-                        .append(usersToAdd[i].username)
+                        .append(usersToAdd[i].name)
                         .append(this._getChallengeHTML());
                     this._activeUsers.append(li);
                 }
 
                 // Remove the users from the DOM and the internal cache.
-                for(var i in usersToRemove) {
+                for (var i in usersToRemove) {
                     $('[data-username=' + usersToRemove[i] + ']').remove();
-                    var i = this._activeUsersCache.indexOf(usersToRemove[i]);
-                    if (i > -1) {
-                        this._activeUsersCache.splice(i, 1);
+                    var k = this._activeUsersCache.indexOf(usersToRemove[i]);
+                    if (k > -1) {
+                        this._activeUsersCache.splice(k, 1);
                     }
                 }
             },
