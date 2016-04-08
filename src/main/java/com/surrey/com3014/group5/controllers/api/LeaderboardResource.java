@@ -4,6 +4,9 @@ import com.surrey.com3014.group5.dto.LeaderboardDTO;
 import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +22,19 @@ import java.util.stream.Collectors;
  * @author Aung Thu Moe
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/leaderboard")
 @Api(value = "Leaderboard", description = "Operation about leaderboard", consumes = "application/json")
-public class LeaderboardController {
+public class LeaderboardResource {
 //    private static final Logger LOGGER = LoggerFactory.getLogger(LobbyController.class);
 
     @Autowired
     private LeaderboardService leaderboardService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/leaderboard")
+    @ApiOperation(value = "Get top 10 leaderboard scores", notes = "This can only be done by logged in user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = LeaderboardDTO.class, responseContainer = "List")
+    })
+    @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Transactional(readOnly = true)
     public ResponseEntity<?> getLeaderboard(){
