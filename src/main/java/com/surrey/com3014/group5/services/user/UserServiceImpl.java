@@ -10,6 +10,8 @@ import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,6 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     public UserServiceImpl(UserRepository userRepository){
         super(userRepository);
     }
-
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -110,5 +111,10 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
             return passwordEncoder.matches(password, maybeUser.get().getPassword());
         }
         return false;
+    }
+
+    @Override
+    public Page<User> getUsers(Pageable pageRequest) {
+        return getUserRepository().findAll(pageRequest);
     }
 }

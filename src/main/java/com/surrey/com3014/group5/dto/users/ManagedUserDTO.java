@@ -31,7 +31,7 @@ public class ManagedUserDTO extends UserDTO implements Credentials {
 
     public ManagedUserDTO(User user) {
         super(user);
-        this.createdDate = user.getCreated();
+        this.createdDate = user.getCreatedDate();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.enabled = user.isEnabled();
         this.password = null;

@@ -7,14 +7,18 @@ import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -91,12 +95,21 @@ public class UserResource {
         @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class, responseContainer = "List"),
         @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class)
     })
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "page", value = "Page number", dataType = "int", paramType = "query"),
+        @ApiImplicitParam(name = "size", value = "Size of result", dataType = "int", paramType = "query"),
+        @ApiImplicitParam(name = "sort", value = "Field name to be sorted by", dataType = "string", paramType = "query")
+    })
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getAll() {
-        List<User> users = userService.getAll();
-        List<ManagedUserDTO> managedUsers = users.stream().map(ManagedUserDTO::new).collect(Collectors.toList());
-        return ResponseEntity.ok(managedUsers);
+    public ResponseEntity<?> getAll(@ApiIgnore Pageable pageRequest) {
+        Page<User> users = userService.getUsers(pageRequest);
+        Sort sort;
+        List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
+        for (User user: users) {
+            managedUserDTOs.add(new ManagedUserDTO(user));
+        }
+        return ResponseEntity.ok(managedUserDTOs);
     }
 }

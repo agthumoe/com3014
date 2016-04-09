@@ -18,14 +18,14 @@ public class DateStampedModel extends Model {
 	@Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    private Date created;
+    private Date createdDate;
 
     public DateStampedModel() {
         super();
-        this.created = new Date();
+        this.createdDate = new Date();
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 }

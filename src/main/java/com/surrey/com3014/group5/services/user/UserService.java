@@ -3,6 +3,8 @@ package com.surrey.com3014.group5.services.user;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.services.MutableService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.util.List;
@@ -28,6 +30,8 @@ public interface UserService extends MutableService<User> {
     Optional<User> getCurrentLogin();
 
     List<User> getAll();
+
+    Page<User> getUsers(Pageable pageRequest);
 
     void updatePassword(User user);
 

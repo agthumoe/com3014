@@ -43,35 +43,39 @@ public class GameChallengeController {
         User challenger = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
 
-        if (command.getCommand().equals(Command.NEW)) {
-            Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
-            if (!optional.isPresent()) {
-                throw new ResourceNotFoundException("not found");
-            }
-            User challenged = optional.get();
-            newChallenge(challenger, challenged);
-        } else if (command.getCommand().equals(Command.DENY)) {
-            denyChallenge(command.getStringData("gameID"));
-        } else if (command.getCommand().equals(Command.ACCEPT)) {
-            acceptChallenge(command.getStringData("gameID"));
+        switch (command.getCommand()) {
+            case Command.NEW:
+                Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
+                if (!optional.isPresent()) {
+                    throw new ResourceNotFoundException("not found");
+                }
+                User challenged = optional.get();
+                newChallenge(challenger, challenged);
+                break;
+            case Command.DENY:
+                denyChallenge(command.getStringData("gameID"));
+                break;
+            case Command.ACCEPT:
+                acceptChallenge(command.getStringData("gameID"));
+                break;
         }
         LOGGER.debug(command.getCommand());
         LOGGER.debug("userID {}" , command.getIntegerData("userID"));
     }
 
-    public void newChallenge(User challenger, User challenged) {
+    private void newChallenge(User challenger, User challenged) {
         final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
         template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", gameRequest);
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
-    public void denyChallenge(String gameID) {
+    private void denyChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
         template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": false}");
         LOGGER.debug("deny challenge: " + gameRequest.toString());
     }
 
-    public void acceptChallenge(String gameID) {
+    private void acceptChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
         template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": true}");
         LOGGER.debug("accept challenge: " + gameRequest.toString());

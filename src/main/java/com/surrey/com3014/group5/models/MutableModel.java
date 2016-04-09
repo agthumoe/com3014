@@ -20,13 +20,13 @@ public abstract class MutableModel extends DateStampedModel {
 	@Column
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
-    private Date lastModified;
+    private Date lastModifiedDate;
 
     public Date getLastModifiedDate() {
-        return lastModified;
+        return lastModifiedDate;
     }
 
     public void setLastModifiedDate(Date lastModified) {
-        this.lastModified = lastModified;
+        this.lastModifiedDate = lastModified;
     }
 }
