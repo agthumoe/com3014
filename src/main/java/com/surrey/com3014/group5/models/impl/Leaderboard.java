@@ -15,7 +15,6 @@ public class Leaderboard extends MutableModel{
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
-    @OrderBy("username")
     private User user;
 
     @Column(nullable = false)

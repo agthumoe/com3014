@@ -15,6 +15,6 @@ public interface LeaderboardService extends MutableService<Leaderboard>{
 
     Optional<Leaderboard> findByUser(User user);
 
-    List<Leaderboard> findAllByOrderByRatioDesc();
+    List<Leaderboard> findAllByOrderByRatioDescUserAsc();
 
 }

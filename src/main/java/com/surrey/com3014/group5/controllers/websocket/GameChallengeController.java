@@ -44,7 +44,6 @@ public class GameChallengeController {
 
         if (command.getCommand().equals("CHALLENGE.NEW")) {
             Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
-
             if (!optional.isPresent()) {
                 throw new ResourceNotFoundException("not found");
             }

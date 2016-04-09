@@ -38,7 +38,7 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
     }
 
     @Override
-    public List<Leaderboard> findAllByOrderByRatioDesc() {
-        return this.getLeaderboardRepository().findAllByOrderByRatioDescUserAsc(new PageRequest(0, 10));
+    public List<Leaderboard> findAllByOrderByRatioDescUserAsc() {
+        return this.getLeaderboardRepository().findAllByOrderByRatioDescUserUsernameAsc(new PageRequest(0, 10));
     }
 }

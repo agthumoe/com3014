@@ -15,6 +15,6 @@ public interface LeaderboardRepository extends Repository<Leaderboard>{
 
     Optional<Leaderboard> findByUser(User user);
 
-    List<Leaderboard> findAllByOrderByRatioDescUserAsc(Pageable pageable);
+    List<Leaderboard> findAllByOrderByRatioDescUserUsernameAsc(Pageable pageable);
 
 }

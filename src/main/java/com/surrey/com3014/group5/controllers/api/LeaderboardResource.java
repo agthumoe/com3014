@@ -38,7 +38,7 @@ public class LeaderboardResource {
     @ResponseBody
     @Transactional(readOnly = true)
     public ResponseEntity<?> getLeaderboard(){
-        List<Leaderboard> leaderboards = getLeaderboardService().findAllByOrderByRatioDesc();
+        List<Leaderboard> leaderboards = getLeaderboardService().findAllByOrderByRatioDescUserAsc();
         List<LeaderboardDTO> leaderboardDTOs = leaderboards.stream().map(leaderboard -> new LeaderboardDTO(leaderboard.getUser().getUsername(), leaderboard.getWins(), leaderboard.getLosses(), leaderboard.getRatio())).collect(Collectors.toList());
         return ResponseEntity.ok(leaderboardDTOs);
     }
