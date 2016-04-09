@@ -2,7 +2,10 @@ package com.surrey.com3014.group5.controllers.websocket;
 
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
 import com.surrey.com3014.group5.game.Command;
+import com.surrey.com3014.group5.game.GameRequest;
+import com.surrey.com3014.group5.game.GameRequestService;
 import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.security.RandomUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,49 +35,45 @@ public class GameChallengeController {
     @Autowired
     private UserService userService;
 
-    private void receiveChallengeRequest(User from, User to) {
-        scheduler.scheduleAtFixedRate(() -> template.convertAndSendToUser(to.getUsername(), "/topic/game/challenge", from), 5000);
-        LOGGER.debug("Broadcast challenge: {}", from);
-    }
+    @Autowired
+    private GameRequestService gameRequestService;
 
     @MessageMapping("/queue/game/challenge")
     public void handleCommand(String message, Principal principal) {
         User challenger = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
 
-        if (command.getCommand().equals("CHALLENGE.NEW")) {
+        if (command.getCommand().equals(Command.NEW)) {
             Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
             if (!optional.isPresent()) {
                 throw new ResourceNotFoundException("not found");
             }
             User challenged = optional.get();
             newChallenge(challenger, challenged);
-        } else if (command.getCommand().equals("CHALLENGE.DENY")) {
-//            deny(challenger);
-        } else if (command.getCommand().equals("CHALLENGE.ACCEPT")) {
-//            accept(challenger);
+        } else if (command.getCommand().equals(Command.DENY)) {
+            denyChallenge(command.getStringData("gameID"));
+        } else if (command.getCommand().equals(Command.ACCEPT)) {
+            acceptChallenge(command.getStringData("gameID"));
         }
         LOGGER.debug(command.getCommand());
         LOGGER.debug("userID {}" , command.getIntegerData("userID"));
     }
 
     public void newChallenge(User challenger, User challenged) {
-        // Create unique Game ID
-
-        // Store challenger and challenged against GameID in cache with timestamp
-
-        // Send message to challenger containing gameID
-
-        // send message to Challenged containing challenger info and game ID
+        final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
+        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", gameRequest);
+        LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
-    public void deny(int gameID) {
-        // Look up challenger and challenged using gameID
-
-        // send message to challenger denying request
+    public void denyChallenge(String gameID) {
+        final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": false}");
+        LOGGER.debug("deny challenge: " + gameRequest.toString());
     }
 
-    public void accept(int gameID) {
-
+    public void acceptChallenge(String gameID) {
+        final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": true}");
+        LOGGER.debug("accept challenge: " + gameRequest.toString());
     }
 }

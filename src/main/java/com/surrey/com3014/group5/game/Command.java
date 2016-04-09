@@ -10,6 +10,10 @@ import java.io.Serializable;
 public class Command implements Serializable {
     private static final long serialVersionUID = 2367277263792938674L;
 
+    public static final String NEW = "CHALLENGE.NEW";
+    public static final String ACCEPT = "CHALLENGE.ACCEPT";
+    public static final String DENY = "CHALLENGE.DENY";
+
     private String command;
 
     private JSONObject parsedData;

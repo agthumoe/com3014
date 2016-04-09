@@ -31,6 +31,11 @@ public final class RandomUtils {
         }
     }
 
+    /**
+     * http://stackoverflow.com/questions/332079/in-java-how-do-i-convert-a-byte-array-to-a-string-of-hex-digits-while-keeping-l
+     * @param bytes
+     * @return
+     */
     public static String toHexString(byte[] bytes) {
         final StringBuilder hexString = new StringBuilder();
 
