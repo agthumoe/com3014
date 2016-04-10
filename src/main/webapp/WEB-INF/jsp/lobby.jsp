@@ -60,7 +60,8 @@
 <script src="../../assets/libs/tron.active-users.js"></script>
 <script type="text/javascript">
     $(function () {
-        TronChallenge.init();
+        var challengeManager = TronChallenge.create();
+        challengeManager.init();
         
         var chat = TronChat.create();
         chat.init('#chat-input', '#messages');
@@ -68,7 +69,7 @@
 
         var activeUsers = TronActiveUsers.create();
         activeUsers.init("#online-users", function (e) {
-            TronChallenge.newChallenge(e.data.userID);
+            challengeManager.newChallenge(e.data.userID);
         });
     });
 </script>
