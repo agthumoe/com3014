@@ -171,7 +171,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.version}</source>
+                    <pageList>${java.version}</pageList>
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
@@ -191,12 +191,12 @@
                 <configuration>
                     <resources>
                         <resource>
-                            <source>
+                            <pageList>
                                 <directory>${basedir}/src/main/webapp/assets/scss</directory>
                                 <includes>
                                     <include>*.scss</include>
                                 </includes>
-                            </source>
+                            </pageList>
                             <destination>${project.basedir}/src/main/webapp/assets/styles</destination>
                         </resource>
                     </resources>

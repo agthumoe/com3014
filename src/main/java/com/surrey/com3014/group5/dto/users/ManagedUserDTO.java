@@ -7,7 +7,7 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.AuthoritiesConstants;
 import io.swagger.annotations.ApiModel;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Aung Thu Moe
@@ -16,8 +16,8 @@ import java.util.Date;
 @ApiModel
 public class ManagedUserDTO extends UserDTO implements Credentials {
     private static final long serialVersionUID = 8867610531231596079L;
-    private Date createdDate;
-    private Date lastModifiedDate;
+    private String createdDate;
+    private String lastModifiedDate;
     private boolean enabled;
     private boolean admin;
     @JsonIgnore
@@ -31,27 +31,28 @@ public class ManagedUserDTO extends UserDTO implements Credentials {
 
     public ManagedUserDTO(User user) {
         super(user);
-        this.createdDate = user.getCreatedDate();
-        this.lastModifiedDate = user.getLastModifiedDate();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        this.createdDate = formatter.format(user.getCreatedDate());
+        this.lastModifiedDate = formatter.format(user.getLastModifiedDate());
         this.enabled = user.isEnabled();
         this.password = null;
         this.confirmPassword = null;
         user.getAuthorities().stream().filter(authority -> authority.getAuthority().equals(AuthoritiesConstants.ADMIN)).forEach(authority -> this.setAdmin(true));
     }
 
-    public Date getCreatedDate() {
+    public String getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
     }
 
-    public Date getLastModifiedDate() {
+    public String getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

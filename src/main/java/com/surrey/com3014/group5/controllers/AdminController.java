@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Aung Thu Moe
@@ -53,8 +52,7 @@ public class AdminController {
     }
 
     @RequestMapping("/admin/users")
-    public String index(Model model) {
-        model.addAttribute("users", userService.getAll().stream().map(ManagedUserDTO::new).collect(Collectors.toList()));
+    public String index() {
         return "admin/index";
     }
 
@@ -94,10 +92,6 @@ public class AdminController {
         throw new ResourceNotFoundException("User (id: " + id + ") does not exist!");
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public void test(@ModelAttribute("managedUserDTO") ManagedUserDTO managedUserDTO) {
-        LOGGER.debug("inside test controller: " + managedUserDTO.toString());
-    }
     @RequestMapping(value = "/admin/users/{id}", method = RequestMethod.POST)
     public String update(
         @PathVariable("id") long id,

@@ -114,7 +114,7 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
     }
 
     @Override
-    public Page<User> getUsers(Pageable pageRequest) {
+    public Page<User> getPagedList(Pageable pageRequest) {
         return getUserRepository().findAll(pageRequest);
     }
 }

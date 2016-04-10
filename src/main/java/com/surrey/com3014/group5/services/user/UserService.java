@@ -31,7 +31,7 @@ public interface UserService extends MutableService<User> {
 
     List<User> getAll();
 
-    Page<User> getUsers(Pageable pageRequest);
+    Page<User> getPagedList(Pageable pageRequest);
 
     void updatePassword(User user);
 

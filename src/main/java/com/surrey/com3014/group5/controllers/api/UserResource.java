@@ -1,15 +1,17 @@
 package com.surrey.com3014.group5.controllers.api;
 
+import com.surrey.com3014.group5.dto.PagedListDTO;
 import com.surrey.com3014.group5.dto.errors.ErrorDTO;
 import com.surrey.com3014.group5.dto.users.ManagedUserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 @Api(value = "User", description = "Operation about user", consumes = "application/json")
 public class UserResource {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
     @Autowired
     private UserService userService;
 
@@ -92,7 +94,7 @@ public class UserResource {
 
     @ApiOperation(value = "Get all user", notes = "This can only be done by logged in user with ADMIN permission")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class, responseContainer = "List"),
+        @ApiResponse(code = 200, message = "OK", response = PagedListDTO.class),
         @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class)
     })
     @ApiImplicitParams({
@@ -104,12 +106,27 @@ public class UserResource {
     @ResponseBody
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAll(@ApiIgnore Pageable pageRequest) {
-        Page<User> users = userService.getUsers(pageRequest);
-        Sort sort;
-        List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
-        for (User user: users) {
-            managedUserDTOs.add(new ManagedUserDTO(user));
-        }
-        return ResponseEntity.ok(managedUserDTOs);
+        Page<User> pages = userService.getPagedList(pageRequest);
+        PagedListDTO<ManagedUserDTO> pagedListDTO = new PagedListDTO<>();
+        List<ManagedUserDTO> list = new ArrayList<>();
+        pages.forEach(user -> list.add(new ManagedUserDTO(user)));
+        pagedListDTO.setPagedList(list);
+        pagedListDTO.setPageSize(pageRequest.getPageSize());
+        pagedListDTO.setPageNumber(pageRequest.getPageNumber());
+        pagedListDTO.setNumberOfElements(userService.count());
+        pagedListDTO.setTotalPages(pages.getTotalPages());
+        return ResponseEntity.ok(pagedListDTO);
+    }
+
+    @ApiOperation(value = "Get total number of users", notes = "This can only be done by logged in user with ADMIN permission")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = Long.class),
+        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class)
+    })
+    @RequestMapping(method = RequestMethod.GET, value = "/count")
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getCount() {
+        return ResponseEntity.ok("{\"count\": " + userService.count() + "}");
     }
 }
