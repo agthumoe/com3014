@@ -1,6 +1,8 @@
 package com.surrey.com3014.group5.game;
 
 import com.surrey.com3014.group5.dto.users.GamerDTO;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -33,6 +35,15 @@ public class Game implements Serializable {
         return challenged;
     }
 
+    public GamerDTO getGamer(long id) {
+        if (id == challenger.getId()) {
+            return challenger;
+        } else if (id == challenged.getId()) {
+            return challenged;
+        } else {
+            throw new AccessDeniedException("Unauthorised user trying to access the game");
+        }
+    }
     public void setChallenged(GamerDTO challenged) {
         this.challenged = challenged;
     }
