@@ -51,10 +51,6 @@ $(function () {
                 
                 return this;
             },
-
-            handleCommand: function (response) {
-                console.log(response);
-            },
             
             /**
              * TronChallenge.handleCommand
