@@ -77,6 +77,7 @@ $(function () {
                     });
                 });
 
+                that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                 setInterval(function () {
                     that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                 }, this._heartBeatInterval);
