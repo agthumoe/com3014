@@ -72,12 +72,12 @@ $(function () {
                 var activeUsersStompClient = this._activeUsersStompClient;
 
                 activeUsersStompClient.connect({}, function () {
+                    that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                     activeUsersStompClient.subscribe(that._activeUsersURL, function (response) {
                         that.refreshActiveUsersList(response);
                     });
                 });
 
-                that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                 setInterval(function () {
                     that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                 }, this._heartBeatInterval);
