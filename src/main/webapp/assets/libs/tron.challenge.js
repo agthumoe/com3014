@@ -68,40 +68,10 @@ $(function () {
                 var body = JSON.parse(response.body);
                 
                 if (body.command === 'CHALLENGE.NEW') {
-                    $('<div />').attr({
-                        class: 'modal fade',
-                        role: 'dialog'
-                    }).append(
-                        $('<div />').attr({
-                            class: 'modal-dialog'
-                        }).append(
-                            $('<div />').attr({
-                                class: 'modal-content'
-                            }).append(
-                                $('<div />').attr({
-                                    class: 'modal-header'
-                                }).append(
-                                    $('<h4 />').attr({
-                                        class: 'modal-title'
-                                    }).html(body.challenger.name + " has challenged you!")
-                                )
-                            ).append(
-                                $('<div />').attr({
-                                    class: 'modal-footer'
-                                }).append(
-                                    $('<button />').attr({
-                                        type: 'button',
-                                        class: 'btn btn btn-primary'
-                                    })
-                                ).append(
-                                    $('<button />').attr({
-                                        type: 'button',
-                                        class: 'btn btn btn-primary'
-                                    })
-                                )
-                            )
-                        )
-                    );
+                    var $challengeModal = $('#challenge-modal');
+                    var $modalBody = $challengeModal.find('[class=modal-body]');
+                    $modalBody.html(body.challenger.name + " has challenged you!");
+                    $challengeModal.show();
                 } else if (body.command === 'CHALLENGE.ACCEPT') {
                     
                 } else if (body.command === 'CHALLENGE.DENY') {
