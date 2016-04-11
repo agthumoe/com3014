@@ -1,5 +1,77 @@
 $(function() {
     (function (window) {
+        var TronPreGame = {
+            _gameQueue: '/game',
+            _gameTopic: '/user/{userID}/game',
+            _gameSocket: null,
+            _gameStomp: null,
+            
+            /**
+             * #.init
+             * Initialises the TronGameFactory instance.
+             * 
+             * @returns this
+             */
+            init: function () {
+                var that = this;
+                
+                this._gameSocket = new SockJS(this._gameQueue);
+                this._gameStomp = Stomp.over(this._gameSocket);
+                var gameStomp = this._gameStomp;
+                
+                var path = window.location.pathname.split('/');
+                this._gameID = path[path.length - 1];
+                
+                this._gameTopic = this._gameTopic.replace('{userID}', User.username);
+
+                gameStomp.connect({}, function () {
+                    gameStomp.subscribe(that._gameTopic, function (response) {
+                        
+                    });
+                
+                    gameStomp.send(that._gameQueue, {}, JSON.stringify({
+                        command: 'GAME.READY',
+                        data: {
+                            gameID: that._gameID,
+                            height: $(window).height(),
+                            width: $(window).width()
+                        }
+                    }));
+                });
+                
+                return this;
+            },
+            
+            /**
+             * #.instance
+             * Creates an instance of the Tron Game Factory
+             * 
+             * @returns TronGameFactory instance
+             */
+            instance: function () {
+                return Object.create(TronPreGame);
+            },
+            
+            /**
+             * #.getGameSocket
+             * 
+             * @returns The game Socket
+             */
+            getGameSocket: function () {
+                return this._gameSocket;
+            },
+            
+            /**
+             * #.getGameStomp
+             * 
+             * @returns The game STOMP
+             */
+            getGameStomp: function () {
+                return this._gameStomp;
+            }
+        };
+        window.TronPreGame = TronPreGame;
+        
         var TronGame = {
             /**
              * Global configuration of TronGame
@@ -199,7 +271,7 @@ $(function() {
             startWhenLoaded: function (game) {
                 if (!TronGame._assetsLoaded) {
                     Crafty.log('Still waiting for assets to load...');
-                    setTimeout(TronGame.startWhenLoaded, 1000, game);
+                    setTimeout(TronGame.startWhenLoaded, 500, game);
                     return;
                 }
 

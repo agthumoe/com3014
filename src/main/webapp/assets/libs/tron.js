@@ -9,6 +9,10 @@ $(function () {
              * Object containing all available Tron modules.
              */
             _modules: {
+                'pre-game': function () {
+                    return window.TronPreGame;
+                },
+                
                 'game': function () {
                     return window.TronGame;
                 },
