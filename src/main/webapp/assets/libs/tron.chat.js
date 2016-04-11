@@ -129,7 +129,7 @@ $(function () {
                 var m = JSON.parse(message);
                 var div = $('<div />').addClass('message');
 
-                div.append($('<span />').addClass('owner').html(m.username + ': '));
+                div.append($('<span />').addClass('owner').html(m.name + ': '));
 
                 div.append($('<span />').addClass('message-body').html(m.message));
 
