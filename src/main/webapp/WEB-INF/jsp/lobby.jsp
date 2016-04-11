@@ -54,7 +54,7 @@
 <jsp:include page="../template/modal.jsp">
     <jsp:param name="modal_id" value="challenge-modal"/>
     <jsp:param name="title" value="New Challenge"/>
-    <jsp:param name="message" value="You receive new game challenge"/>
+    <jsp:param name="message" value="You've received a new game challenge"/>
     <jsp:param name="btn_yes_id" value="btn-challenge-accept"/>
     <jsp:param name="btn_yes_label" value="Accept"/>
     <jsp:param name="btn_no_id" value="btn-challenge-deny"/>
