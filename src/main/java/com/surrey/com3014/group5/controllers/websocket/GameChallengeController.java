@@ -42,25 +42,19 @@ public class GameChallengeController {
     public void handleCommand(String message, Principal principal) {
         User challenger = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
-
-        switch (command.getCommand()) {
-            case Command.NEW:
-                Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
-                if (!optional.isPresent()) {
-                    throw new ResourceNotFoundException("not found");
-                }
-                User challenged = optional.get();
-                newChallenge(challenger, challenged);
-                break;
-            case Command.DENY:
-                denyChallenge(command.getStringData("gameID"));
-                break;
-            case Command.ACCEPT:
-                acceptChallenge(command.getStringData("gameID"));
-                break;
+        LOGGER.debug(command.toString());
+        if (Command.NEW.equals(command.getCommand())) {
+            Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
+            if (!optional.isPresent()) {
+                throw new ResourceNotFoundException("not found");
+            }
+            User challenged = optional.get();
+            newChallenge(challenger, challenged);
+        } else if (Command.DENY.equals(command.getCommand())) {
+            denyChallenge(command.getStringData("gameID"));
+        } else if (Command.ACCEPT.equals(command.getCommand())) {
+            acceptChallenge(command.getStringData("gameID"));
         }
-        LOGGER.debug(command.getCommand());
-        LOGGER.debug("userID {}" , command.getIntegerData("userID"));
     }
 
     private void newChallenge(User challenger, User challenged) {

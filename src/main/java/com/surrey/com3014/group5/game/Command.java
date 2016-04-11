@@ -45,4 +45,12 @@ public class Command implements Serializable {
     public int getIntegerData(String key) {
         return this.parsedData.getInt(key);
     }
+
+    @Override
+    public String toString() {
+        return "Command{" +
+            "command='" + command + '\'' +
+            "parsedData='" + parsedData.toString() + '\'' +
+            '}';
+    }
 }
