@@ -102,8 +102,10 @@ public class GameChallengeController {
     }
 
     private void sendExpiredChallengeMessage(GameRequest gameRequest) {
+        LOGGER.debug("send expiration message");
         JSONObject response = new JSONObject();
         response.put("gameID", gameRequest.getGameID());
+        response.put("command", Command.EXPIRED);
         JSONObject challengerJSON = new JSONObject();
         challengerJSON.put("name", gameRequest.getChallenger().getName());
         response.put("challenger", challengerJSON);
