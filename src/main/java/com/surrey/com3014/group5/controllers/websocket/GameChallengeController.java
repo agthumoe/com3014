@@ -7,6 +7,7 @@ import com.surrey.com3014.group5.game.GameRequestService;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.RandomUtils;
 import com.surrey.com3014.group5.services.user.UserService;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-
-import javax.json.Json;
-import javax.json.JsonObject;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -61,36 +59,36 @@ public class GameChallengeController {
 
     private void newChallenge(User challenger, User challenged) {
         final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
-        JsonObject response = Json.createObjectBuilder()
-            .add("gameID", gameRequest.getGameID())
-            .add("command", Command.NEW)
-            .add("challenger", Json.createObjectBuilder()
-                .add("name", gameRequest.getChallenger().getName()))
-            .build();
+        JSONObject response = new JSONObject();
+        response.put("gameID", gameRequest.getGameID());
+        response.put("command", Command.NEW);
+        JSONObject challengerJSON = new JSONObject();
+        challengerJSON.put("name", gameRequest.getChallenger().getName());
+        response.put("challenger", challengerJSON);
         template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
     private void denyChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
-        JsonObject response = Json.createObjectBuilder()
-            .add("gameID", gameRequest.getGameID())
-            .add("command", Command.DENY)
-            .add("challenged", Json.createObjectBuilder()
-                .add("name", gameRequest.getChallenged().getName()))
-            .build();
+        JSONObject response = new JSONObject();
+        response.put("gameID", gameRequest.getGameID());
+        response.put("command", Command.DENY);
+        JSONObject challengedJSON = new JSONObject();
+        challengedJSON.put("name", gameRequest.getChallenged().getName());
+        response.put("challenged", challengedJSON);
         template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("deny challenge: " + gameRequest.toString());
     }
 
     private void acceptChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
-        JsonObject response = Json.createObjectBuilder()
-            .add("gameID", gameRequest.getGameID())
-            .add("command", Command.ACCEPT)
-            .add("challenged", Json.createObjectBuilder()
-                .add("name", gameRequest.getChallenged().getName()))
-            .build();
+        JSONObject response = new JSONObject();
+        response.put("gameID", gameRequest.getGameID());
+        response.put("command", Command.ACCEPT);
+        JSONObject challengedJSON = new JSONObject();
+        challengedJSON.put("name", gameRequest.getChallenged().getName());
+        response.put("challenged", challengedJSON);
         template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("accept challenge: " + gameRequest.toString());
     }

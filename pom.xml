@@ -159,11 +159,6 @@
             <artifactId>json</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -196,12 +191,12 @@
                 <configuration>
                     <resources>
                         <resource>
-                            <pageList>
+                            <source>
                                 <directory>${basedir}/src/main/webapp/assets/scss</directory>
                                 <includes>
                                     <include>*.scss</include>
                                 </includes>
-                            </pageList>
+                            </source>
                             <destination>${project.basedir}/src/main/webapp/assets/styles</destination>
                         </resource>
                     </resources>
