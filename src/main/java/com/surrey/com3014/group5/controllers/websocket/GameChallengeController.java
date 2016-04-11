@@ -71,25 +71,46 @@ public class GameChallengeController {
 
     private void denyChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
-        JSONObject response = new JSONObject();
-        response.put("gameID", gameRequest.getGameID());
-        response.put("command", Command.DENY);
-        JSONObject challengedJSON = new JSONObject();
-        challengedJSON.put("name", gameRequest.getChallenged().getName());
-        response.put("challenged", challengedJSON);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
-        LOGGER.debug("deny challenge: " + gameRequest.toString());
+        if (gameRequest.isExpired()) {
+            sendExpiredChallengeMessage(gameRequest);
+        } else {
+            JSONObject response = new JSONObject();
+            response.put("gameID", gameRequest.getGameID());
+            JSONObject challengedJSON = new JSONObject();
+            challengedJSON.put("name", gameRequest.getChallenged().getName());
+            response.put("challenged", challengedJSON);
+            response.put("command", Command.DENY);
+            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
+            LOGGER.debug("deny challenge: " + gameRequest.toString());
+        }
     }
 
     private void acceptChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
+        if (gameRequest.isExpired()) {
+            sendExpiredChallengeMessage(gameRequest);
+        } else {
+            JSONObject response = new JSONObject();
+            response.put("gameID", gameRequest.getGameID());
+            response.put("command", Command.ACCEPT);
+            JSONObject challengedJSON = new JSONObject();
+            challengedJSON.put("name", gameRequest.getChallenged().getName());
+            response.put("challenged", challengedJSON);
+            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
+            LOGGER.debug("accept challenge: " + gameRequest.toString());
+        }
+    }
+
+    private void sendExpiredChallengeMessage(GameRequest gameRequest) {
         JSONObject response = new JSONObject();
         response.put("gameID", gameRequest.getGameID());
-        response.put("command", Command.ACCEPT);
+        JSONObject challengerJSON = new JSONObject();
+        challengerJSON.put("name", gameRequest.getChallenger().getName());
+        response.put("challenger", challengerJSON);
         JSONObject challengedJSON = new JSONObject();
         challengedJSON.put("name", gameRequest.getChallenged().getName());
         response.put("challenged", challengedJSON);
         template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
-        LOGGER.debug("accept challenge: " + gameRequest.toString());
+        template.convertAndSendToUser(gameRequest.getChallenged().getUsername(), "/topic/game/challenge", response.toString());
     }
 }

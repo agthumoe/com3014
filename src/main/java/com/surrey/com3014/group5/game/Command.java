@@ -13,6 +13,7 @@ public class Command implements Serializable {
     public static final String NEW = "CHALLENGE.NEW";
     public static final String ACCEPT = "CHALLENGE.ACCEPT";
     public static final String DENY = "CHALLENGE.DECLINE";
+    public static final String EXPIRED = "CHALLENGE.TIMEOUT";
 
     private String command;
 
