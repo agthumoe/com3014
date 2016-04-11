@@ -9,7 +9,7 @@ $(function () {
             /**
              * The challenge topic URL used for subscriptions.
              */
-            _challengesTopic: '/topic/game/challenge',       
+            _challengesTopic: '/user/{username}/topic/game/challenge',       
             
             /**
              * Reference to the challenge socket
@@ -37,19 +37,23 @@ $(function () {
              * 
              * @returns this
              */
-            init: function () {    
+            init: function (username) {
                 var that = this;
                 this._challengeSocket = new SockJS(this._challengesQueue);
                 this._challengeStomp = Stomp.over(this._challengeSocket);
                 var challengeStomp = this._challengeStomp;
 
                 challengeStomp.connect({}, function () {
-                    challengeStomp.subscribe(that._challengesTopic, function (response) {
+                    challengeStomp.subscribe(that._getSubscriptionURL(username), function (response) {
                         that.handleCommand(response);
                     });
                 });
                 
                 return this;
+            },
+            
+            _getSubscriptionURL: function (username) {
+                return this._challengesTopic.replace("{username}", username);
             },
             
             /**
@@ -61,7 +65,50 @@ $(function () {
              * @returns void
              */
             handleCommand: function (response) {
-                console.log(response);
+                var body = JSON.parse(response.body);
+                
+                if (body.command === 'CHALLENGE.NEW') {
+                    $('<div />').attr({
+                        class: 'modal fade',
+                        role: 'dialog'
+                    }).append(
+                        $('<div />').attr({
+                            class: 'modal-dialog'
+                        }).append(
+                            $('<div />').attr({
+                                class: 'modal-content'
+                            }).append(
+                                $('<div />').attr({
+                                    class: 'modal-header'
+                                }).append(
+                                    $('<h4 />').attr({
+                                        class: 'modal-title'
+                                    }).html(body.challenger.name + " has challenged you!")
+                                )
+                            ).append(
+                                $('<div />').attr({
+                                    class: 'modal-footer'
+                                }).append(
+                                    $('<button />').attr({
+                                        type: 'button',
+                                        class: 'btn btn btn-primary'
+                                    })
+                                ).append(
+                                    $('<button />').attr({
+                                        type: 'button',
+                                        class: 'btn btn btn-primary'
+                                    })
+                                )
+                            )
+                        )
+                    );
+                } else if (body.command === 'CHALLENGE.ACCEPT') {
+                    
+                } else if (body.command === 'CHALLENGE.DENY') {
+                    
+                } else if (body.command === 'CHALLENGE.TIMEOUT') {
+                    
+                }
             },
             
             /**

@@ -70,19 +70,30 @@
 <script src="../../assets/libs/tron.js"></script>
 <script type="text/javascript">
     $(function () {
-        var challengeManager = Tron('challenge', function (m) {
-            m.init();
-        });
+        window.User = null;
+        $.get({
+            url: '/api/account',
+            success: function (response) {
+                window.User = response;
+                
+                var challengeManager = Tron('challenge', function (m) {
+                    m.init(User.username);
+                });
 
-        Tron('chat', function (m) {
-            m.init('#chat-input', '#messages');
-            m.setMessagesMaxHeight(500);
-        });
+                Tron('chat', function (m) {
+                    m.init('#chat-input', '#messages');
+                    m.setMessagesMaxHeight(500);
+                });
 
-        Tron('active-users', function (m) {
-            m.init("#online-users", function (e) {
-                challengeManager.newChallenge(e.data.userID);
-            });
+                Tron('active-users', function (m) {
+                    m.init("#online-users", function (e) {
+                        challengeManager.newChallenge(e.data.userID);
+                    });
+                });
+            },
+            error: function () {
+                console.log("Couldn't get active user");
+            }
         });
     });
 </script>
