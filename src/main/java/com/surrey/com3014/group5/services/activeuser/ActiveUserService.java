@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class ActiveUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveUserService.class);
+    private static final int SCHEDULE_INTERVAL = 5000;
     private LoadingCache<User, UserStats> statsByUser = CacheBuilder.newBuilder().build(new CacheLoader<User, UserStats>() {
 
         @Override
@@ -35,7 +36,7 @@ public class ActiveUserService {
     public List<UserDTO> getActiveUsers() {
         List<UserDTO> active = new ArrayList<>();
         // has the user checked in within the last 10 seconds?
-        statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < 5000).forEach(user -> {
+        statsByUser.asMap().keySet().stream().filter(user -> (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) < SCHEDULE_INTERVAL).forEach(user -> {
             UserDTO userDTO = new UserDTO(user);
             active.add(userDTO);
         });
@@ -57,7 +58,7 @@ public class ActiveUserService {
     }
 
     public boolean recentlyActive(User user) {
-        return (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) > 5000;
+        return (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) > SCHEDULE_INTERVAL;
     }
 
 }

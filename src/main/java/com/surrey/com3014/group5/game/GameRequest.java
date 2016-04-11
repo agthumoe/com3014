@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class GameRequest implements Serializable {
     private static final long serialVersionUID = -5340436566899111089L;
+    private static final int TIMEOUT = 10000;
     private String gameID;
     private final AtomicLong requestedTime;
     private UserDTO challenger;
@@ -49,7 +50,7 @@ public class GameRequest implements Serializable {
     }
 
     public boolean isExpired() {
-        return (System.currentTimeMillis() - this.requestedTime.get()) > 10000;
+        return (System.currentTimeMillis() - this.requestedTime.get()) > TIMEOUT;
     }
 
     @Override
