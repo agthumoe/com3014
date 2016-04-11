@@ -118,7 +118,7 @@ $(function () {
                         })
                         .addClass('list-group-item')
                         .append(usersToAdd[i].name)
-                        .append(this._getChallengeHTML(usersToAdd[i].id));
+                        .append(this._getChallengeHTML(usersToAdd[i].id, usersToAdd[i].name));
                     this._activeUsers.append(li);
                 }
 
@@ -187,16 +187,17 @@ $(function () {
              *
              * @return jQuery object containing the challenge anchor tag
              */
-            _getChallengeHTML: function (userID) {
+            _getChallengeHTML: function (userID, name) {
                 return $('<a />')
                     .attr({
                         href: 'javascript:;',
                         role: 'button',
-                        'data-user-id': userID
+                        'data-user-id': userID,
+                        'data-name': name
                     })
                     .addClass('btn btn-xs btn-default pull-right')
                     .append($('<i />').addClass('fa fa-bolt'))
-                    .on('click', {userID: userID}, this._challengeCallback);
+                    .on('click', {userID: userID, name: name}, this._challengeCallback);
             }
         };
 
