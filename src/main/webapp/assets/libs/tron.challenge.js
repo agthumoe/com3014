@@ -168,7 +168,7 @@ $(function () {
              * @returns this
              */
             _commandTimeoutChallenge: function (response) {
-                var $notification = $('<div />').addClass('alert alert-danger')
+                var $notification = $('<div />').addClass('alert alert-info')
                     .css({
                         display: 'none'
                     });
