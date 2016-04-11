@@ -39,14 +39,6 @@
 						</c:choose>
 					</sec:authorize>
 					<c:choose>
-						<c:when test="${param.active == 'game'}">
-							<li class="active"><a href="#">Play Now</a></li>
-						</c:when>
-						<c:otherwise>
-							<li><a href="/game">Play Now</a></li>
-						</c:otherwise>
-					</c:choose>
-					<c:choose>
 						<c:when test="${param.active == 'help'}">
 							<li class="active"><a href="#">Help</a></li>
 						</c:when>
