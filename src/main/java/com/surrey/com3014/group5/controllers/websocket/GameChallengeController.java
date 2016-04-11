@@ -65,7 +65,7 @@ public class GameChallengeController {
         JSONObject challengerJSON = new JSONObject();
         challengerJSON.put("name", gameRequest.getChallenger().getName());
         response.put("challenger", challengerJSON);
-        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", response);
+        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", response.toString());
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
@@ -77,7 +77,7 @@ public class GameChallengeController {
         JSONObject challengedJSON = new JSONObject();
         challengedJSON.put("name", gameRequest.getChallenged().getName());
         response.put("challenged", challengedJSON);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
         LOGGER.debug("deny challenge: " + gameRequest.toString());
     }
 
@@ -89,7 +89,7 @@ public class GameChallengeController {
         JSONObject challengedJSON = new JSONObject();
         challengedJSON.put("name", gameRequest.getChallenged().getName());
         response.put("challenged", challengedJSON);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
         LOGGER.debug("accept challenge: " + gameRequest.toString());
     }
 }

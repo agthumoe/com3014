@@ -113,6 +113,12 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- for creating json object -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+
         <!-- data binding for database -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -154,10 +160,6 @@
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
