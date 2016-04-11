@@ -87,7 +87,7 @@
 
                 Tron('active-users', function (m) {
                     m.init("#online-users", function (e) {
-                        challengeManager.newChallenge(e.data.userID);
+                        challengeManager.newChallenge(e.data.userID, e.data.name);
                     });
                 });
             },

@@ -2,6 +2,11 @@ $(function () {
     (function (window) {
         var TronChallenge = {
             /**
+             * Defines the URL for a new game.
+             */
+            _newGameURL: '/game/{gameID}',
+            
+            /**
              * The challenge queue URL used for sending commands.
              */
             _challengesQueue: '/queue/game/challenge',
@@ -25,6 +30,11 @@ $(function () {
              * A reference to the challenge modal to accept/dencline invitations.
              */
             _challengeModal: null,
+            
+            /**
+             * The time it takes for a challenge invitation to time out.
+             */
+            _challengeTimeout: 30000,
             
             /**
              * TronChallenge.instance
@@ -93,8 +103,6 @@ $(function () {
                     this._commandAcceptedChallenge(response);
                 } else if (response.command === 'CHALLENGE.DECLINE') {
                     this._commandDeniedChallenge(response);
-                } else if (response.command === 'CHALLENGE.TIMEOUT') {
-                    this._commandTimeoutChallenge(response);
                 }
             },
             
@@ -109,7 +117,12 @@ $(function () {
                 this._$challengeModal.attr('data-game-id', response.gameID);
                 var $modalBody = this._$challengeModal.find('[class=modal-body]');
                 $modalBody.html(response.challenger.name + " has challenged you!");
-                this._$challengeModal.modal({show: true});
+                this._$challengeModal.modal('show');
+                var modal = this._$challengeModal;
+                
+                setTimeout(function () {
+                    modal.modal('hide');
+                }, this._challengeTimeout);
                 
                 return this;
             },
@@ -130,8 +143,10 @@ $(function () {
                     });
                 $('body > div.container').prepend($notification);
                 $notification.slideDown();
+                
+                var that = this;
                 setTimeout(function () {
-                    $notification.slideUp();
+                    window.location.href = that._newGameURL.replace('{gameID}', response.gameID);
                 }, 3000);
                 
                 return this;
@@ -155,6 +170,7 @@ $(function () {
                 $notification.slideDown();
                 setTimeout(function () {
                     $notification.slideUp();
+                    $notification.remove();
                 }, 3000);
                 
                 return this;
@@ -167,20 +183,19 @@ $(function () {
              * @param Object response
              * @returns this
              */
-            _commandTimeoutChallenge: function (response) {
+            _handleTimeoutChallenge: function (name) {
                 var $notification = $('<div />').addClass('alert alert-info')
                     .css({
                         display: 'none'
                     });
-                if (response.challenger.name === User.name) {
-                    $notification.html('Your challenge against <strong>' 
-                        + response.challenged.name + '</strong> ' + 
-                        'timed out.');
-                }
+                $notification.html('Your challenge against <strong>' 
+                    + name + '</strong> ' + 
+                    'timed out.');
                 $('body > div.container').prepend($notification);
                 $notification.slideDown();
                 setTimeout(function () {
                     $notification.slideUp();
+                    $notification.remove();
                 }, 3000);
                 
                 return this;
@@ -194,7 +209,7 @@ $(function () {
              * @param int userID
              * @returns this
              */
-            newChallenge: function (userID) {
+            newChallenge: function (userID, name) {
                 this._challengeStomp.send(TronChallenge._challengesQueue, {}, 
                     JSON.stringify({
                         command: 'CHALLENGE.NEW',
@@ -203,6 +218,11 @@ $(function () {
                         }
                     })
                 );
+            
+                var that = this;
+                setTimeout(function () {
+                    that._handleTimeoutChallenge(name);
+                }, this._challengeTimeout);
             
                 return this;
             },
@@ -223,6 +243,19 @@ $(function () {
                 }));
                 
                 this._$challengeModal.modal('hide');
+                
+                var $notification = $('<div />').addClass('alert alert-success')
+                    .html('Prepare to play!')
+                    .css({
+                        display: 'none'
+                    });
+                $('body > div.container').prepend($notification);
+                $notification.slideDown();
+                
+                var that = this;
+                setTimeout(function () {
+                    window.location.href = that._newGameURL.replace('{gameID}', gameID);
+                }, 3000);
                 
                 return this;
             },
