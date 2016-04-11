@@ -18,7 +18,7 @@
 <script type="text/javascript" src="../../assets/libs/tron.game.js"></script>
 <script type="text/javascript">
     $(function () {
-        var tron = Tron.instance();
+        var tron = TronGame.instance();
         tron.init('game-canvas');
         tron.enterScene('LandingPage', tron);
     });

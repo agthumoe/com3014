@@ -1,8 +1,8 @@
 $(function() {
     (function (window) {
-        var Tron = {
+        var TronGame = {
             /**
-             * Global configuration of Tron
+             * Global configuration of TronGame
              */
             _config: {
                 /**
@@ -52,7 +52,7 @@ $(function() {
             },
 
             /**
-             * A singular instance of Tron
+             * A singular instance of TronGame
              */
             _instance: null,
 
@@ -83,7 +83,7 @@ $(function() {
             _scenes: [],
 
             /**
-             * Defines the assets of Tron
+             * Defines the assets of TronGame
              */
             _assets: {
                 imags: ['logo_nobg.png'],
@@ -137,8 +137,8 @@ $(function() {
             },
 
             /**
-             * Tron.instance
-             * Creates a new instance of the Tron game. Provides a method for accessing the Tron
+             * TronGame.instance
+             * Creates a new instance of the TronGame game. Provides a method for accessing the TronGame
              * signleton as we only ever really want 1 instance of the game in play. Anything else
              * would be silly.
              *
@@ -146,24 +146,24 @@ $(function() {
              * of assets and setting up the canvas.
              */
             instance: function () {
-                if (!Tron._instance) {
-                    Tron._instance = Object.create(Tron);
+                if (!TronGame._instance) {
+                    TronGame._instance = Object.create(TronGame);
                 }
 
-                return Tron._instance;
+                return TronGame._instance;
             },
 
             /**
-             * Tron.init
+             * TronGame.init
              * Initialises the game by creating the game specific objects and
              * defining the map.
              *
              * @returns this
              */
             init: function(canvasID) {
-                Crafty.logginEnabled = Tron._config.logging;
+                Crafty.logginEnabled = TronGame._config.logging;
 
-                Crafty.log("Initialising Tron");
+                Crafty.log("Initialising TronGame");
 
                 this._setupCanvas(canvasID);
                 this._defineComponents();
@@ -173,7 +173,7 @@ $(function() {
             },
 
             /**
-             * Tron.start
+             * TronGame.start
              * Starts the game.
              *
              * @param h Height of the game window
@@ -183,7 +183,7 @@ $(function() {
              * @return this
              */
             start: function () {
-                Crafty.log('Starting Tron');
+                Crafty.log('Starting TronGame');
 
                 this.enterScene('Main', this);
 
@@ -191,15 +191,15 @@ $(function() {
             },
 
             /**
-             * Wrapper function to start a game of Tron safely ensuring all assets have been loaded.
+             * Wrapper function to start a game of TronGame safely ensuring all assets have been loaded.
              *
-             * @param Tron game
+             * @param TronGame game
              * @returns void
              */
             startWhenLoaded: function (game) {
-                if (!Tron._assetsLoaded) {
+                if (!TronGame._assetsLoaded) {
                     Crafty.log('Still waiting for assets to load...');
-                    setTimeout(Tron.startWhenLoaded, 1000, game);
+                    setTimeout(TronGame.startWhenLoaded, 1000, game);
                     return;
                 }
 
@@ -207,7 +207,7 @@ $(function() {
             },
 
             /**
-             * Tron.stop
+             * TronGame.stop
              * Stops the game completely and optionally resets the game state.
              *
              * @param bool If true, clears the game state resetting everything.
@@ -226,7 +226,7 @@ $(function() {
             },
 
             /**
-             * Tron.pause
+             * TronGame.pause
              * Pauses this game.
              *
              * @returns this
@@ -243,7 +243,7 @@ $(function() {
             },
 
             /**
-             * Tron.unpause
+             * TronGame.unpause
              * Unpauses a paused game.
              *
              * @returns this
@@ -260,7 +260,7 @@ $(function() {
             },
 
             /**
-             * Tron.isPaused
+             * TronGame.isPaused
              * Determines whether the game is paused or not.
              *
              * @return bool
@@ -270,14 +270,14 @@ $(function() {
             },
 
             /**
-             * Adds a scene to Tron
+             * Adds a scene to TronGame
              *
              * @param string key
              * @param function scene
              * @returns this
              */
             addScene: function (key, scene) {
-                Tron._scenes.push(key);
+                TronGame._scenes.push(key);
                 Crafty.defineScene(key, scene);
             },
 
@@ -288,7 +288,7 @@ $(function() {
              * @returns void
              */
             enterScene: function (key, data) {
-                if (Tron._scenes.indexOf(key) === -1) {
+                if (TronGame._scenes.indexOf(key) === -1) {
                     Crafty.error('Scene undefined: ' + key);
                 } else {
                     Crafty.log('Entering Scene: ' + key);
@@ -305,12 +305,12 @@ $(function() {
             setConfig: function (config) {
                 config = config || {};
                 for(var i in config) {
-                    Tron._config[i] = config[i];
+                    TronGame._config[i] = config[i];
                 }
             },
 
             /**
-             * Tron._setupCanvas
+             * TronGame._setupCanvas
              * Creates the canvas and initialises the game. Then pauses the game and waits for
              * it to start.
              *
@@ -340,28 +340,28 @@ $(function() {
              * Loads all necessary images, sprites and audio files.
              */
             _loadAssets: function (onLoad, onProgress, onError) {
-                if (!Tron._assetsLoaded) {
+                if (!TronGame._assetsLoaded) {
                     onLoad = onLoad || this._config.assetLoadHandlers.onLoad;
                     onProgress = onProgress || this._config.assetLoadHandlers.onProgress;
                     onError = onError || this._config.assetLoadHandlers.onError;
 
                     // Apply the configuration for paths.
-                    Crafty.paths(Tron._config.assetPaths);
+                    Crafty.paths(TronGame._config.assetPaths);
 
                     Crafty.load(this._assets, function () {
-                        Tron._assetsLoaded = true;
+                        TronGame._assetsLoaded = true;
                         onLoad();
                     }, onProgress, onError);
                 }
             },
 
             /**
-             * Tron._defineComponents
-             * Defines the game objects used in Tron.
+             * TronGame._defineComponents
+             * Defines the game objects used in TronGame.
              */
             _defineComponents: function () {
                 // Ensure components haven't been defined yet.
-                if (!Tron._componentsDefined) {
+                if (!TronGame._componentsDefined) {
                     /**
                      * Define a generic square object.
                      */
@@ -485,7 +485,7 @@ $(function() {
                                     trail.getPlayer().removeTrail(trail);
                                     trail.destroy();
                                 }, 500, trail);
-                            }, Tron._config.trailTimeout, this);
+                            }, TronGame._config.trailTimeout, this);
 
                             return this;
                         }
@@ -896,12 +896,12 @@ $(function() {
                                 explosion.tween({
                                     alpha: 0
                                 }, 500);
-                            }, Tron._config.explosionTimeout - 500, this);
+                            }, TronGame._config.explosionTimeout - 500, this);
 
                             // Remove the explosion after configured time.
                             setTimeout(function (explosion) {
                                 explosion.destroy();
-                            }, Tron._config.explosionTimeout, this);
+                            }, TronGame._config.explosionTimeout, this);
                         }
                     });
 
@@ -999,12 +999,12 @@ $(function() {
                     });
 
                     // Set components defined flag.
-                    Tron._componentsDefined = true;
+                    TronGame._componentsDefined = true;
                 }
             }
         };
 
-        Tron.addScene('LandingPage', function (game) {
+        TronGame.addScene('LandingPage', function (game) {
             Crafty.background('rgb(40, 40, 40)');
 
             Crafty.audio.play('Background', -1, 0.1);
@@ -1039,7 +1039,7 @@ $(function() {
                 w: 758
             })
             .append($('<img />').attr({
-                src: Tron._config.assetPaths.images + 'logo_nobg.png',
+                src: TronGame._config.assetPaths.images + 'logo_nobg.png',
             }))
             .bind('Click', function () {
                 Crafty.log('Clicked');
@@ -1126,7 +1126,7 @@ $(function() {
             });
         });
 
-        Tron.addScene('Main', function () {
+        TronGame.addScene('Main', function () {
             Crafty.background('rgb(40, 40, 40) url("images/bg.png") center no-repeat');
 
             //Crafty.audio.play('Background', -1, 0.05);
@@ -1201,7 +1201,7 @@ $(function() {
             });
         });
 
-        Tron.addScene('Debug', function () {
+        TronGame.addScene('Debug', function () {
             Crafty.background('rgb(40, 40, 40) url("images/bg.png") center no-repeat');
 
             var maxParticles = Math.round(
@@ -1284,6 +1284,6 @@ $(function() {
             }
         });
 
-        window.Tron = Tron;
+        window.TronGame = TronGame;
     })(window);
 });
