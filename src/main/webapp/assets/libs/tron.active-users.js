@@ -68,6 +68,7 @@ $(function () {
 
                 this._activeUsersSocket = new SockJS(this._activeUsersTrackerURL);
                 this._activeUsersStompClient = Stomp.over(this._activeUsersSocket);
+                this._activeUsersStompClient.debug = null;
                 var activeUsersStompClient = this._activeUsersStompClient;
 
                 activeUsersStompClient.connect({}, function () {
@@ -77,7 +78,7 @@ $(function () {
                 });
 
                 setInterval(function () {
-                    that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "{}");
+                    that._activeUsersStompClient.send(that._activeUsersTrackerURL, {}, "");
                 }, this._heartBeatInterval);
             },
 
@@ -105,8 +106,6 @@ $(function () {
 
                 var usersToAdd = this._getUsersToAdd(onlineUsers);
                 var usersToRemove = this._getUsersToRemove(onlineUsers);
-
-                console.log(this._activeUsersCache);
 
                 // Add the users to the DOM and to the internal cache so we can track them easily.
                 for (var i in usersToAdd) {
