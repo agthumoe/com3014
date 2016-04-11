@@ -35,7 +35,7 @@ $(function () {
              * Defines the interval at which the manual heart beat will be triggered.
              */
             _heartBeatInterval: 5000,
-            
+
             /**
              * A callback function when the challenge button is clicked
              */
@@ -60,7 +60,7 @@ $(function () {
              */
             init: function (onlineUsersID, challengeCallback) {
                 var that = this;
-                
+
                 this._challengeCallback = challengeCallback;
 
                 // Wrap the online users div in jQuery object.
@@ -179,10 +179,10 @@ $(function () {
 
             /**
              * TronActiveUsers._getChallgeHTML
-             * Gets the challenge button HTML. The callback is applied to this hyperlink and the 
+             * Gets the challenge button HTML. The callback is applied to this hyperlink and the
              * user Id passed in such that the received variable is the event variable and the
              * data is accessible as follows:
-             *  
+             *
              *      event.data.YOUR_DATA
              *
              * @return jQuery object containing the challenge anchor tag

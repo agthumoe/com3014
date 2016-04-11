@@ -150,3 +150,13 @@ body {
 .clear-padding-right {
     padding-right: 0;
 }
+
+.centre-screen {
+    position: fixed;
+    width: 500px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -250px;
+}

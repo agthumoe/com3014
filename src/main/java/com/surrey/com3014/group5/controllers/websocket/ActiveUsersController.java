@@ -45,6 +45,11 @@ public class ActiveUsersController {
     public void activeUser(Message<Object> message) {
         Principal principal = message.getHeaders().get(SimpMessageHeaderAccessor.USER_HEADER, Principal.class);
         User user = (User) ((Authentication) principal).getPrincipal();
-        activeUserService.mark(user);
+        if (!activeUserService.recentlyActive(user)) {
+            activeUserService.mark(user);
+            template.convertAndSend("/topic/activeUsers", activeUserService.getActiveUsers());
+        } else {
+            activeUserService.mark(user);
+        }
     }
 }

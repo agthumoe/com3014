@@ -55,4 +55,8 @@ public class ActiveUserService {
         }
 
     }
+
+    public boolean recentlyActive(User user) {
+        return (System.currentTimeMillis() - statsByUser.getUnchecked(user).lastAccess()) > 5000;
+    }
 }
