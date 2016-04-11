@@ -69,8 +69,10 @@
     <jsp:param name="modal_id" value="delete-modal"/>
     <jsp:param name="title" value="Confirmation"/>
     <jsp:param name="message" value="Are you sure you want to delete?"/>
-    <jsp:param name="btn_confirm_id" value="btn-delete-confirm"/>
-    <jsp:param name="btn_confirm_label" value="Delete"/>
+    <jsp:param name="btn_yes_id" value="btn-delete-confirm"/>
+    <jsp:param name="btn_yes_label" value="Delete"/>
+    <jsp:param name="btn_no_id" value="btn-close"/>
+    <jsp:param name="btn_no_label" value="Close"/>
 </jsp:include>
 
 <div id="notification" class="alert alert-info alert-dismissible top-right notification" role="alert">

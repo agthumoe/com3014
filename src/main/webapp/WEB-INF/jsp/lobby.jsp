@@ -51,6 +51,15 @@
         </div>
     </div>
 </div>
+<jsp:include page="../template/modal.jsp">
+    <jsp:param name="modal_id" value="challenge-modal"/>
+    <jsp:param name="title" value="New Challenge"/>
+    <jsp:param name="message" value="You receive new game challenge"/>
+    <jsp:param name="btn_yes_id" value="btn-challenge-accept"/>
+    <jsp:param name="btn_yes_label" value="Accept"/>
+    <jsp:param name="btn_no_id" value="btn-challenge-deny"/>
+    <jsp:param name="btn_no_label" value="Deny"/>
+</jsp:include>
 <%@include file="../template/footer.jsp" %>
 <%@include file="../template/scripts.jsp" %>
 <script src="../../bower_components/sockjs/sockjs.min.js"></script>
@@ -64,12 +73,12 @@
         var challengeManager = Tron('challenge', function (m) {
             m.init();
         });
-        
+
         Tron('chat', function (m) {
             m.init('#chat-input', '#messages');
             m.setMessagesMaxHeight(500);
         });
-        
+
         Tron('active-users', function (m) {
             m.init("#online-users", function (e) {
                 challengeManager.newChallenge(e.data.userID);

@@ -16,8 +16,8 @@
                 ${param.message}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="${param.btn_confirm_id}">${param.btn_confirm_label}</button>
+                <button type="button" class="btn btn-default" id="${param.btn_no_id}" data-dismiss="modal">${param.btn_no_label}</button>
+                <button type="button" class="btn btn-primary" id="${param.btn_yes_id}">${param.btn_yes_label}</button>
             </div>
         </div>
     </div>
