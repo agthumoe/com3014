@@ -1,6 +1,7 @@
 package com.surrey.com3014.group5.controllers.websocket;
 
 import com.surrey.com3014.group5.game.Command;
+import com.surrey.com3014.group5.game.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,17 @@ public class GameController {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @MessageMapping("/queue/game")
+    @Autowired
+    private GameService gameService;
+
+    @MessageMapping("/game")
     public void request(String message, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
+        if (Command.READY.equals(command.getCommand())) {
+           gameService.getGame(command.getStringData("gameID"));
+        }
         LOGGER.debug(command.toString());
-        
     }
 
     public void response() {
