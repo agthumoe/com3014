@@ -32,12 +32,12 @@ $(function () {
             _chatURL: '/topic/chat',
 
             /**
-             * TronChat.create
+             * TronChat.instance
              * Creates a new isntance of the TronChat object
              *
              * @return TronChat
              */
-            create: function () {
+            instance: function () {
                 return Object.create(TronChat);
             },
 

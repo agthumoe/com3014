@@ -42,12 +42,12 @@ $(function () {
             _challengeCallback: null,
 
             /**
-             * TronActiveUsers.create
+             * TronActiveUsers.instance
              * Creates a new instance of the TronChat object
              *
              * @return TronChat
              */
-            create: function () {
+            instance: function () {
                 return Object.create(TronActiveUsers);
             },
 

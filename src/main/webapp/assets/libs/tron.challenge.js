@@ -22,12 +22,12 @@ $(function () {
             _challengeStomp: null,
             
             /**
-             * TronChallenge.create
+             * TronChallenge.instance
              * Creates a new instance of the TronChallenge class.
              * 
              * @returns TronChallenge
              */
-            create: function () {
+            instance: function () {
                 return Object.create(TronChallenge);
             },
             

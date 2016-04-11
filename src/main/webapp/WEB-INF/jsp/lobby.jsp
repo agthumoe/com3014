@@ -58,18 +58,22 @@
 <script src="../../assets/libs/tron.chat.js"></script>
 <script src="../../assets/libs/tron.challenge.js"></script>
 <script src="../../assets/libs/tron.active-users.js"></script>
+<script src="../../assets/libs/tron.js"></script>
 <script type="text/javascript">
     $(function () {
-        var challengeManager = TronChallenge.create();
-        challengeManager.init();
+        var challengeManager = Tron('challenge', function (m) {
+            m.init();
+        });
         
-        var chat = TronChat.create();
-        chat.init('#chat-input', '#messages');
-        chat.setMessagesMaxHeight(500);
-
-        var activeUsers = TronActiveUsers.create();
-        activeUsers.init("#online-users", function (e) {
-            challengeManager.newChallenge(e.data.userID);
+        Tron('chat', function (m) {
+            m.init('#chat-input', '#messages');
+            m.setMessagesMaxHeight(500);
+        });
+        
+        Tron('active-users', function (m) {
+            m.init("#online-users", function (e) {
+                challengeManager.newChallenge(e.data.userID);
+            });
         });
     });
 </script>
