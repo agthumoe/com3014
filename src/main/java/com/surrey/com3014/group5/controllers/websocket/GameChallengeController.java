@@ -16,6 +16,8 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -59,19 +61,37 @@ public class GameChallengeController {
 
     private void newChallenge(User challenger, User challenged) {
         final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
-        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", gameRequest);
+        JsonObject response = Json.createObjectBuilder()
+            .add("gameID", gameRequest.getGameID())
+            .add("command", Command.NEW)
+            .add("challenger", Json.createObjectBuilder()
+                .add("name", gameRequest.getChallenger().getName()))
+            .build();
+        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
     private void denyChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": false}");
+        JsonObject response = Json.createObjectBuilder()
+            .add("gameID", gameRequest.getGameID())
+            .add("command", Command.DENY)
+            .add("challenged", Json.createObjectBuilder()
+                .add("name", gameRequest.getChallenged().getName()))
+            .build();
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("deny challenge: " + gameRequest.toString());
     }
 
     private void acceptChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", "{\"accept\": true}");
+        JsonObject response = Json.createObjectBuilder()
+            .add("gameID", gameRequest.getGameID())
+            .add("command", Command.ACCEPT)
+            .add("challenged", Json.createObjectBuilder()
+                .add("name", gameRequest.getChallenged().getName()))
+            .build();
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response);
         LOGGER.debug("accept challenge: " + gameRequest.toString());
     }
 }

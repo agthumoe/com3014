@@ -2,7 +2,6 @@ package com.surrey.com3014.group5.game;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.security.RandomUtils;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
@@ -60,6 +59,7 @@ public class GameRequest implements Serializable {
             ", requestedTime=" + requestedTime +
             ", challenger=" + challenger +
             ", challenged=" + challenged +
+            ", expired=" + isExpired() +
             '}';
     }
 }
