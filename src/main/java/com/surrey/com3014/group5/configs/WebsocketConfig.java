@@ -34,7 +34,7 @@ public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/queue/chat", "/queue/activeUsers", "/queue/game/challenge")
+        registry.addEndpoint("/queue/chat", "/queue/activeUsers", "/queue/game", "/queue/game/challenge")
             .setHandshakeHandler(new DefaultHandshakeHandler() {
                 @Override
                 protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
