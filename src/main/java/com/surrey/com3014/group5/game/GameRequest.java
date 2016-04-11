@@ -49,7 +49,7 @@ public class GameRequest implements Serializable {
     }
 
     public boolean isExpired() {
-        return (System.currentTimeMillis() - this.requestedTime.get()) > 30000;
+        return (System.currentTimeMillis() - this.requestedTime.get()) > 10000;
     }
 
     @Override
