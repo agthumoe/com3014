@@ -2,6 +2,7 @@ package com.surrey.com3014.group5.controllers.websocket;
 
 import com.surrey.com3014.group5.dto.messages.MessageDTO;
 import com.surrey.com3014.group5.dto.messages.ReplyMessageDTO;
+import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class ChatController {
         LOGGER.debug("Connected to Chat() -> Username: " + SecurityUtils.getCurrentUsername() + ", SessionID: " + stompHeaderAccessor.getSessionId() + ", IPAddress: " + stompHeaderAccessor.getSessionAttributes().get(IP_ADDRESS).toString());
         User user = (User) ((Authentication) principal).getPrincipal();
         Instant instant = Instant.ofEpochMilli(Calendar.getInstance().getTimeInMillis());
-        return new ReplyMessageDTO(user.getUsername(), dateTimeFormatter.format(ZonedDateTime.ofInstant(instant, ZoneOffset.systemDefault())), message.getMessage());
+        return new ReplyMessageDTO(new UserDTO(user), dateTimeFormatter.format(ZonedDateTime.ofInstant(instant, ZoneOffset.systemDefault())), message.getMessage());
     }
 
 }
