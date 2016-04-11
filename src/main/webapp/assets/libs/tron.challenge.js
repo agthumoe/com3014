@@ -52,6 +52,11 @@ $(function () {
                 return this;
             },
             
+            /**
+             * TronChallenge._getSubscriptionURL
+             * @param string username
+             * @returns {String}
+             */
             _getSubscriptionURL: function (username) {
                 return this._challengesTopic.replace("{username}", username);
             },
