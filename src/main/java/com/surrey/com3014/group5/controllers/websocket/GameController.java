@@ -51,6 +51,7 @@ public class GameController {
             response.put("role", gamerDTO.getRole());
             response.put("height", resolution.getHeight());
             response.put("width", resolution.getWidth());
+            response.put("command", Command.PREP);
             template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", response.toString());
             template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", response.toString());
         }
