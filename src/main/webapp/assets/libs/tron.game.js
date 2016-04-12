@@ -948,11 +948,6 @@ $(function() {
                                     this.vy = this._remoteAttributes.vy;
                                     this.rotation = this._remoteAttributes.rotation;
                                     this._magnitude = this._remoteAttributes.magnitude;
-
-                                    // Look at the status and determine if we should blow up or not
-                                    if (this._remoteAttributes.status === 'EXPLODED') {
-                                        this.explode();
-                                    }
                                 }
                             }
                         },
@@ -972,7 +967,14 @@ $(function() {
                             stomp.subscribe(url, function (response) {
                                 var body = JSON.parse(response.body);
                                 if (body.command === 'GAME.UPDATE') {
-                                    that._remoteAttributes = body;
+                                    // Look at the status and determine if we should blow up or not
+                                    if (body.status === 'EXPLODED') {
+                                        that.vx = 0;
+                                        that.vy = 0;
+                                        that.explode();
+                                    } else {
+                                        that._remoteAttributes = body;
+                                    }
                                 }
                             });
                             
@@ -1128,6 +1130,12 @@ $(function() {
                                     this.vx = 0;
                                     this.vy = 0;
                                 }
+                            },
+                            
+                            Remove: function () {
+                                // We want to be sure to send 1 last update containing explode
+                                // so we know this object blew up on the other client.
+                                this.sendUpdate();
                             }
                         },
 
