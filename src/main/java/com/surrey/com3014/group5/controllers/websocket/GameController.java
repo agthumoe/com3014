@@ -38,22 +38,29 @@ public class GameController {
             Game game = gameService.getGame(command.getStringData("gameID"));
             // record the gamer's resolution
             game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
-            response(user.getId(), game);
+            response(game);
         }
     }
 
-    public void response(long gamerID, Game game) {
+    public void response(Game game) {
         Resolution resolution = game.getResolution();
         if (resolution != null) {
-            JSONObject response = new JSONObject();
-            response.put("gameID", game.getGameID());
-            GamerDTO gamerDTO = game.getGamer(gamerID);
-            response.put("role", gamerDTO.getRole());
-            response.put("height", resolution.getHeight());
-            response.put("width", resolution.getWidth());
-            response.put("command", Command.PREP);
-            template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", response.toString());
-            template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", response.toString());
+            final JSONObject responseForChallenger = new JSONObject();
+            responseForChallenger.put("gameID", game.getGameID());
+            responseForChallenger.put("role", game.getChallenger().getRole());
+            responseForChallenger.put("height", resolution.getHeight());
+            responseForChallenger.put("width", resolution.getWidth());
+            responseForChallenger.put("command", Command.PREP);
+
+            JSONObject responseForChallenged = new JSONObject();
+            responseForChallenged.put("gameID", game.getGameID());
+            responseForChallenged.put("role", game.getChallenged().getRole());
+            responseForChallenged.put("height", resolution.getHeight());
+            responseForChallenged.put("width", resolution.getWidth());
+            responseForChallenged.put("command", Command.PREP);
+
+            template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", responseForChallenger.toString());
+            template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", responseForChallenged.toString());
         }
     }
 }
