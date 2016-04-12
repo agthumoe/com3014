@@ -49,7 +49,7 @@ public class GameController {
             reponse.put("vy", command.getDoubleData("vy"));
             reponse.put("rotation", command.getDoubleData("rotation"));
             reponse.put("command", Command.UPDATE);
-            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", reponse);
+            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", reponse.toString());
         }
     }
 
