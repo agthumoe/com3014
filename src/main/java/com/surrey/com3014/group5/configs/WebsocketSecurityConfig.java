@@ -16,7 +16,6 @@ public class WebsocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
             .nullDestMatcher().authenticated()
             .simpDestMatchers("/queue/**").hasAuthority(USER)
             .simpDestMatchers("/topic/**").authenticated() // block any messages directly sent to /channel
-            .simpDestMatchers("/game/**").authenticated()
             .simpDestMatchers("/user/**").authenticated()
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
             .anyMessage().denyAll();

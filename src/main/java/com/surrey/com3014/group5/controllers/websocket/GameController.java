@@ -28,7 +28,7 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @MessageMapping("/game")
+    @MessageMapping("/queue/game")
     public void request(String message, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
