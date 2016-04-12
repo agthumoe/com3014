@@ -9,12 +9,12 @@ $(function () {
             /**
              * The challenge queue URL used for sending commands.
              */
-            _challengesQueue: '/queue/game/challenge',
+            _challengesQueue: '/queue/challenge',
             
             /**
              * The challenge topic URL used for subscriptions.
              */
-            _challengesTopic: '/user/{username}/topic/game/challenge',       
+            _challengesTopic: '/user/{username}/topic/challenge',       
             
             /**
              * Reference to the challenge socket
