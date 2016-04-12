@@ -24,6 +24,7 @@
                 
                 Tron('pre-game', function (m) {
                     m.init();
+                    m.initGame(400, 800, 'challenger');
                 });
             },
             error: function () {
