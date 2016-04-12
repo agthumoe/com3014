@@ -15,31 +15,32 @@ $(function() {
             init: function () {
                 var that = this;
                 
+                console.log(this._gameQueue);
                 this._gameSocket = new SockJS(this._gameQueue);
-                this._gameStomp = Stomp.over(this._gameSocket);
-                var gameStomp = this._gameStomp;
-                
-                var path = window.location.pathname.split('/');
-                this._gameID = path[path.length - 1];
-                
-                this._gameTopic = this._gameTopic.replace('{userID}', User.username);
-
-                gameStomp.connect({}, function () {
-                    gameStomp.subscribe(that._gameTopic, function (response) {
-                        
-                    });
-                
-                    gameStomp.send(that._gameQueue, {}, JSON.stringify({
-                        command: 'GAME.READY',
-                        data: {
-                            gameID: that._gameID,
-                            height: $(window).height(),
-                            width: $(window).width()
-                        }
-                    }));
-                });
-                
-                return this;
+//                this._gameStomp = Stomp.over(this._gameSocket);
+//                var gameStomp = this._gameStomp;
+//                
+//                var path = window.location.pathname.split('/');
+//                this._gameID = path[path.length - 1];
+//                
+//                this._gameTopic = this._gameTopic.replace('{userID}', User.username);
+//
+//                gameStomp.connect({}, function () {
+//                    gameStomp.subscribe(that._gameTopic, function (response) {
+//                        
+//                    });
+//                
+//                    gameStomp.send(that._gameQueue, {}, JSON.stringify({
+//                        command: 'GAME.READY',
+//                        data: {
+//                            gameID: that._gameID,
+//                            height: $(window).height(),
+//                            width: $(window).width()
+//                        }
+//                    }));
+//                });
+//                
+//                return this;
             },
             
             /**
@@ -51,24 +52,24 @@ $(function() {
             instance: function () {
                 return Object.create(TronPreGame);
             },
-            
-            /**
-             * #.getGameSocket
-             * 
-             * @returns The game Socket
-             */
-            getGameSocket: function () {
-                return this._gameSocket;
-            },
-            
-            /**
-             * #.getGameStomp
-             * 
-             * @returns The game STOMP
-             */
-            getGameStomp: function () {
-                return this._gameStomp;
-            }
+//            
+//            /**
+//             * #.getGameSocket
+//             * 
+//             * @returns The game Socket
+//             */
+//            getGameSocket: function () {
+//                return this._gameSocket;
+//            },
+//            
+//            /**
+//             * #.getGameStomp
+//             * 
+//             * @returns The game STOMP
+//             */
+//            getGameStomp: function () {
+//                return this._gameStomp;
+//            }
         };
         window.TronPreGame = TronPreGame;
         
