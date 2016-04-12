@@ -858,12 +858,6 @@ $(function() {
                             }
                         },
                         
-                        update: function (response) {
-                            this.x = response.x;
-                            this.y = response.y;
-                            this.rotation = response.rotation;
-                        },
-                        
                         setStomp: function (stomp) {
                             this._stomp = stomp;
                             var that = this;
