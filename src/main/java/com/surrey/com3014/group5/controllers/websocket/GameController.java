@@ -57,6 +57,8 @@ public class GameController {
     public void response(Game game) {
         Resolution resolution = game.getResolution();
         if (resolution != null) {
+            resolution.setHeight(resolution.getHeight() - 20);
+            resolution.setWidth(resolution.getWidth() - 20);
             final JSONObject responseForChallenger = new JSONObject();
             responseForChallenger.put("gameID", game.getGameID());
             responseForChallenger.put("role", game.getChallenger().getRole());
