@@ -1,38 +1,39 @@
 package com.surrey.com3014.group5.dto.users;
 
+import com.surrey.com3014.group5.game.Resolution;
+import org.springframework.util.Assert;
+
 /**
  * @author Aung Thu Moe
  */
 public class GamerDTO extends UserDTO {
     private static final long serialVersionUID = -1223709935605109559L;
-    private Resolution resolution = new Resolution();
+    public static final String CHALLENGER = "GAMER.CHALLENGER";
+    public static final String CHALLENGED = "GAMER.CHALLENGED";
+
+    private String role;
+    private Resolution resolution = null;
     private GameData gameData = new GameData();
 
     public GamerDTO() {
         super();
     }
 
-    public GamerDTO(UserDTO user) {
+    public GamerDTO(UserDTO user, String role) {
         setId(user.getId());
         setUsername(user.getUsername());
         setEmail(user.getEmail());
         setName(user.getName());
+        this.role = role;
     }
 
-    public int getHeight() {
-        return this.resolution.getHeight();
+    public Resolution getResolution() {
+        return resolution;
     }
 
-    public void setHeight(int height) {
-        this.resolution.setHeight(height);
-    }
-
-    public int getWidth() {
-        return this.resolution.getWidth();
-    }
-
-    public void setWidth(int width) {
-        this.resolution.setWidth(width);
+    public void setResolution(Resolution resolution) {
+        Assert.notNull(resolution);
+        this.resolution = resolution;
     }
 
     public int getX() {
@@ -51,6 +52,14 @@ public class GamerDTO extends UserDTO {
         this.gameData.setY(y);
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public String getRotation() {
         return this.gameData.getRotation();
     }
@@ -66,38 +75,10 @@ public class GamerDTO extends UserDTO {
             ", username=" + getUsername() +
             ", email=" + getEmail() +
             ", name=" + getName() +
+            ", role=" + role +
             ", resolution=" + resolution +
             ", gameData=" + gameData +
             '}';
-    }
-
-    private final class Resolution {
-        private int height;
-        private int width;
-
-        private int getHeight() {
-            return height;
-        }
-
-        private void setHeight(int height) {
-            this.height = height;
-        }
-
-        private int getWidth() {
-            return width;
-        }
-
-        private void setWidth(int width) {
-            this.width = width;
-        }
-
-        @Override
-        public String toString() {
-            return "Resolution{" +
-                "height=" + height +
-                ", width=" + width +
-                '}';
-        }
     }
 
     private final class GameData {

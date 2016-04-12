@@ -4,6 +4,8 @@ import com.surrey.com3014.group5.dto.users.GamerDTO;
 import com.surrey.com3014.group5.game.Command;
 import com.surrey.com3014.group5.game.Game;
 import com.surrey.com3014.group5.game.GameService;
+import com.surrey.com3014.group5.game.Resolution;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +36,23 @@ public class GameController {
         Command command = new Command(message);
         if (Command.READY.equals(command.getCommand())) {
             Game game = gameService.getGame(command.getStringData("gameID"));
-            // get the gamer using current client id
-            GamerDTO gamer = game.getGamer(user.getId());
-            // update the screen resolution of the client
-            gamer.setWidth(command.getIntegerData("width"));
-            gamer.setHeight(command.getIntegerData("height"));
-            //TODO:: how to make sure both has set the resolution??
+            // record the gamer's resolution
+            game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
+            response(user.getId(), game);
         }
     }
 
-    public void response() {
-
+    public void response(long gamerID, Game game) {
+        Resolution resolution = game.getResolution();
+        if (resolution != null) {
+            JSONObject response = new JSONObject();
+            response.put("gameID", game.getGameID());
+            GamerDTO gamerDTO = game.getGamer(gamerID);
+            response.put("role", gamerDTO.getRole());
+            response.put("height", resolution.getHeight());
+            response.put("width", resolution.getWidth());
+            template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", response.toString());
+            template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", response.toString());
+        }
     }
 }

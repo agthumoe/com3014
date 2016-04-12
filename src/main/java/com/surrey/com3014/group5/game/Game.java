@@ -2,7 +2,6 @@ package com.surrey.com3014.group5.game;
 
 import com.surrey.com3014.group5.dto.users.GamerDTO;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -14,6 +13,7 @@ public class Game implements Serializable {
     private String gameID;
     private GamerDTO challenger;
     private GamerDTO challenged;
+    private int resolutionCount;
 
     public String getGameID() {
         return gameID;
@@ -44,6 +44,7 @@ public class Game implements Serializable {
             throw new AccessDeniedException("Unauthorised user trying to access the game");
         }
     }
+
     public void setChallenged(GamerDTO challenged) {
         this.challenged = challenged;
     }
@@ -71,5 +72,23 @@ public class Game implements Serializable {
             ", challenger=" + challenger +
             ", challenged=" + challenged +
             '}';
+    }
+
+    public void setGamerResolution(long userID, int height, int width) {
+        GamerDTO gamer = this.getGamer(userID);
+        // update the screen resolution of the client
+        Resolution resolution = new Resolution(height, width);
+        gamer.setResolution(resolution);
+    }
+
+    public Resolution getResolution() {
+        Resolution challengerResolution = this.getChallenger().getResolution();
+        Resolution challengedResolution = this.getChallenged().getResolution();
+        if (challengerResolution == null || challengedResolution == null) {
+            return null;
+        }
+        int bestHeight = challengerResolution.getHeight() < challengedResolution.getHeight() ? challengerResolution.getHeight() : challengedResolution.getHeight();
+        int bestWidth = challengerResolution.getWidth() < challengedResolution.getWidth() ? challengerResolution.getWidth() : challengedResolution.getWidth();
+        return new Resolution(bestHeight, bestWidth);
     }
 }

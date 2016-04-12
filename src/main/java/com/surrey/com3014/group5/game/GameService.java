@@ -26,8 +26,8 @@ public class GameService {
         Assert.notNull(gameRequest);
         final Game game = this.games.getUnchecked(gameRequest.getGameID());
         game.setGameID(gameRequest.getGameID());
-        game.setChallenged(new GamerDTO(gameRequest.getChallenged()));
-        game.setChallenger(new GamerDTO(gameRequest.getChallenger()));
+        game.setChallenged(new GamerDTO(gameRequest.getChallenged(), GamerDTO.CHALLENGED));
+        game.setChallenger(new GamerDTO(gameRequest.getChallenger(), GamerDTO.CHALLENGER));
         return game;
     }
 
