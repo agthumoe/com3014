@@ -43,13 +43,14 @@ public class GameController {
             Game game = gameService.getGame(command.getStringData("gameID"));
             GamerDTO oppositePlayer = game.getOtherGamer(user.getId());
 
-            final JSONObject reponse = new JSONObject();
-            reponse.put("gameID", game.getGameID());
-            reponse.put("vx", command.getDoubleData("vx"));
-            reponse.put("vy", command.getDoubleData("vy"));
-            reponse.put("rotation", command.getDoubleData("rotation"));
-            reponse.put("command", Command.UPDATE);
-            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", reponse.toString());
+            final JSONObject response = new JSONObject();
+            response.put("gameID", game.getGameID());
+            response.put("vx", command.getDoubleData("vx"));
+            response.put("vy", command.getDoubleData("vy"));
+            response.put("magnitude", command.getIntegerData("magnitude"));
+            response.put("rotation", command.getDoubleData("rotation"));
+            response.put("command", Command.UPDATE);
+            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", response.toString());
         }
     }
 
