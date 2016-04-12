@@ -6,7 +6,9 @@ $(function() {
             _gameSocket: null,
             _gameStomp: null,
             
+            _gameID: null,
             _game: null,
+            _gameInitialised: false,
             
             /**
              * #.init
@@ -58,33 +60,46 @@ $(function() {
                 response = JSON.parse(response.body);
                 
                 if (response.command === "GAME.PREP") {
-                    this.initGame(response.height, response.width, response.player);
+                    this._gameHeight = response.height;
+                    this._gameWidth = response.width;
+                    this._playerRole = response.role;
+                    this.initGame();
                 } 
             },
             
-            initGame: function (height, width, player) {
+            initGame: function () {
                 var that = this;
                 
-                this._game = TronGame.instance();
-                
-//                $('body').append($('<canvas />').attr({
-//                    id: 'game-canvas',
-////                    'tron-height': height,
-////                    'tron-width': width
-//                }));
-                
-                this._game.init('game-canvas');
-                TronGame.startWhenLoaded(this._game, function () {
-                    if (player === 'challenger') {
-                        var p = Crafty.e('CyanPlayer, ControllablePlayer').attr({
-                            x: 100,
-                            y: 100,
-                            rotation: 90
-                        });
-                        p.setStomp(that._gameStomp);
-                    }
-                });
-                
+                if (!this._gameInitialised) {
+                    this._game = TronGame.instance();
+
+    //                $('body').append($('<canvas />').attr({
+    //                    id: 'game-canvas',
+    ////                    'tron-height': height,
+    ////                    'tron-width': width
+    //                }));
+
+                    this._game.init('game-canvas');
+                    TronGame.startWhenLoaded(this._game, function () {
+                        if (that._playerRole === 'CHALLENGER') {
+                            console.log("Adding controllable player");
+                            Crafty.e('CyanPlayer, ControllablePlayer').attr({
+                                    x: 100,
+                                    y: 100,
+                                    rotation: 90
+                                })
+                                .setStomp(that._gameStomp, that._gameID);
+                        }
+
+                        if (that._playerRole === 'CHALLENGED') {
+                            console.log("Adding remote player");
+                            Crafty.e('OrangePlayer, RemotePlayer')
+                                .setStomp(that._gameStomp, that._gameTopic);
+                        }
+                    });
+                    
+                    this._gameInitialised = true;
+                }
             },
             
             startGame: function (startIn) {
@@ -843,7 +858,6 @@ $(function() {
                         _remoteAttributes: {
                             vx: 0,
                             vy: 0,
-                            rotation: -90
                         },
                         
                         init: function () {
@@ -858,10 +872,10 @@ $(function() {
                             }
                         },
                         
-                        setStomp: function (stomp) {
+                        setStomp: function (stomp, url) {
                             this._stomp = stomp;
                             var that = this;
-                            stomp.subscribe(TronPreGame._gameTopic, function (response) {
+                            stomp.subscribe(url, function (response) {
                                 var body = JSON.parse(response.body);
                                 if (body.command === 'GAME.UPDATE') {
                                     that._remoteAttributes = body;
@@ -911,6 +925,7 @@ $(function() {
                         },
                         
                         _stomp: null,
+                        _gameID: null,
 
                         /**
                          * Initialiser function to set the objects default properties.
@@ -1007,7 +1022,7 @@ $(function() {
                                     this._stomp.send(TronPreGame._gameQueue, {}, JSON.stringify({
                                         'command': 'GAME.UPDATE',
                                         'data': {
-                                            gameID: TronPreGame._gameID,
+                                            gameID: this._gameID,
                                             vx: this.vx,
                                             vy: this.vy,
                                             rotation: this.rotation,
@@ -1032,9 +1047,10 @@ $(function() {
                             return (v.x !== 0 || v.y !== 0);
                         },
                         
-                        setStomp: function (stomp) {
+                        setStomp: function (stomp, gameID) {
                             this._stomp = stomp;
-                            this._stomp.debug = null;
+                            this._gameID = gameID;
+                            //this._stomp.debug = null;
                         }
                     });
 
