@@ -49,6 +49,7 @@ public class GameController {
             response.put("vy", command.getDoubleData("vy"));
             response.put("magnitude", command.getIntegerData("magnitude"));
             response.put("rotation", command.getDoubleData("rotation"));
+            response.put("status", command.getStringData("status"));
             response.put("command", Command.UPDATE);
             template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", response.toString());
         }
@@ -57,8 +58,8 @@ public class GameController {
     public void response(Game game) {
         Resolution resolution = game.getResolution();
         if (resolution != null) {
-            resolution.setHeight(resolution.getHeight() - 20);
-            resolution.setWidth(resolution.getWidth() - 20);
+            resolution.setHeight(resolution.getHeight() - 40);
+            resolution.setWidth(resolution.getWidth() - 40);
             final JSONObject responseForChallenger = new JSONObject();
             responseForChallenger.put("gameID", game.getGameID());
             responseForChallenger.put("role", game.getChallenger().getRole());
