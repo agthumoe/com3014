@@ -42,7 +42,7 @@ public class GameChallengeController {
     @Autowired
     private GameService gameService;
 
-    @MessageMapping("/queue/game/challenge")
+    @MessageMapping("/queue/challenge")
     public void handleCommand(String message, Principal principal) {
         User challenger = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
@@ -69,7 +69,7 @@ public class GameChallengeController {
         JSONObject challengerJSON = new JSONObject();
         challengerJSON.put("name", gameRequest.getChallenger().getName());
         response.put("challenger", challengerJSON);
-        template.convertAndSendToUser(challenged.getUsername(), "/topic/game/challenge", response.toString());
+        template.convertAndSendToUser(challenged.getUsername(), "/topic/challenge", response.toString());
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
@@ -84,7 +84,7 @@ public class GameChallengeController {
             challengedJSON.put("name", gameRequest.getChallenged().getName());
             response.put("challenged", challengedJSON);
             response.put("command", Command.DENY);
-            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
+            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/challenge", response.toString());
             LOGGER.debug("deny challenge: " + gameRequest.toString());
         }
     }
@@ -100,7 +100,7 @@ public class GameChallengeController {
             JSONObject challengedJSON = new JSONObject();
             challengedJSON.put("name", gameRequest.getChallenged().getName());
             response.put("challenged", challengedJSON);
-            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
+            template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/challenge", response.toString());
             // register new game in the game service
             this.gameService.registerNewGame(gameRequest);
             LOGGER.debug("accept challenge: " + gameRequest.toString());
@@ -118,7 +118,7 @@ public class GameChallengeController {
         JSONObject challengedJSON = new JSONObject();
         challengedJSON.put("name", gameRequest.getChallenged().getName());
         response.put("challenged", challengedJSON);
-        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
-        template.convertAndSendToUser(gameRequest.getChallenged().getUsername(), "/topic/game/challenge", response.toString());
+        template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/challenge", response.toString());
+        template.convertAndSendToUser(gameRequest.getChallenged().getUsername(), "/topic/challenge", response.toString());
     }
 }
