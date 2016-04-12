@@ -8,6 +8,8 @@ $(function() {
             
             _gameID: null,
             _game: null,
+            _gameHeight: 0,
+            _gameWidth: 0,
             _gameInitialised: false,
             
             /**
@@ -56,6 +58,13 @@ $(function() {
                 return Object.create(TronPreGame);
             },
             
+            /**
+             * #.handle
+             * Handles a message from the server before the game starts.
+             * 
+             * @param json response
+             * @returns void
+             */
             handle: function (response) {
                 response = JSON.parse(response.body);
                 
@@ -63,42 +72,64 @@ $(function() {
                     this._gameHeight = response.height;
                     this._gameWidth = response.width;
                     this._playerRole = response.role;
-                    this.initGame();
+                    this.initGame(response.height);
                 } 
             },
             
+            /**
+             * #.initGame
+             * Initialises the game with the players and canvas size etc.
+             * 
+             * @returns void
+             */
             initGame: function () {
                 var that = this;
                 
                 if (!this._gameInitialised) {
+                    this._gameInitialised = true;
+                    
                     this._game = TronGame.instance();
+                    
+                    $('body').append($('<div />').attr({
+                        id: 'stage',
+                        'tron-height': that._gameHeight,
+                        'tron-width': that._gameWidth
+                    }));
 
-    //                $('body').append($('<canvas />').attr({
-    //                    id: 'game-canvas',
-    ////                    'tron-height': height,
-    ////                    'tron-width': width
-    //                }));
-
-                    this._game.init('game-canvas');
+                    this._game.init('stage');
                     TronGame.startWhenLoaded(this._game, function () {
+                        // Setup required for the challenger player.
                         if (that._playerRole === 'CHALLENGER') {
-                            console.log("Adding controllable player");
                             Crafty.e('CyanPlayer, ControllablePlayer').attr({
-                                    x: 100,
-                                    y: 100,
-                                    rotation: 90
-                                })
-                                .setStomp(that._gameStomp, that._gameID);
+                                x: 100,
+                                y: 100,
+                                rotation: 90
+                            })
+                            .setStomp(that._gameStomp, that._gameID);
+                            
+                            Crafty.e('OrangePlayer, RemotePlayer').attr({
+                                x: that._gameWidth - 100,
+                                y: that._gameHeight - 100
+                            })
+                            .setStomp(that._gameStomp, that._gameTopic);
                         }
-
+                        
+                        // Setup required for the challenged player.
                         if (that._playerRole === 'CHALLENGED') {
-                            console.log("Adding remote player");
-                            Crafty.e('OrangePlayer, RemotePlayer')
-                                .setStomp(that._gameStomp, that._gameTopic);
+                            Crafty.e('CyanPlayer, RemotePlayer').attr({
+                                x: 100,
+                                y: 100
+                            })
+                            .setStomp(that._gameStomp, that._gameTopic);
+                        
+                            Crafty.e('OrangePlayer, ControllablePlayer').attr({
+                                x: that._gameWidth - 100,
+                                y: that._gameHeight - 100,
+                                rotation: -90
+                            })
+                            .setStomp(that._gameStomp, that._gameID);
                         }
                     });
-                    
-                    this._gameInitialised = true;
                 }
             },
             
@@ -452,17 +483,41 @@ $(function() {
              */
             _setupCanvas: function (canvasID) {
                 this._canvas = document.getElementById(canvasID);
-
+                var canvas = $(this._canvas);
+                
+                var height = canvas.attr('tron-height') * 1;
+                var width = canvas.attr('tron-width') * 1;
+                var windowHeight = $(window).height();
+                var windowWidth = $(window).width();
+                var adjustment = 20;
+                
+                // Calculate required spacing for the canvas from the edges
+                if (height + adjustment === windowHeight) {
+                    marginTop = 0;
+                } else {
+                    marginTop = (windowHeight / 2) - (height / 2);
+                }
+                
+                if (width + adjustment === windowWidth) {
+                    marginLeft = 0;
+                } else {
+                    marginLeft = (windowWidth / 2) - (width / 2);
+                }
+                
                 if (this._canvas
                     && typeof this._canvas !== "undefined"
                     && this._canvas.attributes.hasOwnProperty('tron-height')
                     && this._canvas.attributes.hasOwnProperty('tron-width')) {
 
                     Crafty.log("Setting up canvas with predefined properties");
-
-                    Crafty.init(this._canvas.attributes.getNamedItem('tron-width').value * 1,
-                        this._canvas.attributes.getNamedItem('tron-height').value * 1,
-                            this._canvas);
+                    
+                    canvas.css({
+                        position: 'fixed',
+                        'margin-left': marginLeft,
+                        'margin-top': marginTop
+                    });
+                    
+                    Crafty.init(width, height, this._canvas);
                 } else {
                     Crafty.log("Setting up default canvas");
                     Crafty.init();
@@ -559,6 +614,7 @@ $(function() {
                             HitOn: function (hit) {
                                 var o = hit[0].obj;
                                 if (o.has('Player') && this._active) {
+                                    
                                     o.explode();
                                 }
                             }
@@ -669,7 +725,12 @@ $(function() {
                         /**
                          * Defines whether this object can be manipulated or not.
                          */
-                        _lock: false,
+                        _lock: false,                        
+                        
+                        /**
+                         * Status of this object.
+                         */
+                        _status: 'ACTIVE',
 
                         /**
                          * Initialises the objects properties.
@@ -781,6 +842,9 @@ $(function() {
 
                                 // Rotate back into the 0d position.
                                 this.rotate = 0;
+                                
+                                // Set the exploded state
+                                this._status = 'EXPLODED';
 
                                 // Create a new explision object and offset it by 16 pixels moving it
                                 // up and left so it centres ove the top of the bike.
@@ -850,14 +914,27 @@ $(function() {
                         }
                     });
                     
+                    /**
+                     * A remote player updates by the server.
+                     */
                     Crafty.c('RemotePlayer', {
+                        /**
+                         * Required modules.
+                         */
                         required: 'Player, Motion',
                         
+                        /**
+                         * Reference to the STOMP interface to commuicate with the server.
+                         */
                         _stomp: null,
                         
+                        /**
+                         * Defines the remote attributes for this object.
+                         */
                         _remoteAttributes: {
                             vx: 0,
                             vy: 0,
+                            status: 'ACTIVE',
                         },
                         
                         init: function () {
@@ -866,14 +943,31 @@ $(function() {
                         
                         events: {
                             EnterFrame: function () {
-                                this.vx = this._remoteAttributes.vx;
-                                this.vy = this._remoteAttributes.vy;
-                                this.rotation = this._remoteAttributes.rotation;
+                                if (!this.isLocked()) {
+                                    this.vx = this._remoteAttributes.vx;
+                                    this.vy = this._remoteAttributes.vy;
+                                    this.rotation = this._remoteAttributes.rotation;
+                                    this._magnitude = this._remoteAttributes.magnitude;
+
+                                    // Look at the status and determine if we should blow up or not
+                                    if (this._remoteAttributes.status === 'EXPLODED') {
+                                        this.explode();
+                                    }
+                                }
                             }
                         },
                         
+                        /**
+                         * #.setStomp
+                         * Sets the STOMP Interface internally and subscribes for updates.
+                         * 
+                         * @param STOMP stomp
+                         * @param string url
+                         * @returns this
+                         */
                         setStomp: function (stomp, url) {
                             this._stomp = stomp;
+                            this._stomp.debug = null;
                             var that = this;
                             stomp.subscribe(url, function (response) {
                                 var body = JSON.parse(response.body);
@@ -881,6 +975,8 @@ $(function() {
                                     that._remoteAttributes = body;
                                 }
                             });
+                            
+                            return this;
                         }
                     });
 
@@ -924,7 +1020,14 @@ $(function() {
                             RIGHT: false,
                         },
                         
+                        /**
+                         * A reference to the STOMP interface used to send updates
+                         */
                         _stomp: null,
+                        
+                        /**
+                         * A reference to the GAME ID sent in every communication with the server
+                         */
                         _gameID: null,
 
                         /**
@@ -1018,16 +1121,8 @@ $(function() {
                                         }
                                     }
                                     
-                                    // Send information to server about position and rotation.
-                                    this._stomp.send(TronPreGame._gameQueue, {}, JSON.stringify({
-                                        'command': 'GAME.UPDATE',
-                                        'data': {
-                                            gameID: this._gameID,
-                                            vx: this.vx,
-                                            vy: this.vy,
-                                            rotation: this.rotation,
-                                        }
-                                    }));
+                                    // Send update to the server
+                                    this.sendUpdate();
                                 } else {
                                     // Object is locked so set all values to 0
                                     this.vx = 0;
@@ -1047,10 +1142,39 @@ $(function() {
                             return (v.x !== 0 || v.y !== 0);
                         },
                         
+                        /**
+                         * #.setStomp
+                         * Sets the stomp socket so we can push updates to the server about
+                         * position and rotation.
+                         * 
+                         * @param STOMP stomp
+                         * @param int gameID
+                         * @returns this
+                         */
                         setStomp: function (stomp, gameID) {
                             this._stomp = stomp;
                             this._gameID = gameID;
-                            //this._stomp.debug = null;
+                            this._stomp.debug = null;
+                            
+                            return this;
+                        },
+                        
+                        sendUpdate: function () {
+                            // Send information to server about position and rotation.
+                            console.log(this._status);
+                            this._stomp.send(TronPreGame._gameQueue, {}, 
+                                JSON.stringify({
+                                    'command': 'GAME.UPDATE',
+                                    'data': {
+                                        gameID: this._gameID,
+                                        vx: this.vx,
+                                        vy: this.vy,
+                                        magnitude: this._magnitude,
+                                        rotation: this.rotation,
+                                        status: this._status
+                                    }
+                                })
+                            );
                         }
                     });
 
