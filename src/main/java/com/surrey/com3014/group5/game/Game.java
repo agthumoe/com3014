@@ -45,6 +45,15 @@ public class Game implements Serializable {
         }
     }
 
+    public GamerDTO getOtherGamer(long id) {
+        if (getGamer(id).getRole().equals(GamerDTO.CHALLENGER)) {
+            return challenged;
+        } else if (getGamer(id).getRole().equals(GamerDTO.CHALLENGED)) {
+            return challenger;
+        }
+        throw new AccessDeniedException("Unauthorised user trying to access the game");
+    }
+
     public void setChallenged(GamerDTO challenged) {
         this.challenged = challenged;
     }

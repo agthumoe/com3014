@@ -39,6 +39,17 @@ public class GameController {
             // record the gamer's resolution
             game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
             response(game);
+        } else if (Command.UPDATE.equals(command.getCommand())) {
+            Game game = gameService.getGame(command.getStringData("gameID"));
+            GamerDTO oppositePlayer = game.getOtherGamer(user.getId());
+
+            final JSONObject reponse = new JSONObject();
+            reponse.put("gameID", game.getGameID());
+            reponse.put("vx", command.getDoubleData("vx"));
+            reponse.put("vy", command.getDoubleData("vy"));
+            reponse.put("rotation", command.getDoubleData("rotation"));
+            reponse.put("command", Command.UPDATE);
+            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", reponse);
         }
     }
 

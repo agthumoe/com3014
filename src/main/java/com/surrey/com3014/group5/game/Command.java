@@ -16,6 +16,7 @@ public class Command implements Serializable {
     public static final String EXPIRED = "CHALLENGE.TIMEOUT";
     public static final String READY = "GAME.READY";
     public static final String PREP = "GAME.PREP";
+    public static final String UPDATE = "GAME.UPDATE";
 
     private String command;
 
@@ -47,6 +48,10 @@ public class Command implements Serializable {
 
     public int getIntegerData(String key) {
         return this.parsedData.getInt(key);
+    }
+
+    public double getDoubleData(String key) {
+        return this.parsedData.getDouble(key);
     }
 
     @Override
