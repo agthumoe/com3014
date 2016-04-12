@@ -8,8 +8,8 @@ import org.springframework.util.Assert;
  */
 public class GamerDTO extends UserDTO {
     private static final long serialVersionUID = -1223709935605109559L;
-    public static final String CHALLENGER = "GAMER.CHALLENGER";
-    public static final String CHALLENGED = "GAMER.CHALLENGED";
+    public static final String CHALLENGER = "CHALLENGER";
+    public static final String CHALLENGED = "CHALLENGED";
 
     private String role;
     private Resolution resolution = null;
