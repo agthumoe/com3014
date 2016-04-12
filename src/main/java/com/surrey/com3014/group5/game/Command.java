@@ -14,6 +14,7 @@ public class Command implements Serializable {
     public static final String ACCEPT = "CHALLENGE.ACCEPT";
     public static final String DENY = "CHALLENGE.DECLINE";
     public static final String EXPIRED = "CHALLENGE.TIMEOUT";
+    public static final String READY = "GAME.READY";
 
     private String command;
 

@@ -4,6 +4,7 @@ import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
 import com.surrey.com3014.group5.game.Command;
 import com.surrey.com3014.group5.game.GameRequest;
 import com.surrey.com3014.group5.game.GameRequestService;
+import com.surrey.com3014.group5.game.GameService;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.RandomUtils;
 import com.surrey.com3014.group5.services.user.UserService;
@@ -37,6 +38,9 @@ public class GameChallengeController {
 
     @Autowired
     private GameRequestService gameRequestService;
+
+    @Autowired
+    private GameService gameService;
 
     @MessageMapping("/queue/game/challenge")
     public void handleCommand(String message, Principal principal) {
@@ -97,6 +101,8 @@ public class GameChallengeController {
             challengedJSON.put("name", gameRequest.getChallenged().getName());
             response.put("challenged", challengedJSON);
             template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/game/challenge", response.toString());
+            // register new game in the game service
+            this.gameService.registerNewGame(gameRequest);
             LOGGER.debug("accept challenge: " + gameRequest.toString());
         }
     }
