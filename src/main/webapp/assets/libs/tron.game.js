@@ -37,6 +37,11 @@ $(function() {
             _gameInitialised: false,
             
             /**
+             * Indicator of whether this is the challenged or challenger.
+             */
+            _role: null,
+            
+            /**
              * #.init
              * Initialises the TronGameFactory instance.
              * 
@@ -96,13 +101,16 @@ $(function() {
                     
                     this._gameStomp.send(this._gameQueue, {}, JSON.stringify({
                         command: 'GAME.PREP_RECEIVED',
-                        data: {}
+                        data: {
+                            gameID: this._gameID
+                        }
                     }));
                     
+                    this._role = response.role;
                     this.initGame(response.height, response.width, response.role);
                     
                 } else if (response.command === 'GAME.START') {
-                    console.log(response);
+                    this.startGame();
                 }
             },
             
@@ -126,44 +134,55 @@ $(function() {
                         'tron-width': width
                     }));
 
-                    this._game.init('stage', function () {                        
+                    this._game.init('stage', function () {  
+                        
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            Crafty.e('CyanPlayer, ControllablePlayer').attr({
+                            Crafty.e('CyanPlayer, ControllablePlayer, Challenger').attr({
                                 x: 100,
                                 y: 100,
                                 rotation: 90
                             })
                             .setStomp(that._gameStomp, that._gameID);
                             
-                            Crafty.e('OrangePlayer, RemotePlayer').attr({
+                            Crafty.e('OrangePlayer, RemotePlayer, Challenged').attr({
                                 x: width - 100,
-                                y: height - 100
+                                y: height - 100,
+                                rotation: -90
                             })
                             .setStomp(that._gameStomp, that._gameTopic);
                         }
                         
                         // Setup required for the challenged player.
                         if (role === 'CHALLENGED') {
-                            Crafty.e('CyanPlayer, RemotePlayer').attr({
+                            Crafty.e('CyanPlayer, RemotePlayer, Challenger').attr({
                                 x: 100,
-                                y: 100
+                                y: 100,
+                                rotation: -90
                             })
                             .setStomp(that._gameStomp, that._gameTopic);
                         
-                            Crafty.e('OrangePlayer, ControllablePlayer').attr({
+                            Crafty.e('OrangePlayer, ControllablePlayer, Challenged').attr({
                                 x: width - 100,
                                 y: height - 100,
                                 rotation: -90
                             })
                             .setStomp(that._gameStomp, that._gameID);
                         }
+                        
                     });
                 }
             },
             
             startGame: function (startIn) {
+                if (this._role === 'CHALLENGED') {
+                    var pos = Crafty('Challenged').get(0).pos();
+                    Crafty.log(pos);
+                } else {
+                    
+                }
                 
+                this._game.start();
             },
             
             endGame: function () {
@@ -375,12 +394,12 @@ $(function() {
                         setTimeout(enterMainScene, 100, game, callback);
                         return;
                     }
+                    
                     game.enterScene('Main', game);
                     callback();
                     game._initialised = true;
+                    game.lockPlayers();
                 })(this, callback);
-                
-                this.pause();
 
                 return this;
             },
@@ -412,7 +431,7 @@ $(function() {
                         
                         Crafty.log("Starting TronGame attempt " + attempt);
                         // CODE TO START THE GAME.
-                        that.unpause();
+                        that.unlockPlayers();
                     }
                 })(1, this);
                 
@@ -520,6 +539,36 @@ $(function() {
                 for(var i in config) {
                     TronGame._config[i] = config[i];
                 }
+            },
+            
+            /**
+             * #.lockPlayers
+             * Locks all players.
+             * 
+             * @returns this
+             */
+            lockPlayers: function () {
+                Crafty.log('Locking all players');
+                Crafty('Player').each(function (p) {
+                    this.lock();
+                });
+                
+                return this;
+            },
+            
+            /**
+             * #.unlockPlayers
+             * Unlocks all players.
+             * 
+             * @returns this
+             */
+            unlockPlayers: function () {
+                Crafty.log('Unlocking all players');
+                Crafty('Player').each(function (p) {
+                    this.unlock();
+                });
+                
+                return this;
             },
 
             /**
@@ -850,11 +899,21 @@ $(function() {
                          * #.lock
                          * Sets the lock on this object to true.
                          *
-                         * @param bool
                          * @return this
                          */
-                        lock: function (lock) {
-                            this._lock = lock || true;
+                        lock: function () {
+                            this._lock = true;
+                            return this;
+                        },
+                        
+                        /**
+                         * #.unlock
+                         * Unlocks this player object.
+                         * 
+                         * @returns this
+                         */
+                        unlock: function () {
+                            this._lock = false;
                             return this;
                         },
 
@@ -918,6 +977,9 @@ $(function() {
                             return this;
                         }
                     });
+                    
+                    Crafty.c('Challenger', {});
+                    Crafty.c('Challenged', {});
 
                     /**
                      * Defines an enemy player.
@@ -1008,6 +1070,7 @@ $(function() {
                                 if (body.command === 'GAME.UPDATE') {
                                     // Look at the status and determine if we should blow up or not
                                     if (body.status === 'EXPLODED') {
+                                        that.lock();
                                         that.vx = 0;
                                         that.vy = 0;
                                         that.explode();
