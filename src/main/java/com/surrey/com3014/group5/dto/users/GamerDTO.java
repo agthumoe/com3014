@@ -14,7 +14,29 @@ public class GamerDTO extends UserDTO {
     private String role;
     private Resolution resolution = null;
     private GameData gameData = new GameData();
+    private long messageSentTime;
 
+    private long messageReceivedTime;
+
+    public long getMessageSentTime() {
+        return messageSentTime;
+    }
+
+    public void setMessageSentTime(long messageSentTime) {
+        this.messageSentTime = messageSentTime;
+    }
+
+    public long getMessageReceivedTime() {
+        return messageReceivedTime;
+    }
+
+    public void setMessageReceivedTime(long messageReceivedTime) {
+        this.messageReceivedTime = messageReceivedTime;
+    }
+
+    public long getPingRate() {
+        return (this.messageReceivedTime - this.messageSentTime) / 2;
+    }
     public GamerDTO() {
         super();
     }

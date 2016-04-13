@@ -76,14 +76,16 @@ public class GameController {
                     leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
                     LOGGER.debug("game: {}, has finished!", game.getGameID());
                 }
+            } else if (Command.PING.equals(command.getCommand())) {
+                GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
+                currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
+                final JSONObject response = new JSONObject();
+                response.put("gameID", game.getGameID());
+                response.put("command", Command.START);
+                response.put("start_in", currentPlayer.getPingRate());
+                template.convertAndSendToUser(currentPlayer.getUsername(), "/topic/game", response.toString());
             }
         }
-    }
-
-    @MessageExceptionHandler
-    @SendToUser("/topic/error")
-    public String handleException(Throwable exception) {
-        return exception.getMessage();
     }
 
     public void response(Game game) {
@@ -106,7 +108,9 @@ public class GameController {
             responseForChallenged.put("command", Command.PREP);
 
             template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", responseForChallenger.toString());
+            game.getChallenger().setMessageSentTime(System.currentTimeMillis());
             template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", responseForChallenged.toString());
+            game.getChallenged().setMessageSentTime(System.currentTimeMillis());
         }
     }
 }

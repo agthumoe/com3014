@@ -18,6 +18,8 @@ public class Command implements Serializable {
     public static final String PREP = "GAME.PREP";
     public static final String UPDATE = "GAME.UPDATE";
     public static final String FINISHED = "GAME.FINISHED";
+    public static final String PING = "GAME.PREP_RECEIVED";
+    public static final String START = "GAME.START";
 
     private String command;
 
