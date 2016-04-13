@@ -11,10 +11,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,6 +25,7 @@ import java.security.Principal;
 @Controller
 public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
+    private static final long TIME_TO_START = 5000;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -82,7 +81,8 @@ public class GameController {
                 final JSONObject response = new JSONObject();
                 response.put("gameID", game.getGameID());
                 response.put("command", Command.START);
-                response.put("start_in", currentPlayer.getPingRate());
+                // start game in time to start - transmission delay
+                response.put("start_in", TIME_TO_START - currentPlayer.getPingRate());
                 template.convertAndSendToUser(currentPlayer.getUsername(), "/topic/game", response.toString());
             }
         }
