@@ -13,7 +13,7 @@ public class Game implements Serializable {
     private String gameID;
     private GamerDTO challenger;
     private GamerDTO challenged;
-    private int resolutionCount;
+    private boolean isExpired = false;
 
     public String getGameID() {
         return gameID;
@@ -35,7 +35,7 @@ public class Game implements Serializable {
         return challenged;
     }
 
-    public GamerDTO getGamer(long id) {
+    public GamerDTO getCurrentPlayer(long id) {
         if (id == challenger.getId()) {
             return challenger;
         } else if (id == challenged.getId()) {
@@ -45,10 +45,10 @@ public class Game implements Serializable {
         }
     }
 
-    public GamerDTO getOtherGamer(long id) {
-        if (getGamer(id).getRole().equals(GamerDTO.CHALLENGER)) {
+    public GamerDTO getOppositePlayer(long id) {
+        if (getCurrentPlayer(id).getRole().equals(GamerDTO.CHALLENGER)) {
             return challenged;
-        } else if (getGamer(id).getRole().equals(GamerDTO.CHALLENGED)) {
+        } else if (getCurrentPlayer(id).getRole().equals(GamerDTO.CHALLENGED)) {
             return challenger;
         }
         throw new AccessDeniedException("Unauthorised user trying to access the game");
@@ -56,6 +56,14 @@ public class Game implements Serializable {
 
     public void setChallenged(GamerDTO challenged) {
         this.challenged = challenged;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        isExpired = expired;
     }
 
     @Override
@@ -80,11 +88,12 @@ public class Game implements Serializable {
             "gameID='" + gameID + '\'' +
             ", challenger=" + challenger +
             ", challenged=" + challenged +
+            ", isExpired=" + isExpired +
             '}';
     }
 
     public void setGamerResolution(long userID, int height, int width) {
-        GamerDTO gamer = this.getGamer(userID);
+        GamerDTO gamer = this.getCurrentPlayer(userID);
         // update the screen resolution of the client
         Resolution resolution = new Resolution(height, width);
         gamer.setResolution(resolution);

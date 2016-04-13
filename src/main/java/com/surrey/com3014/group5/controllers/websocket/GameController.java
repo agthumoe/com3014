@@ -5,15 +5,19 @@ import com.surrey.com3014.group5.game.Command;
 import com.surrey.com3014.group5.game.Game;
 import com.surrey.com3014.group5.game.GameService;
 import com.surrey.com3014.group5.game.Resolution;
+import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import com.surrey.com3014.group5.models.impl.User;
 
 import java.security.Principal;
 
@@ -30,29 +34,56 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
+    @Autowired
+    private LeaderboardService leaderboardService;
+
     @MessageMapping("/queue/game")
-    public void request(String message, Principal principal) {
+    public void request(String message, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
-        if (Command.READY.equals(command.getCommand())) {
-            Game game = gameService.getGame(command.getStringData("gameID"));
-            // record the gamer's resolution
-            game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
-            response(game);
-        } else if (Command.UPDATE.equals(command.getCommand())) {
-            Game game = gameService.getGame(command.getStringData("gameID"));
-            GamerDTO oppositePlayer = game.getOtherGamer(user.getId());
-
-            final JSONObject response = new JSONObject();
-            response.put("gameID", game.getGameID());
-            response.put("vx", command.getDoubleData("vx"));
-            response.put("vy", command.getDoubleData("vy"));
-            response.put("magnitude", command.getIntegerData("magnitude"));
-            response.put("rotation", command.getDoubleData("rotation"));
-            response.put("status", command.getStringData("status"));
-            response.put("command", Command.UPDATE);
-            template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", response.toString());
+        final Game game = gameService.getGame(command.getStringData("gameID"));
+        if (game.getGameID() == null) {
+            stompHeaderAccessor.setMessage("You are not allow to subscribe this socket");
+            template.convertAndSendToUser(user.getUsername(),"/topic/game", "{\"status\": \"error\"}", stompHeaderAccessor.getMessageHeaders());
+        } else if (game.isExpired()) {
+            stompHeaderAccessor.setMessage("Game is expired");
+            template.convertAndSendToUser(user.getUsername(),"/topic/game", "{\"status\": \"error\"}", stompHeaderAccessor.getMessageHeaders());
+        } else {
+            if (Command.READY.equals(command.getCommand())) {
+                if (game.getGameID() == null) {
+                    stompHeaderAccessor.setMessage("You are not allow to subscribe this socket");
+                } else if (game.isExpired()) {
+                    stompHeaderAccessor.setMessage("Game is expired");
+                } else {
+                    game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
+                    response(game);
+                }
+            } else if (Command.UPDATE.equals(command.getCommand())) {
+                GamerDTO oppositePlayer = game.getOppositePlayer(user.getId());
+                final JSONObject response = new JSONObject();
+                response.put("gameID", game.getGameID());
+                response.put("vx", command.getDoubleData("vx"));
+                response.put("vy", command.getDoubleData("vy"));
+                response.put("magnitude", command.getIntegerData("magnitude"));
+                response.put("rotation", command.getDoubleData("rotation"));
+                String status = command.getStringData("status");
+                response.put("status", status);
+                response.put("command", Command.UPDATE);
+                template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", response.toString());
+                if (status != null && status.equals("EXPLODED")) {
+                    game.setExpired(true);
+                    leaderboardService.setLoser(user.getId());
+                    leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
+                    LOGGER.debug("game: {}, has finished!", game.getGameID());
+                }
+            }
         }
+    }
+
+    @MessageExceptionHandler
+    @SendToUser("/topic/error")
+    public String handleException(Throwable exception) {
+        return exception.getMessage();
     }
 
     public void response(Game game) {

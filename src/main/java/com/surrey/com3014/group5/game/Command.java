@@ -17,6 +17,7 @@ public class Command implements Serializable {
     public static final String READY = "GAME.READY";
     public static final String PREP = "GAME.PREP";
     public static final String UPDATE = "GAME.UPDATE";
+    public static final String FINISHED = "GAME.FINISHED";
 
     private String command;
 
@@ -27,8 +28,6 @@ public class Command implements Serializable {
         this.parsedData = o.getJSONObject("data");
         this.command = o.getString("command");
     }
-
-
 
     public String getCommand() {
         return command;

@@ -13,8 +13,11 @@ import java.util.Optional;
 public interface LeaderboardService extends MutableService<Leaderboard>{
 
 
-    Optional<Leaderboard> findByUser(User user);
+    Optional<Leaderboard> findByUserID(long userID);
 
     List<Leaderboard> findAllByOrderByRatioDescUserAsc();
 
+    void setWinner(long userID);
+
+    void setLoser(long userID);
 }
