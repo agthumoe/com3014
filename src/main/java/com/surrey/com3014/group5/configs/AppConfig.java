@@ -18,10 +18,12 @@ import java.time.format.DateTimeFormatter;
 public class AppConfig {
 
     /**
-     * Initialise {@link org.springframework.security.core.session.SessionRegistry} bean which contains session
-     * information.
+     * Initialise
+     * {@link org.springframework.security.core.session.SessionRegistry} bean
+     * which contains session information.
      *
-     * @return {@link org.springframework.security.core.session.SessionRegistry} containing SessionInformation
+     * @return {@link org.springframework.security.core.session.SessionRegistry}
+     * containing SessionInformation
      * @see SessionRegistry
      */
     @Bean
@@ -30,11 +32,15 @@ public class AppConfig {
     }
 
     /**
-     * Initialise a {@link org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder} as a
-     * {@link org.springframework.security.crypto.password.PasswordEncoder} bean.
+     * Initialise a
+     * {@link org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder}
+     * as a {@link org.springframework.security.crypto.password.PasswordEncoder}
+     * bean.
      *
-     * @return {@link org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder} as a
-     * {@link org.springframework.security.crypto.password.PasswordEncoder} to encrypt password.
+     * @return {@link org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder}
+     * as a
+     * {@link org.springframework.security.crypto.password.PasswordEncoder}
+     * to encrypt password.
      * @see PasswordEncoder
      * @see BCryptPasswordEncoder
      */
@@ -44,7 +50,8 @@ public class AppConfig {
     }
 
     /**
-     * Initialise a {@link java.time.format.DateTimeFormatter} bean to format date time.
+     * Initialise a {@link java.time.format.DateTimeFormatter} bean to format
+     * date time.
      *
      * @return {@link java.time.format.DateTimeFormatter} to format date time.
      */

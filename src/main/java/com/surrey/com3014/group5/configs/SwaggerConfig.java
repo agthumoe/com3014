@@ -19,15 +19,27 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static springfox.documentation.builders.PathSelectors.regex;
+
 /**
+ * Configuration for swagger, API documentation tools
+ *
  * @author Aung Thu Moe
  */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+    /**
+     * Autowired environment variable
+     */
     @Autowired
     Environment env;
 
+    /**
+     * This bean configure the API info
+     *
+     * @return {@link springfox.documentation.spring.web.plugins.Docket}
+     * containing API info.
+     */
     @Bean
     public Docket api() {
         ApiInfo apiInfo = new ApiInfo(
@@ -37,13 +49,27 @@ public class SwaggerConfig {
             null,
             null,
             null,
-            null);
+            null
+        );
         List<ResponseMessage> responseMessages = new ArrayList<>();
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("Internal Server Error").responseModel(new ModelRef("ErrorDTO")).build());
-        responseMessages.add(new ResponseMessageBuilder().code(401).message("Unauthorized").responseModel(new ModelRef("ErrorDTO")).build());
+
+        ResponseMessage internalServerError = new ResponseMessageBuilder()
+            .code(500)
+            .message("Internal Server Error")
+            .responseModel(new ModelRef("ErrorDTO"))
+            .build();
+
+        ResponseMessage unauthorizedError = new ResponseMessageBuilder()
+            .code(401)
+            .message("Unauthorized")
+            .responseModel(new ModelRef("ErrorDTO"))
+            .build();
+
+        responseMessages.add(internalServerError);
+        responseMessages.add(unauthorizedError);
         return new Docket(DocumentationType.SWAGGER_2)
             .useDefaultResponseMessages(false)
-            .globalResponseMessage(RequestMethod.GET, newArrayList(new ResponseMessageBuilder().code(500).message("Internal Server Error").responseModel(new ModelRef("ErrorDTO")).build()))
+            .globalResponseMessage(RequestMethod.GET, newArrayList(internalServerError))
             .globalResponseMessage(RequestMethod.POST, responseMessages)
             .globalResponseMessage(RequestMethod.DELETE, responseMessages)
             .globalResponseMessage(RequestMethod.PUT, responseMessages)

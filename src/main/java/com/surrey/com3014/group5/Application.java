@@ -20,21 +20,28 @@ import java.net.UnknownHostException;
  */
 @ComponentScan
 @EnableAutoConfiguration
-@PropertySource(value = {"classpath:META-INF/application.properties", "classpath:META-INF/database.properties", "classpath:META-INF/swagger.properties"})
+@PropertySource(value = { "classpath:META-INF/application.properties", "classpath:META-INF/database.properties",
+		"classpath:META-INF/swagger.properties" })
 public class Application extends SpringBootServletInitializer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class.getName());
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class);
-    }
+	/**
+	 * Configure this application as a spring-boot application.
+	 */
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(Application.class);
+	}
 
-    public static void main(String[] args) throws UnknownHostException {
-        LOGGER.info("starting tron application");
-        Environment env = SpringApplication.run(Application.class, args).getEnvironment();
+	/**
+	 * Entry point of the application.
+	 */
+	public static void main(String[] args) throws UnknownHostException {
+		LOGGER.info("starting tron application");
+		Environment env = SpringApplication.run(Application.class, args).getEnvironment();
 
-        LOGGER.info("Access URLs:\t\thttp://127.0.0.1:8080");
-        LOGGER.info("Active Profiles:\t\t{}", StringUtils.arrayToDelimitedString(env.getActiveProfiles(), ", "));
-    }
+		LOGGER.info("Access URLs:\t\thttp://127.0.0.1:8080");
+		LOGGER.info("Active Profiles:\t\t{}", StringUtils.arrayToDelimitedString(env.getActiveProfiles(), ", "));
+	}
 
 }

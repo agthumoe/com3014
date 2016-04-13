@@ -21,46 +21,63 @@ import java.util.Map;
 
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 
+/**
+ * Configuration for websocket.
+ *
+ * @author Aung Thu Moe
+ * @author Spyros Balkonis
+ */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
+    /**
+     * IP Address attribute label to be used.
+     */
     public static final String IP_ADDRESS = "IP_ADDRESS";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/user");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/queue/chat", "/queue/activeUsers", "/queue/game", "/queue/challenge")
             .setHandshakeHandler(new DefaultHandshakeHandler() {
                 @Override
-                protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+                protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
+                                                  Map<String, Object> attributes) {
                     Principal principal = request.getPrincipal();
                     if (principal == null) {
                         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                         authorities.add(new SimpleGrantedAuthority(ANONYMOUS));
-                        principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous", authorities);
+                        principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous",
+                            authorities);
                     }
                     return principal;
                 }
-            })
-            .withSockJS()
-            .setInterceptors(new HandshakeInterceptor() {
-                @Override
-                public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-                    if (request instanceof ServletServerHttpRequest) {
-                        ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-                        attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
-                    }
-                    return true;
+            }).withSockJS().setInterceptors(new HandshakeInterceptor() {
+            @Override
+            public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                           WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+                if (request instanceof ServletServerHttpRequest) {
+                    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+                    attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
                 }
+                return true;
+            }
 
-                @Override
-                public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-                }
-            });
+            @Override
+            public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                       WebSocketHandler wsHandler, Exception exception) {
+            }
+        });
     }
 }
