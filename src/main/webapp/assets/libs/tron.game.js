@@ -1,15 +1,39 @@
 $(function() {
     (function (window) {
         var TronPreGame = {
+            /**
+             * Defines the URL to send game updates to.
+             */
             _gameQueue: '/queue/game',
+            
+            /**
+             * Defines the subscription URL specific to the logged in user. 
+             */
             _gameTopic: '/user/{userID}/topic/game',
+            
+            /**
+             * A reference to the game socket.
+             */
             _gameSocket: null,
+            
+            /**
+             * A reference to the STOMP interface being used.
+             */
             _gameStomp: null,
             
+            /**
+             * The unique GAME ID
+             */
             _gameID: null,
+            
+            /**
+             * A reference to the game in progress.
+             */
             _game: null,
-            _gameHeight: 0,
-            _gameWidth: 0,
+            
+            /**
+             * Quick reference to determine if the game has been initialised.
+             */
             _gameInitialised: false,
             
             /**
@@ -69,11 +93,17 @@ $(function() {
                 response = JSON.parse(response.body);
                 
                 if (response.command === "GAME.PREP") {
-                    this._gameHeight = response.height;
-                    this._gameWidth = response.width;
-                    this._playerRole = response.role;
-                    this.initGame(response.height);
-                } 
+                    
+                    this._gameStomp.send(this._gameQueue, {}, JSON.stringify({
+                        command: 'GAME.PREP_RECEIVED',
+                        data: {}
+                    }));
+                    
+                    this.initGame(response.height, response.width, response.role);
+                    
+                } else if (response.command === 'GAME.START') {
+                    console.log(response);
+                }
             },
             
             /**
@@ -82,7 +112,7 @@ $(function() {
              * 
              * @returns void
              */
-            initGame: function () {
+            initGame: function (height, width, role) {
                 var that = this;
                 
                 if (!this._gameInitialised) {
@@ -92,14 +122,13 @@ $(function() {
                     
                     $('body').append($('<div />').attr({
                         id: 'stage',
-                        'tron-height': that._gameHeight,
-                        'tron-width': that._gameWidth
+                        'tron-height': height,
+                        'tron-width': width
                     }));
 
-                    this._game.init('stage');
-                    TronGame.startWhenLoaded(this._game, function () {
+                    this._game.init('stage', function () {                        
                         // Setup required for the challenger player.
-                        if (that._playerRole === 'CHALLENGER') {
+                        if (role === 'CHALLENGER') {
                             Crafty.e('CyanPlayer, ControllablePlayer').attr({
                                 x: 100,
                                 y: 100,
@@ -108,14 +137,14 @@ $(function() {
                             .setStomp(that._gameStomp, that._gameID);
                             
                             Crafty.e('OrangePlayer, RemotePlayer').attr({
-                                x: that._gameWidth - 100,
-                                y: that._gameHeight - 100
+                                x: width - 100,
+                                y: height - 100
                             })
                             .setStomp(that._gameStomp, that._gameTopic);
                         }
                         
                         // Setup required for the challenged player.
-                        if (that._playerRole === 'CHALLENGED') {
+                        if (role === 'CHALLENGED') {
                             Crafty.e('CyanPlayer, RemotePlayer').attr({
                                 x: 100,
                                 y: 100
@@ -123,8 +152,8 @@ $(function() {
                             .setStomp(that._gameStomp, that._gameTopic);
                         
                             Crafty.e('OrangePlayer, ControllablePlayer').attr({
-                                x: that._gameWidth - 100,
-                                y: that._gameHeight - 100,
+                                x: width - 100,
+                                y: height - 100,
                                 rotation: -90
                             })
                             .setStomp(that._gameStomp, that._gameID);
@@ -134,6 +163,10 @@ $(function() {
             },
             
             startGame: function (startIn) {
+                
+            },
+            
+            endGame: function () {
                 
             },
             
@@ -222,6 +255,11 @@ $(function() {
              * Flag to determine if components have been defined or not.
              */
             _componentsDefined: false,
+            
+            /**
+             * Dertermines whether the game has been intiialised.
+             */
+            _initialised: false,
 
             /**
              * Determines if the game is paused or not.
@@ -322,7 +360,7 @@ $(function() {
              *
              * @returns this
              */
-            init: function(canvasID) {
+            init: function(canvasID, callback) {
                 Crafty.logginEnabled = TronGame._config.logging;
 
                 Crafty.log("Initialising TronGame");
@@ -330,6 +368,19 @@ $(function() {
                 this._setupCanvas(canvasID);
                 this._defineComponents();
                 this._loadAssets();
+                
+                // Wait for the game to have all assets loaded before entering the main scene.
+                (function enterMainScene(game, callback) {
+                    if (!TronGame._assetsLoaded) {
+                        setTimeout(enterMainScene, 100, game, callback);
+                        return;
+                    }
+                    game.enterScene('Main', game);
+                    callback();
+                    game._initialised = true;
+                })(this, callback);
+                
+                this.pause();
 
                 return this;
             },
@@ -344,30 +395,28 @@ $(function() {
              *
              * @return this
              */
-            start: function (callback) {
-                Crafty.log('Starting TronGame');
-
-                this.enterScene('Main', this);
+            start: function () {
                 
-                callback(this);
-
+                var that = this;
+                
+                // Wait for the game to have all assets loaded before entering the main scene.
+                (function startGame(attempt, game) {
+                    if (attempt > 5) {
+                        Crafty.log("Failed to start game");
+                        return;
+                    } else if (!game._initialised) {
+                        Crafty.log("Failed to start game on attempt " + attempt);
+                        setTimeout(startGame, 500, ++attempt, game);
+                        return;
+                    } else {
+                        
+                        Crafty.log("Starting TronGame attempt " + attempt);
+                        // CODE TO START THE GAME.
+                        that.unpause();
+                    }
+                })(1, this);
+                
                 return this;
-            },
-
-            /**
-             * Wrapper function to start a game of TronGame safely ensuring all assets have been loaded.
-             *
-             * @param TronGame game
-             * @returns void
-             */
-            startWhenLoaded: function (game, callback) {
-                if (!TronGame._assetsLoaded) {
-                    Crafty.log('Still waiting for assets to load...');
-                    setTimeout(TronGame.startWhenLoaded, 500, game, callback);
-                    return;
-                }
-
-                game.start(callback);
             },
 
             /**
@@ -485,24 +534,16 @@ $(function() {
                 this._canvas = document.getElementById(canvasID);
                 var canvas = $(this._canvas);
                 
+                // Get all the heights and widths to position the canvas in the centre of the 
+                // screen
                 var height = canvas.attr('tron-height') * 1;
                 var width = canvas.attr('tron-width') * 1;
                 var windowHeight = $(window).height();
                 var windowWidth = $(window).width();
-                var adjustment = 20;
                 
                 // Calculate required spacing for the canvas from the edges
-                if (height + adjustment === windowHeight) {
-                    marginTop = 0;
-                } else {
-                    marginTop = (windowHeight / 2) - (height / 2);
-                }
-                
-                if (width + adjustment === windowWidth) {
-                    marginLeft = 0;
-                } else {
-                    marginLeft = (windowWidth / 2) - (width / 2);
-                }
+                marginTop = (windowHeight / 2) - (height / 2);
+                marginLeft = (windowWidth / 2) - (width / 2) - 10;
                 
                 if (this._canvas
                     && typeof this._canvas !== "undefined"
@@ -614,7 +655,6 @@ $(function() {
                             HitOn: function (hit) {
                                 var o = hit[0].obj;
                                 if (o.has('Player') && this._active) {
-                                    
                                     o.explode();
                                 }
                             }
@@ -629,7 +669,6 @@ $(function() {
                          */
                         setPlayer: function (player) {
                             this._player = player;
-
                             return this;
                         },
 
@@ -1167,9 +1206,14 @@ $(function() {
                             return this;
                         },
                         
+                        /**
+                         * #.sendUpdates
+                         * Sends an update to the server about position, rotation, etc.
+                         * 
+                         * @returns void
+                         */
                         sendUpdate: function () {
                             // Send information to server about position and rotation.
-                            console.log(this._status);
                             this._stomp.send(TronPreGame._gameQueue, {}, 
                                 JSON.stringify({
                                     'command': 'GAME.UPDATE',
@@ -1447,6 +1491,8 @@ $(function() {
 
         TronGame.addScene('Main', function () {
             Crafty.background('rgb(40, 40, 40) url("/assets/images/game/bg.png") center no-repeat');
+
+            //Crafty.audio.play('Background', -1, 0.05);
 
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
