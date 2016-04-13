@@ -19,7 +19,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 /**
- * This class handles exception and constracts a proper errors message.
+ * This class handles exception and constructs a proper errors message for api controllers.
  *
  * @author Aung Thu Moe
  */
@@ -31,7 +31,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      * This method handles {@link DataIntegrityViolationException}
      *
      * @param ex DataIntegrityViolationException
-     * @return errors message in json format
+     * @return errors message in json format with http status (400)
      */
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -47,7 +47,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      * This method handles {@link ConstraintViolationException}
      *
      * @param ex ConstraintViolationException
-     * @return errors message in json format
+     * @return errors message in json format with http status (400)
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -60,11 +60,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return error;
     }
 
-//    @ExceptionHandler(value = NotFoundException.class)
-//    protected ResponseEntity<ErrorDTO> handleNotFoundException(NotFoundException ex) {
-//        return new ResponseEntity<ErrorDTO>(new ErrorDTO(ex.getHttpStatus(), ex.getMessage()), ex.getHttpStatus());
-//    }
 
+    /**
+     * This method handles any exception.
+     *
+     * @param request HttpServletRequest information.
+     * @param ex      exception to be handled
+     * @return error message in json format
+     */
     @ExceptionHandler(Exception.class)
     @ResponseBody
     protected ResponseEntity<?> handleAnyException(HttpServletRequest request, Throwable ex) {
@@ -72,12 +75,24 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorDTO(status, ex.getMessage()), status);
     }
 
+    /**
+     * This method handles {@link AuthenticationException}
+     *
+     * @param ex {@link AuthenticationException} to be handled
+     * @return error message in json format with Http status (401)
+     */
     @ExceptionHandler(AuthenticationException.class)
     @ResponseBody
     protected ResponseEntity<?> handleAuthenticationException(AuthenticationException ex) {
         return new ResponseEntity<>(new ErrorDTO(HttpStatus.UNAUTHORIZED, ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * This method get the http status out of {@link HttpServletRequest}
+     *
+     * @param request {@link HttpServletRequest}
+     * @return {@link HttpStatus} of the provided request
+     */
     private HttpStatus getStatus(HttpServletRequest request) {
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
         if (statusCode == null) {

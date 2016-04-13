@@ -5,8 +5,6 @@ import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +24,6 @@ import java.util.Optional;
  */
 @Controller
 public class AdminController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     private UserService userService;

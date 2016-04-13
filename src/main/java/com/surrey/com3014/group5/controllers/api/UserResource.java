@@ -7,8 +7,6 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +30,6 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 @Api(value = "User", description = "Operation about user", consumes = "application/json")
 public class UserResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
     @Autowired
     private UserService userService;
 

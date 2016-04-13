@@ -12,13 +12,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * This class handles exception and return jsp error page.
+ *
  * @author Aung Thu Moe
  */
 @ControllerAdvice(basePackages = {"com.surrey.com3014.group5.controllers"})
 public class JSPExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(JSPExceptionHandler.class);
-    // Convert a predefined exception to an HTTP Status code
-    @ResponseStatus(value= HttpStatus.CONFLICT, reason="Data integrity violation")  // 409
+
+    /**
+     * This method handles {@link DataIntegrityViolationException} and returns the error
+     * page with http status (409)
+     *
+     * @param req       {@link HttpServletRequest}
+     * @param exception {@link DataIntegrityViolationException} to be handled
+     * @param model     Model attributes to be set
+     * @return error page with http status 409
+     */
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Data integrity violation")  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String conflict(HttpServletRequest req, DataIntegrityViolationException exception, Model model) {
         LOGGER.error("Request: " + req.getRequestURL() + " raised " + exception);
@@ -27,6 +38,14 @@ public class JSPExceptionHandler {
         return "error";
     }
 
+    /**
+     * This method handles any exception and return the error page with http status (500)
+     *
+     * @param req       {@link HttpServletRequest}
+     * @param exception any exception to be handled
+     * @param model     Model attributes to be set
+     * @return error page with http status 500
+     */
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR) // 500
     @ExceptionHandler(Exception.class)
     public String handleError(HttpServletRequest req, Exception exception, Model model) {
