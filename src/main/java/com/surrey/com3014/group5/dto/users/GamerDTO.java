@@ -7,16 +7,27 @@ import org.springframework.util.Assert;
  * @author Aung Thu Moe
  */
 public class GamerDTO extends UserDTO {
-    private static final long serialVersionUID = -1223709935605109559L;
     public static final String CHALLENGER = "CHALLENGER";
     public static final String CHALLENGED = "CHALLENGED";
-
+    private static final long serialVersionUID = -1223709935605109559L;
     private String role;
     private Resolution resolution = null;
     private GameData gameData = new GameData();
     private long messageSentTime;
 
     private long messageReceivedTime;
+
+    public GamerDTO() {
+        super();
+    }
+
+    public GamerDTO(UserDTO user, String role) {
+        setId(user.getId());
+        setUsername(user.getUsername());
+        setEmail(user.getEmail());
+        setName(user.getName());
+        this.role = role;
+    }
 
     public long getMessageSentTime() {
         return messageSentTime;
@@ -36,17 +47,6 @@ public class GamerDTO extends UserDTO {
 
     public long getPingRate() {
         return (this.messageReceivedTime - this.messageSentTime) / 2;
-    }
-    public GamerDTO() {
-        super();
-    }
-
-    public GamerDTO(UserDTO user, String role) {
-        setId(user.getId());
-        setUsername(user.getUsername());
-        setEmail(user.getEmail());
-        setName(user.getName());
-        this.role = role;
     }
 
     public Resolution getResolution() {
