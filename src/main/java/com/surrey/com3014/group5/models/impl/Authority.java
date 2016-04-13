@@ -16,20 +16,43 @@ public class Authority extends Model implements GrantedAuthority {
 
     private static final long serialVersionUID = -8735115732090836845L;
 
+    /**
+     * Authority type.
+     */
+    @Column
+    private String type;
+
+    /**
+     * Default constructor initialise this class.
+     */
     public Authority() {
         super();
     }
 
-    @Column
-    private String type;
-
+    /**
+     * Set authority type.
+     *
+     * @param type of authority.
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Get authority type.
+     *
+     * @return type of authority.
+     */
     @Override
-    public String getAuthority(){
+    public String getAuthority() {
         return type;
     }
 
+    @Override
+    public String toString() {
+        return "Authority{" +
+            "id='" + getId() + '\'' +
+            "type='" + type + '\'' +
+            '}';
+    }
 }
