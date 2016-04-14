@@ -3,15 +3,18 @@ package com.surrey.com3014.group5.dto.users;
 import com.surrey.com3014.group5.game.Resolution;
 import org.springframework.util.Assert;
 
+import java.util.Optional;
+
 /**
  * @author Aung Thu Moe
  */
 public class GamerDTO extends UserDTO {
+//    private static final Logger LOGGEr = LoggerFactory.getLogger(GamerDTO.class);
     public static final String CHALLENGER = "CHALLENGER";
     public static final String CHALLENGED = "CHALLENGED";
     private static final long serialVersionUID = -1223709935605109559L;
     private String role;
-    private Resolution resolution = null;
+    private Optional<Resolution> resolution = Optional.empty();
     private boolean ready = false;
     private GameData gameData = new GameData();
     private long messageSentTime;
@@ -51,13 +54,17 @@ public class GamerDTO extends UserDTO {
         return (this.messageReceivedTime - this.messageSentTime) / 2;
     }
 
-    public Resolution getResolution() {
+    public Optional<Resolution> getResolution() {
         return resolution;
     }
 
     public void setResolution(Resolution resolution) {
+//        LOGGEr.debug("UserID: {} set resolution", getId());
         Assert.notNull(resolution);
-        this.resolution = resolution;
+        if (this.resolution.isPresent()) {
+            throw new RuntimeException("resolution is already set");
+        }
+        this.resolution = Optional.of(resolution);
     }
 
     public int getX() {
@@ -108,7 +115,7 @@ public class GamerDTO extends UserDTO {
             ", email=" + getEmail() +
             ", name=" + getName() +
             ", role=" + role +
-            ", resolution=" + resolution +
+            ", resolution=" + resolution.get() +
             ", gameData=" + gameData +
             ", ready=" + ready +
             '}';

@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * @author Aung Thu Moe
@@ -40,17 +41,24 @@ public class GameController {
     public void request(String message, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
-        final Game game = gameService.getGame(command.getStringData("gameID"));
-        if (this.validate(user, game, command)) {
-            if (Command.Game.LOADED.equals(command.getCommand())) {
-                loadedAndPing(user, game, command);
-            } else if (Command.Game.PONG.equals(command.getCommand())) {
-                pongAndPrepare(user, game, command);
-            } else if (Command.Game.READY.equals(command.getCommand())) {
-                readyAndStart(user, game, command);
-            } else if (Command.Game.UPDATE.equals(command.getCommand())) {
-                update(user, game, command);
-            } // any other commands will be ignore
+        try {
+            final Game game = gameService.getGame(command.getStringData("gameID"));
+            if (this.validate(user, game, command)) {
+                if (Command.Game.LOADED.equals(command.getCommand())) {
+                    LOGGER.debug("user: {}, Server receive <- GAME.LOADED", user.getUsername());
+                    loadedAndPing(user, game, command);
+                } else if (Command.Game.PONG.equals(command.getCommand())) {
+                    LOGGER.debug("user: {}, Server receive <- GAME.PONG", user.getUsername());
+                    pongAndPrepare(user, game);
+                } else if (Command.Game.READY.equals(command.getCommand())) {
+                    LOGGER.debug("user: {}, Server receive <- GAME.READY", user.getUsername());
+                    readyAndStart(user, game);
+                } else if (Command.Game.UPDATE.equals(command.getCommand())) {
+                    update(user, game, command);
+                } // any other commands will be ignore
+            }
+        } catch (Exception e) {
+            LOGGER.error("user: {}, error: {}, request: {}", user.getUsername(), e.getMessage(), message);
         }
     }
 
@@ -71,7 +79,7 @@ public class GameController {
 
     private void loadedAndPing(final User user, final Game game, final Command command) {
         // record gamer's resolutions
-        LOGGER.debug("User: {} -> loaded and ping", user.getUsername());
+        LOGGER.debug("User: {}, Server response -> GAME.PING", user.getUsername());
         game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
         final JSONObject response = new JSONObject();
         response.put("gameID", game.getGameID());
@@ -83,28 +91,29 @@ public class GameController {
         game.getChallenged().setMessageSentTime(System.currentTimeMillis());
     }
 
-    private void pongAndPrepare(User user, Game game, Command command) {
-        LOGGER.debug("User: {} -> pong and prepare", user.getUsername());
+    private void pongAndPrepare(User user, Game game) {
+        LOGGER.debug("User: {}, Server response -> GAME.PREPARE", user.getUsername());
         // calculate the transmission delay
         game.getChallenger().setMessageReceivedTime(System.currentTimeMillis());
         game.getChallenged().setMessageReceivedTime(System.currentTimeMillis());
         // send prepare message with recommanded resolutions for both players.
-        final Resolution resolution = game.getResolution();
-        if (resolution != null) {
-            resolution.setHeight(resolution.getHeight() - Resolution.OFFSET);
-            resolution.setWidth(resolution.getWidth() - Resolution.OFFSET);
+        final Optional<Resolution> resolution = game.getResolution();
+        if (resolution.isPresent()) {
+            Resolution recommened = resolution.get();
+            recommened.setHeight(recommened.getHeight() - Resolution.OFFSET);
+            recommened.setWidth(recommened.getWidth() - Resolution.OFFSET);
             final JSONObject responseForChallenger = new JSONObject();
             responseForChallenger.put("gameID", game.getGameID());
             responseForChallenger.put("role", game.getChallenger().getRole());
-            responseForChallenger.put("height", resolution.getHeight());
-            responseForChallenger.put("width", resolution.getWidth());
+            responseForChallenger.put("height", recommened.getHeight());
+            responseForChallenger.put("width", recommened.getWidth());
             responseForChallenger.put("command", Command.Game.PREP);
 
             JSONObject responseForChallenged = new JSONObject();
             responseForChallenged.put("gameID", game.getGameID());
             responseForChallenged.put("role", game.getChallenged().getRole());
-            responseForChallenged.put("height", resolution.getHeight());
-            responseForChallenged.put("width", resolution.getWidth());
+            responseForChallenged.put("height", recommened.getHeight());
+            responseForChallenged.put("width", recommened.getWidth());
             responseForChallenged.put("command", Command.Game.PREP);
 
             template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, responseForChallenger.toString());
@@ -112,11 +121,9 @@ public class GameController {
             template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, responseForChallenged.toString());
             game.getChallenged().setMessageSentTime(System.currentTimeMillis());
         }
-
     }
 
-    private void readyAndStart(User user, Game game, Command command) {
-        LOGGER.debug("User: {} -> ready", user.getUsername());
+    private void readyAndStart(User user, Game game) {
         GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         currentPlayer.setReady(true);
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
@@ -124,6 +131,7 @@ public class GameController {
         response.put("gameID", game.getGameID());
         // if game is already started, response with started message
         if (game.isStarted()) {
+            LOGGER.debug("User: {}, Server response -> GAME.STARTED", user.getUsername());
             response.put("command", Command.Game.STARTED);
             template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
         } else if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
@@ -132,9 +140,9 @@ public class GameController {
             // start game in time to start - transmission delay
             response.put("start_in", Game.TIME_TO_START - currentPlayer.getPingRate());
             template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, response.toString());
-            LOGGER.debug("Challenger: {} -> start", game.getChallenger().getUsername());
+            LOGGER.debug("Challenger: {}, Server response -> GAME.START", game.getChallenger().getUsername());
             template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
-            LOGGER.debug("Challenged: {} -> start", game.getChallenged().getUsername());
+            LOGGER.debug("Challenged: {}, Server response -> GAME.START", game.getChallenged().getUsername());
             game.setStarted(true);
         }
     }

@@ -4,11 +4,13 @@ import com.surrey.com3014.group5.dto.users.GamerDTO;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author Aung Thu Moe
  */
 public class Game implements Serializable {
+//    private static final Logger LOGGER = LoggerFactory.getLogger(Game.class);
     private static final long serialVersionUID = -5340436566899111089L;
     public static final int TIME_TO_START = 5000;
     private String gameID;
@@ -102,15 +104,15 @@ public class Game implements Serializable {
         gamer.setResolution(resolution);
     }
 
-    public Resolution getResolution() {
-        Resolution challengerResolution = this.getChallenger().getResolution();
-        Resolution challengedResolution = this.getChallenged().getResolution();
-        if (challengerResolution == null || challengedResolution == null) {
-            return null;
+    public Optional<Resolution> getResolution() {
+        Optional<Resolution> challengerResolution = this.getChallenger().getResolution();
+        Optional<Resolution> challengedResolution = this.getChallenged().getResolution();
+        if (challengerResolution.isPresent() && challengedResolution.isPresent()) {
+            int bestHeight = challengerResolution.get().getHeight() < challengedResolution.get().getHeight() ? challengerResolution.get().getHeight() : challengedResolution.get().getHeight();
+            int bestWidth = challengerResolution.get().getWidth() < challengedResolution.get().getWidth() ? challengerResolution.get().getWidth() : challengedResolution.get().getWidth();
+            return Optional.of(new Resolution(bestHeight, bestWidth));
         }
-        int bestHeight = challengerResolution.getHeight() < challengedResolution.getHeight() ? challengerResolution.getHeight() : challengedResolution.getHeight();
-        int bestWidth = challengerResolution.getWidth() < challengedResolution.getWidth() ? challengerResolution.getWidth() : challengedResolution.getWidth();
-        return new Resolution(bestHeight, bestWidth);
+        return Optional.empty();
     }
 
     public boolean isStarted() {
