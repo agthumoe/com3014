@@ -68,6 +68,10 @@ public class Command implements Serializable {
         return this.parsedData.getDouble(key);
     }
 
+    public JSONObject getData() {
+        return this.parsedData;
+    }
+
     @Override
     public String toString() {
         return "Command{" +
