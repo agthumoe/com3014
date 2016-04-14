@@ -61,24 +61,7 @@ $(function() {
             init: function () {
                 var that = this;
                 
-                this._gameSocket = new SockJS(this._gameQueue);
-                this._gameStomp = Stomp.over(this._gameSocket);
                 
-                Crafty.log(this._gameStomp);
-                
-                // Change the debug function of stomp to filter out any game updates.
-                this._gameStomp.debug = function (s) {
-                    var um = Stomp.Frame.unmarshall(s);
-                    if (um.frames.length > 0 && um.frames[0].body !== "") {
-                        var unparsed = JSON.parse(um.frames[0].body);
-                        
-                        if (!String(unparsed.command).match("GAME.UPDATE")) {
-                            Crafty.log(s);
-                        }
-                    } else {
-                        Crafty.log(s);
-                    }
-                }
                 
                 // Get the game ID from the URL and replace the subscription URL userID with 
                 // the logged in users username.
@@ -114,6 +97,7 @@ $(function() {
              * @returns void
              */
             handle: function (response) {
+                
                 // Go through each possible command and see if we want to handle it.
                 if (response.command === 'GAME.PING') {
                     
@@ -146,7 +130,7 @@ $(function() {
                     });
                     
                 } else if (response.command === 'GAME.START') {
-                    
+                    Crafty.log('GAME.START');
                     this.startGame(response.start_in);
                     
                 }
@@ -247,19 +231,36 @@ $(function() {
              * #._onAssetsLoaded
              * Called when the assets have been loaded by Crafty.
              * 
-             * @returns return this;
+             * @returns void
              */
             _onAssetsLoaded: function () {
                 Crafty.log("Assets loaded: now trying to connect the web socket");
+                
+                this._gameSocket = new SockJS(this._gameQueue);
+                this._gameStomp = Stomp.over(this._gameSocket);
+                
+                // Change the debug function of stomp to filter out any game updates.
+                this._gameStomp.debug = function (s) {
+                    var um = Stomp.Frame.unmarshall(s);
+                    if (um.frames.length > 0 && um.frames[0].body !== "") {
+                        var parsed = JSON.parse(um.frames[0].body);
+                        
+                        if (!String(parsed.command).match("GAME.UPDATE")) {
+                            Crafty.log(s);
+                        }
+                    } else {
+                        Crafty.log(s);
+                    }
+                }
                 
                 var gameStomp = this._gameStomp;
                 var that = this;                
                 
                 // Connect to the server and subscribe to our personal URL. Then send a message
                 // indicating our status as LOADED.
-                this._gameStomp.connect({}, function () {
+                gameStomp.connect({}, function () {
                     gameStomp.subscribe(that._gameTopic, function (response) {
-                        that.handle(JSON.stringify(response.body));
+                        that.handle(JSON.parse(response.body));
                     });
                 
                     gameStomp.send(that._gameQueue, {}, JSON.stringify({
@@ -274,8 +275,6 @@ $(function() {
                     Crafty.log("There was an error connecting to the WS");
                     Crafty.log(err);
                 });
-                
-                return this;
             },
         };
         window.TronPreGame = TronPreGame;
@@ -491,19 +490,28 @@ $(function() {
                 
                 // Wait for the game to have all assets loaded before entering the main scene.
                 (function startGame(attempt, game) {
+                    // Make sure we have an end to the attempts.
                     if (attempt > 5) {
                         Crafty.log("Failed to start game");
                         return;
-                    } else if (!game._initialised) {
+                    }
+                    
+                    // Make sure the game is intiialised.
+                    if (!game._initialised) {
                         Crafty.log("Failed to start game on attempt " + attempt);
                         setTimeout(startGame, 500, ++attempt, game);
                         return;
-                    } else {
-                        
-                        Crafty.log("Starting TronGame attempt " + attempt);
-                        // CODE TO START THE GAME.
-                        that.unlockPlayers();
                     }
+                    
+                    // Make sure we haven't already started. We don't want to refresh here.
+                    if (game._started) {
+                        Crafty.log("Trying to start a game that's arleady been started");
+                        return;
+                    }
+                    
+                    Crafty.log("Starting TronGame on attempt " + attempt);
+                    game._started = true;
+                    that.unlockPlayers();
                 })(1, this);
                 
                 return this;
