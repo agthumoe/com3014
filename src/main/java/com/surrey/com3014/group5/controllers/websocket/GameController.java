@@ -147,16 +147,10 @@ public class GameController {
 
     private void update(final User user, final Game game, final Command command) {
         GamerDTO oppositePlayer = game.getOppositePlayer(user.getId());
-        final JSONObject response = new JSONObject();
-        response.put("gameID", game.getGameID());
-        response.put("vx", command.getDoubleData("vx"));
-        response.put("vy", command.getDoubleData("vy"));
-        response.put("magnitude", command.getIntegerData("magnitude"));
-        response.put("rotation", command.getDoubleData("rotation"));
-        String status = command.getStringData("status");
-        response.put("status", status);
+        final JSONObject response = command.getData();
         response.put("command", Command.Game.UPDATE);
         template.convertAndSendToUser(oppositePlayer.getUsername(), OUT_BOUND, response.toString());
+        String status = command.getStringData("status");
         if (status != null && status.equals("EXPLODED")) {
             game.setExpired(true);
             leaderboardService.setLoser(user.getId());
