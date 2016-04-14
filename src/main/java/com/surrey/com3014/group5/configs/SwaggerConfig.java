@@ -43,13 +43,13 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         ApiInfo apiInfo = new ApiInfo(
-            env.getProperty("swagger.api.name"),
+            env.getProperty("swagger.api.title"),
             env.getProperty("swagger.api.description"),
             env.getProperty("swagger.api.version"),
-            env.getProperty("swagger.api.termsOfServiceUrl"),
-            env.getProperty("swagger.api.contact"),
-            env.getProperty("swagger.api.license"),
-            env.getProperty("swagger.api.licenseUrl")
+            env.getProperty(null),
+            env.getProperty(null),
+            env.getProperty(null),
+            env.getProperty(null)
         );
         List<ResponseMessage> responseMessages = new ArrayList<>();
 
