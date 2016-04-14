@@ -46,10 +46,10 @@ public class SwaggerConfig {
             env.getProperty("swagger.api.title"),
             env.getProperty("swagger.api.description"),
             env.getProperty("swagger.api.version"),
-            env.getProperty(null),
-            env.getProperty(null),
-            env.getProperty(null),
-            env.getProperty(null)
+            null,
+            null,
+            null,
+            null
         );
         List<ResponseMessage> responseMessages = new ArrayList<>();
 
