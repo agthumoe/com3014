@@ -1103,74 +1103,6 @@ $(function() {
                             this._trailColour = 'cyan';
                         }
                     });
-                    
-                    /**
-                     * A remote player updates by the server.
-                     */
-                    Crafty.c('RemotePlayer', {
-                        /**
-                         * Required modules.
-                         */
-                        required: 'Player, Motion',
-                        
-                        /**
-                         * Reference to the STOMP interface to commuicate with the server.
-                         */
-                        _stomp: null,
-                        
-                        /**
-                         * Defines the remote attributes for this object.
-                         */
-                        _remoteAttributes: {
-                            vx: 0,
-                            vy: 0,
-                            status: 'ACTIVE',
-                        },
-                        
-                        init: function () {
-                            this.origin('center');
-                        },
-                        
-                        events: {
-                            EnterFrame: function () {
-                                if (!this.isLocked()) {
-                                    this.vx = this._remoteAttributes.vx;
-                                    this.vy = this._remoteAttributes.vy;
-                                    this.rotation = this._remoteAttributes.rotation;
-                                    this._magnitude = this._remoteAttributes.magnitude;
-                                }
-                            }
-                        },
-                        
-                        /**
-                         * #.setStomp
-                         * Sets the STOMP Interface internally and subscribes for updates.
-                         * 
-                         * @param STOMP stomp
-                         * @param string url
-                         * @returns this
-                         */
-                        setStomp: function (stomp, url) {
-                            this._stomp = stomp;
-                            var that = this;
-                            stomp.subscribe(url, function (response) {
-                                var body = JSON.parse(response.body);
-                                if (body.command === 'GAME.UPDATE') {
-                                    // Look at the status and determine if we should blow up or not
-                                    if (body.status === 'EXPLODED') {
-                                        that.lock();
-                                        that.vx = 0;
-                                        that.vy = 0;
-                                        that.explode();
-                                    } else {
-                                        that._remoteAttributes = body;
-                                    }
-                                }
-                            });
-                            
-                            return this;
-                        }
-                    });
 
                     /**
                      * Defines a controllable player.
@@ -1184,7 +1116,7 @@ $(function() {
                          * Object requires motion and keyboard component. Angular motion is handled
                          * manually and so AngularMotion is nto required.
                          */
-                        required: "Player, Motion, Keyboard",
+                        required: "Player, Motion, Keyboard, Model",
 
                         /**
                          * Defines the magnitude used to multiply the movement vector to denote the
@@ -1209,7 +1141,7 @@ $(function() {
                         _keysPressed: {
                             UP: false,
                             LEFT: false,
-                            RIGHT: false,
+                            RIGHT: false
                         },
                         
                         /**
@@ -1237,29 +1169,29 @@ $(function() {
                                 // If we're moving, and the key pressed is a directional change then
                                 // apply some rotation.
                                 if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this._keysPressed.RIGHT = true;
+                                    this.attr('_keysPressed.RIGHT', true);
                                 }
 
                                 if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this._keysPressed.LEFT = true;
+                                    this.attr('_keysPressed.LEFT', true);
                                 }
 
                                 if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this._keysPressed.UP = true;
+                                    this.attr('_keysPressed.UP', true);
                                 }
                             },
 
                             KeyUp: function (e) {
                                 if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this._keysPressed.RIGHT = false;
+                                    this.attr('_keysPressed.RIGHT', false);
                                 }
 
                                 if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this._keysPressed.LEFT = false;
+                                    this.attr('_keysPressed.LEFT', false);
                                 }
 
                                 if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this._keysPressed.UP = false;
+                                    this.attr('_keysPressed.UP', false);
                                 }
                             },
 
@@ -1272,11 +1204,13 @@ $(function() {
                                             && (this._keysPressed.LEFT || this._keysPressed.RIGHT)) {
 
                                         if (this._keysPressed.LEFT) {
-                                            this.rotation-= this._rotationSpeed;
+                                            this.attr('rotation', 
+                                                this.rotation - this._rotationSpeed);
                                         }
 
                                         if (this._keysPressed.RIGHT) {
-                                            this.rotation+= this._rotationSpeed;
+                                            this.attr('rotation', 
+                                                this.rotation + this._rotationSpeed);
                                         }
                                     }
 
@@ -1284,49 +1218,71 @@ $(function() {
                                     if (this._keysPressed.UP) {
                                         // Adjust the magnitude ensuring we don't go over the limit.
                                         if (this._magnitude <= this._maxMagnitude) {
-                                            this._magnitude+= this._magnitudeIncrement;
+                                            this.attr('_magnitude', 
+                                                this._magnitude + this._magnitudeIncrement);
                                         }
 
                                         // Scale the vector to the new magnitude.
                                         this._vector.scaleToMagnitude(this._magnitude);
 
                                         // Adjust the x and y velocity of the objet accordingly.
-                                        this.vx = this._vector.x;
-                                        this.vy = this._vector.y;
+                                        this.attr('vx', this._vector.x);
+                                        this.attr('vy', this._vector.y);
                                     } else {
                                         // Decrease the magnitude while it's greater than 1
                                         if (this._magnitude > 1) {
-                                            this._magnitude-= this._magnitudeIncrement;
+                                            this.attr('_magnitude', 
+                                                this._magnitude - this._magnitudeIncrement);
                                         }
 
                                         // If magnitude is less than or equal to 1 we're at the smallest
                                         // magnitude and want to stop the object moving. If not, we want
                                         // to apply the reduced magnitude and set the velocity accordingly.
                                         if (this._magnitude <= 1) {
-                                            this._magnitude = 1;
-                                            this.vx = 0;
-                                            this.vy = 0;
+                                            this.attr('_magnitude', 1);
+                                            this.attr('vx', 0);
+                                            this.attr('vy', 0);
                                         } else {
                                             this._vector.scaleToMagnitude(this._magnitude);
-                                            this.vx = this._vector.x;
-                                            this.vy = this._vector.y;
+                                            this.attr('vx', this._vector.x);
+                                            this.attr('vy', this._vector.y);
                                         }
                                     }
-                                    
-                                    // Send update to the server
-                                    this.sendUpdate();
                                 } else {
                                     // Object is locked so set all values to 0
-                                    this.vx = 0;
-                                    this.vy = 0;
+                                    this.attr('vx', 0);
+                                    this.attr('vy', 0);
                                 }
                             },
                             
                             Remove: function () {
-                                // We want to be sure to send 1 last update containing explode
-                                // so we know this object blew up on the other client.
-                                this.sendUpdate();
+                                if (this._controlsEnabled) {
+                                    // We want to be sure to send 1 last update containing explode
+                                    // so we know this object blew up on the other client.
+                                    this.sendUpdate();
+                                }
+                            },
+                            
+                            'Change': function (e) {
+                                // Won't send for remote as remote doesn't set via .attr so the 
+                                // change event is never triggered for it.
+                                if (typeof e._keysPressed === "object") {
+                                    this.sendUpdate();
+                                }
                             }
+                        },
+                        
+                        /**
+                         * #.controls
+                         * A method to allow control of whether the controls for this object
+                         * are on or off.
+                         * @param bool status
+                         * @returns this
+                         */
+                        controls: function (status) {
+                            this._controlsEnabled = status;
+                            
+                            return this;
                         },
 
                         /**
@@ -1369,14 +1325,72 @@ $(function() {
                                     'command': 'GAME.UPDATE',
                                     'data': {
                                         gameID: this._gameID,
-                                        vx: this.vx,
-                                        vy: this.vy,
-                                        magnitude: this._magnitude,
-                                        rotation: this.rotation,
-                                        status: this._status
+                                        status: this._status,
+                                        _keysPressed: this._keysPressed
                                     }
                                 })
                             );
+                        }
+                    });
+                    
+                    /**
+                     * A remote player updates by the server.
+                     */
+                    Crafty.c('RemotePlayer', {
+                        /**
+                         * Required modules.
+                         */
+                        required: 'Player, Motion',
+                        
+                        /**
+                         * Reference to the STOMP interface to commuicate with the server.
+                         */
+                        _stomp: null,
+                        
+                        init: function () {
+                            this.origin('center');
+                        },
+                        
+                        /**
+                         * #.setStomp
+                         * Sets the STOMP Interface internally and subscribes for updates.
+                         * 
+                         * @param STOMP stomp
+                         * @param string url
+                         * @returns this
+                         */
+                        setStomp: function (stomp, url) {
+                            
+                            this._stomp = stomp;
+                            var that = this;
+                            
+                            stomp.subscribe(url, function (response) {
+                                var body = JSON.parse(response.body);
+                                if (body.command === 'GAME.UPDATE') {
+                                    // Look at the status and determine if we should blow up or not
+                                    if (body.status === 'EXPLODED') {
+                                        
+                                        that.lock();
+                                        that._keysPressed = {
+                                            UP: false,
+                                            LEFT: false,
+                                            RIGHT: false
+                                        };
+                                        that.vx = 0;
+                                        that.vy = 0;
+                                        that.explode();
+                                        
+                                    } else {
+                                        
+                                        for (var k in body._keysPressed) {
+                                            that._keysPressed[k] = body._keysPressed[k];
+                                        }
+                                        
+                                    }
+                                }
+                            });
+                            
+                            return this;
                         }
                     });
 
