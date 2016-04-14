@@ -1,7 +1,7 @@
-package com.surrey.com3014.group5.controllers.websocket;
+package com.surrey.com3014.group5.websockets.controllers;
 
-import com.surrey.com3014.group5.dto.messages.MessageDTO;
-import com.surrey.com3014.group5.dto.messages.ReplyMessageDTO;
+import com.surrey.com3014.group5.websockets.dto.MessageDTO;
+import com.surrey.com3014.group5.websockets.dto.ReplyMessageDTO;
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;

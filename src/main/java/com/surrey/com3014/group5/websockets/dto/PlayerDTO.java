@@ -1,6 +1,7 @@
-package com.surrey.com3014.group5.dto.users;
+package com.surrey.com3014.group5.websockets.dto;
 
-import com.surrey.com3014.group5.game.Resolution;
+import com.surrey.com3014.group5.dto.users.UserDTO;
+import com.surrey.com3014.group5.websockets.domains.Resolution;
 import org.springframework.util.Assert;
 
 import java.util.Optional;
@@ -8,7 +9,7 @@ import java.util.Optional;
 /**
  * @author Aung Thu Moe
  */
-public class GamerDTO extends UserDTO {
+public class PlayerDTO extends UserDTO {
 //    private static final Logger LOGGEr = LoggerFactory.getLogger(GamerDTO.class);
     public static final String CHALLENGER = "CHALLENGER";
     public static final String CHALLENGED = "CHALLENGED";
@@ -21,11 +22,11 @@ public class GamerDTO extends UserDTO {
 
     private long messageReceivedTime;
 
-    public GamerDTO() {
+    public PlayerDTO() {
         super();
     }
 
-    public GamerDTO(UserDTO user, String role) {
+    public PlayerDTO(UserDTO user, String role) {
         setId(user.getId());
         setUsername(user.getUsername());
         setEmail(user.getEmail());
@@ -109,7 +110,7 @@ public class GamerDTO extends UserDTO {
 
     @Override
     public String toString() {
-        return "Gamer{" +
+        return "Player{" +
             "id=" + getId() +
             ", username=" + getUsername() +
             ", email=" + getEmail() +

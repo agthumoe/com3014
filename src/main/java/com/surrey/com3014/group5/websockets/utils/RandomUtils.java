@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.security;
+package com.surrey.com3014.group5.websockets.utils;
 
 import com.surrey.com3014.group5.exceptions.HttpStatusException;
 import org.springframework.http.HttpStatus;

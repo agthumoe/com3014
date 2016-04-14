@@ -91,18 +91,13 @@ public class UserDTO implements Serializable {
 
         UserDTO userDTO = (UserDTO) o;
 
-        if (id != userDTO.id) return false;
-        if (!username.equals(userDTO.username)) return false;
-        return email.equals(userDTO.email);
+        return id == userDTO.id;
 
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + username.hashCode();
-        result = 31 * result + email.hashCode();
-        return result;
+        return (int) (id ^ (id >>> 32));
     }
 
     @Override

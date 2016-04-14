@@ -1,8 +1,8 @@
-package com.surrey.com3014.group5.controllers.websocket;
+package com.surrey.com3014.group5.websockets.controllers;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.services.activeuser.ActiveUserService;
+import com.surrey.com3014.group5.websockets.services.ActiveUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ActiveUsersController {
     public List<UserDTO> activeUser(Message<Object> message) {
         Principal principal = message.getHeaders().get(SimpMessageHeaderAccessor.USER_HEADER, Principal.class);
         User user = (User) ((Authentication) principal).getPrincipal();
-        activeUserService.mark(user);
+        activeUserService.update(new UserDTO(user));
         return activeUserService.getActiveUsers();
     }
 }

@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.game;
+package com.surrey.com3014.group5.websockets.domains;
 
 import org.json.JSONObject;
 

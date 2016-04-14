@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.dto;
+package com.surrey.com3014.group5.dto.leaderboards;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import io.swagger.annotations.ApiModel;

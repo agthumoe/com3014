@@ -1,12 +1,12 @@
-package com.surrey.com3014.group5.controllers.websocket;
+package com.surrey.com3014.group5.websockets.controllers;
 
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
-import com.surrey.com3014.group5.game.Command;
-import com.surrey.com3014.group5.game.GameRequest;
-import com.surrey.com3014.group5.game.GameRequestService;
-import com.surrey.com3014.group5.game.GameService;
+import com.surrey.com3014.group5.websockets.domains.Command;
+import com.surrey.com3014.group5.websockets.domains.GameRequest;
+import com.surrey.com3014.group5.websockets.services.GameRequestService;
+import com.surrey.com3014.group5.websockets.services.GameService;
 import com.surrey.com3014.group5.models.impl.User;
-import com.surrey.com3014.group5.security.RandomUtils;
+import com.surrey.com3014.group5.websockets.utils.RandomUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import org.json.JSONObject;
 import org.slf4j.Logger;

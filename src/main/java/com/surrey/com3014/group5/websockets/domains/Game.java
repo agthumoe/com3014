@@ -1,6 +1,6 @@
-package com.surrey.com3014.group5.game;
+package com.surrey.com3014.group5.websockets.domains;
 
-import com.surrey.com3014.group5.dto.users.GamerDTO;
+import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.io.Serializable;
@@ -14,8 +14,8 @@ public class Game implements Serializable {
     private static final long serialVersionUID = -5340436566899111089L;
     public static final int TIME_TO_START = 5000;
     private String gameID;
-    private GamerDTO challenger;
-    private GamerDTO challenged;
+    private PlayerDTO challenger;
+    private PlayerDTO challenged;
     private boolean expired = false;
     private boolean started = false;
 
@@ -27,19 +27,19 @@ public class Game implements Serializable {
         this.gameID = gameID;
     }
 
-    public GamerDTO getChallenger() {
+    public PlayerDTO getChallenger() {
         return challenger;
     }
 
-    public void setChallenger(GamerDTO challenger) {
+    public void setChallenger(PlayerDTO challenger) {
         this.challenger = challenger;
     }
 
-    public GamerDTO getChallenged() {
+    public PlayerDTO getChallenged() {
         return challenged;
     }
 
-    public GamerDTO getCurrentPlayer(long id) {
+    public PlayerDTO getCurrentPlayer(long id) {
         if (id == challenger.getId()) {
             return challenger;
         } else if (id == challenged.getId()) {
@@ -49,16 +49,16 @@ public class Game implements Serializable {
         }
     }
 
-    public GamerDTO getOppositePlayer(long id) {
-        if (getCurrentPlayer(id).getRole().equals(GamerDTO.CHALLENGER)) {
+    public PlayerDTO getOppositePlayer(long id) {
+        if (getCurrentPlayer(id).getRole().equals(PlayerDTO.CHALLENGER)) {
             return challenged;
-        } else if (getCurrentPlayer(id).getRole().equals(GamerDTO.CHALLENGED)) {
+        } else if (getCurrentPlayer(id).getRole().equals(PlayerDTO.CHALLENGED)) {
             return challenger;
         }
         throw new AccessDeniedException("Unauthorised user trying to access the game");
     }
 
-    public void setChallenged(GamerDTO challenged) {
+    public void setChallenged(PlayerDTO challenged) {
         this.challenged = challenged;
     }
 
@@ -97,11 +97,11 @@ public class Game implements Serializable {
             '}';
     }
 
-    public void setGamerResolution(long userID, int height, int width) {
-        GamerDTO gamer = this.getCurrentPlayer(userID);
+    public void setPlayerResolution(long userID, int height, int width) {
+        PlayerDTO player = this.getCurrentPlayer(userID);
         // update the screen resolution of the client
         Resolution resolution = new Resolution(height, width);
-        gamer.setResolution(resolution);
+        player.setResolution(resolution);
     }
 
     public Optional<Resolution> getResolution() {

@@ -1,4 +1,4 @@
-package com.surrey.com3014.group5.dto.messages;
+package com.surrey.com3014.group5.websockets.dto;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 

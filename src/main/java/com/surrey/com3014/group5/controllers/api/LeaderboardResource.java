@@ -1,6 +1,6 @@
 package com.surrey.com3014.group5.controllers.api;
 
-import com.surrey.com3014.group5.dto.LeaderboardDTO;
+import com.surrey.com3014.group5.dto.leaderboards.LeaderboardDTO;
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;

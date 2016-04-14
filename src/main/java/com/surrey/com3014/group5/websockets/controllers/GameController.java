@@ -1,10 +1,10 @@
-package com.surrey.com3014.group5.controllers.websocket;
+package com.surrey.com3014.group5.websockets.controllers;
 
-import com.surrey.com3014.group5.dto.users.GamerDTO;
-import com.surrey.com3014.group5.game.Command;
-import com.surrey.com3014.group5.game.Game;
-import com.surrey.com3014.group5.game.GameService;
-import com.surrey.com3014.group5.game.Resolution;
+import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
+import com.surrey.com3014.group5.websockets.domains.Command;
+import com.surrey.com3014.group5.websockets.domains.Game;
+import com.surrey.com3014.group5.websockets.services.GameService;
+import com.surrey.com3014.group5.websockets.domains.Resolution;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
 import org.json.JSONObject;
@@ -78,9 +78,9 @@ public class GameController {
     }
 
     private void loadedAndPing(final User user, final Game game, final Command command) {
-        // record gamer's resolutions
+        // record player's resolutions
         LOGGER.debug("User: {}, Server response -> GAME.PING", user.getUsername());
-        game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
+        game.setPlayerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
         final JSONObject response = new JSONObject();
         response.put("gameID", game.getGameID());
         response.put("command", Command.Game.PING);
@@ -122,7 +122,7 @@ public class GameController {
     }
 
     private void readyAndStart(User user, Game game) {
-        GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
+        PlayerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         currentPlayer.setReady(true);
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
         final JSONObject response = new JSONObject();
@@ -146,7 +146,7 @@ public class GameController {
     }
 
     private void update(final User user, final Game game, final Command command) {
-        GamerDTO oppositePlayer = game.getOppositePlayer(user.getId());
+        PlayerDTO oppositePlayer = game.getOppositePlayer(user.getId());
         final JSONObject response = command.getData();
         response.put("command", Command.Game.UPDATE);
         template.convertAndSendToUser(oppositePlayer.getUsername(), OUT_BOUND, response.toString());
