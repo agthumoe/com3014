@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class Game implements Serializable {
     private static final long serialVersionUID = -5340436566899111089L;
+    public static final int TIME_TO_START = 5000;
     private String gameID;
     private GamerDTO challenger;
     private GamerDTO challenged;

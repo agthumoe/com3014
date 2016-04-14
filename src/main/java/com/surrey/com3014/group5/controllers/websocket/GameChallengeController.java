@@ -47,16 +47,16 @@ public class GameChallengeController {
         User challenger = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
         LOGGER.debug(command.toString());
-        if (Command.NEW.equals(command.getCommand())) {
+        if (Command.Challenge.NEW.equals(command.getCommand())) {
             Optional<User> optional = userService.findOne(command.getIntegerData("userID"));
             if (!optional.isPresent()) {
                 throw new ResourceNotFoundException("not found");
             }
             User challenged = optional.get();
             newChallenge(challenger, challenged);
-        } else if (Command.DENY.equals(command.getCommand())) {
+        } else if (Command.Challenge.DECLINE.equals(command.getCommand())) {
             denyChallenge(command.getStringData("gameID"));
-        } else if (Command.ACCEPT.equals(command.getCommand())) {
+        } else if (Command.Challenge.ACCEPT.equals(command.getCommand())) {
             acceptChallenge(command.getStringData("gameID"));
         }
     }
@@ -65,7 +65,7 @@ public class GameChallengeController {
         final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
         JSONObject response = new JSONObject();
         response.put("gameID", gameRequest.getGameID());
-        response.put("command", Command.NEW);
+        response.put("command", Command.Challenge.NEW);
         JSONObject challengerJSON = new JSONObject();
         challengerJSON.put("name", gameRequest.getChallenger().getName());
         response.put("challenger", challengerJSON);
@@ -83,7 +83,7 @@ public class GameChallengeController {
             JSONObject challengedJSON = new JSONObject();
             challengedJSON.put("name", gameRequest.getChallenged().getName());
             response.put("challenged", challengedJSON);
-            response.put("command", Command.DENY);
+            response.put("command", Command.Challenge.DECLINE);
             template.convertAndSendToUser(gameRequest.getChallenger().getUsername(), "/topic/challenge", response.toString());
             LOGGER.debug("deny challenge: " + gameRequest.toString());
         }
@@ -96,7 +96,7 @@ public class GameChallengeController {
         } else {
             JSONObject response = new JSONObject();
             response.put("gameID", gameRequest.getGameID());
-            response.put("command", Command.ACCEPT);
+            response.put("command", Command.Challenge.ACCEPT);
             JSONObject challengedJSON = new JSONObject();
             challengedJSON.put("name", gameRequest.getChallenged().getName());
             response.put("challenged", challengedJSON);
@@ -111,7 +111,7 @@ public class GameChallengeController {
         LOGGER.debug("send expiration message");
         JSONObject response = new JSONObject();
         response.put("gameID", gameRequest.getGameID());
-        response.put("command", Command.EXPIRED);
+        response.put("command", Command.Challenge.TIMEOUT);
         JSONObject challengerJSON = new JSONObject();
         challengerJSON.put("name", gameRequest.getChallenger().getName());
         response.put("challenger", challengerJSON);

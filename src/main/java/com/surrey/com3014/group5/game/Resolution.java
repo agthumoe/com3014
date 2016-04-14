@@ -6,6 +6,7 @@ import java.io.Serializable;
  * @author Aung Thu Moe
  */
 public class Resolution implements Serializable {
+    public static final int OFFSET = 40;
     private static final long serialVersionUID = -7610151504517214517L;
     private int height;
     private int width;

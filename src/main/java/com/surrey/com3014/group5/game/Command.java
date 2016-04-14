@@ -10,16 +10,28 @@ import java.io.Serializable;
 public class Command implements Serializable {
     private static final long serialVersionUID = 2367277263792938674L;
 
-    public static final String NEW = "CHALLENGE.NEW";
-    public static final String ACCEPT = "CHALLENGE.ACCEPT";
-    public static final String DENY = "CHALLENGE.DECLINE";
-    public static final String EXPIRED = "CHALLENGE.TIMEOUT";
-    public static final String READY = "GAME.READY";
-    public static final String PREP = "GAME.PREP";
-    public static final String UPDATE = "GAME.UPDATE";
-    public static final String FINISHED = "GAME.FINISHED";
-    public static final String PING = "GAME.PREP_RECEIVED";
-    public static final String START = "GAME.START";
+    public static final class Challenge {
+        public static final String NEW = "CHALLENGE.NEW";
+        public static final String ACCEPT = "CHALLENGE.ACCEPT";
+        public static final String DECLINE = "CHALLENGE.DECLINE";
+        public static final String TIMEOUT = "CHALLENGE.TIMEOUT";
+    }
+
+    public static final class Game {
+        public static final String LOADED = "GAME.LOADED";
+        public static final String PING = "GAME.PING";
+        public static final String PONG = "GAME.PONG";
+        public static final String PREP = "GAME.PREP";
+        public static final String READY = "GAME.READY";
+        public static final String FINISHED = "GAME.FINISHED";
+        public static final String START = "GAME.START";
+        public static final String UPDATE = "GAME.UPDATE";
+    }
+
+    public static final class Error {
+        public static final String DENY = "ERROR.WEB_SOCKET.DENY";
+        public static final String EXPIRED = "ERROR.GAME.EXPIRED";
+    }
 
     private String command;
 

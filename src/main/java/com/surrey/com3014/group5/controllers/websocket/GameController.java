@@ -25,8 +25,8 @@ import java.security.Principal;
 @Controller
 public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
-    private static final long TIME_TO_START = 5000;
-
+    private static final String OUT_BOUND = "/topic/game";
+    private static final String IN_BOUND = "/queue/game";
     @Autowired
     private SimpMessagingTemplate template;
 
@@ -36,81 +36,111 @@ public class GameController {
     @Autowired
     private LeaderboardService leaderboardService;
 
-    @MessageMapping("/queue/game")
+    @MessageMapping(IN_BOUND)
     public void request(String message, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
         final Game game = gameService.getGame(command.getStringData("gameID"));
-        if (game.getGameID() == null) {
-            stompHeaderAccessor.setMessage("You are not allow to subscribe this socket");
-            template.convertAndSendToUser(user.getUsername(),"/topic/game", "{\"status\": \"error\"}", stompHeaderAccessor.getMessageHeaders());
-        } else if (game.isExpired()) {
-            stompHeaderAccessor.setMessage("Game is expired");
-            template.convertAndSendToUser(user.getUsername(),"/topic/game", "{\"status\": \"error\"}", stompHeaderAccessor.getMessageHeaders());
-        } else {
-            if (Command.READY.equals(command.getCommand())) {
-                if (game.getGameID() == null) {
-                    stompHeaderAccessor.setMessage("You are not allow to subscribe this socket");
-                } else if (game.isExpired()) {
-                    stompHeaderAccessor.setMessage("Game is expired");
-                } else {
-                    game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
-                    response(game);
-                }
-            } else if (Command.UPDATE.equals(command.getCommand())) {
-                GamerDTO oppositePlayer = game.getOppositePlayer(user.getId());
-                final JSONObject response = new JSONObject();
-                response.put("gameID", game.getGameID());
-                response.put("vx", command.getDoubleData("vx"));
-                response.put("vy", command.getDoubleData("vy"));
-                response.put("magnitude", command.getIntegerData("magnitude"));
-                response.put("rotation", command.getDoubleData("rotation"));
-                String status = command.getStringData("status");
-                response.put("status", status);
-                response.put("command", Command.UPDATE);
-                template.convertAndSendToUser(oppositePlayer.getUsername(), "/topic/game", response.toString());
-                if (status != null && status.equals("EXPLODED")) {
-                    game.setExpired(true);
-                    leaderboardService.setLoser(user.getId());
-                    leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
-                    LOGGER.debug("game: {}, has finished!", game.getGameID());
-                }
-            } else if (Command.PING.equals(command.getCommand())) {
-                GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
-                currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
-                final JSONObject response = new JSONObject();
-                response.put("gameID", game.getGameID());
-                response.put("command", Command.START);
-                // start game in time to start - transmission delay
-                response.put("start_in", TIME_TO_START - currentPlayer.getPingRate());
-                template.convertAndSendToUser(currentPlayer.getUsername(), "/topic/game", response.toString());
-            }
+        if (this.validate(user, game, command)) {
+            if (Command.Game.LOADED.equals(command.getCommand())) {
+                loadedAndPing(user, game, command);
+            } else if (Command.Game.PONG.equals(command.getCommand())) {
+                pongAndPrepare(user, game, command);
+            } else if (Command.Game.READY.equals(command.getCommand())) {
+                readyAndStart(user, game, command);
+            } else if (Command.Game.UPDATE.equals(command.getCommand())) {
+                update(user, game, command);
+            } // any other commands will be ignore
         }
     }
 
-    public void response(Game game) {
-        Resolution resolution = game.getResolution();
+    private boolean validate(User user, Game game, Command command) {
+        final JSONObject response = new JSONObject();
+        response.put("gameID", game.getGameID());
+        if (game.getGameID() == null) {
+            response.put("command", Command.Error.DENY);
+            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+            return false;
+        } else if (game.isExpired()) {
+            response.put("command", Command.Error.EXPIRED);
+            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+            return false;
+        }
+        return true;
+    }
+
+    private void loadedAndPing(final User user, final Game game, final Command command) {
+        // record gamer's resolutions
+        game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
+        final JSONObject response = new JSONObject();
+        response.put("gameID", game.getGameID());
+        response.put("command", Command.Game.PING);
+        // return the ping message
+        template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, response.toString());
+        game.getChallenger().setMessageSentTime(System.currentTimeMillis());
+        template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
+        game.getChallenged().setMessageSentTime(System.currentTimeMillis());
+    }
+
+    private void pongAndPrepare(User user, Game game, Command command) {
+        // calculate the transmission delay
+        game.getChallenger().setMessageReceivedTime(System.currentTimeMillis());
+        game.getChallenged().setMessageReceivedTime(System.currentTimeMillis());
+        // send prepare message with recommanded resolutions for both players.
+        final Resolution resolution = game.getResolution();
         if (resolution != null) {
-            resolution.setHeight(resolution.getHeight() - 40);
-            resolution.setWidth(resolution.getWidth() - 40);
+            resolution.setHeight(resolution.getHeight() - Resolution.OFFSET);
+            resolution.setWidth(resolution.getWidth() - Resolution.OFFSET);
             final JSONObject responseForChallenger = new JSONObject();
             responseForChallenger.put("gameID", game.getGameID());
             responseForChallenger.put("role", game.getChallenger().getRole());
             responseForChallenger.put("height", resolution.getHeight());
             responseForChallenger.put("width", resolution.getWidth());
-            responseForChallenger.put("command", Command.PREP);
+            responseForChallenger.put("command", Command.Game.PREP);
 
             JSONObject responseForChallenged = new JSONObject();
             responseForChallenged.put("gameID", game.getGameID());
             responseForChallenged.put("role", game.getChallenged().getRole());
             responseForChallenged.put("height", resolution.getHeight());
             responseForChallenged.put("width", resolution.getWidth());
-            responseForChallenged.put("command", Command.PREP);
+            responseForChallenged.put("command", Command.Game.PREP);
 
-            template.convertAndSendToUser(game.getChallenger().getUsername(), "/topic/game", responseForChallenger.toString());
+            template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, responseForChallenger.toString());
             game.getChallenger().setMessageSentTime(System.currentTimeMillis());
-            template.convertAndSendToUser(game.getChallenged().getUsername(), "/topic/game", responseForChallenged.toString());
+            template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, responseForChallenged.toString());
             game.getChallenged().setMessageSentTime(System.currentTimeMillis());
+        }
+
+    }
+
+    private void readyAndStart(User user, Game game, Command command) {
+        GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
+        currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
+        final JSONObject response = new JSONObject();
+        response.put("gameID", game.getGameID());
+        response.put("command", Command.Game.START);
+        // start game in time to start - transmission delay
+        response.put("start_in", Game.TIME_TO_START - currentPlayer.getPingRate());
+        template.convertAndSendToUser(currentPlayer.getUsername(), OUT_BOUND, response.toString());
+    }
+
+    private void update(final User user, final Game game, final Command command) {
+        GamerDTO oppositePlayer = game.getOppositePlayer(user.getId());
+        final JSONObject response = new JSONObject();
+        response.put("gameID", game.getGameID());
+        response.put("vx", command.getDoubleData("vx"));
+        response.put("vy", command.getDoubleData("vy"));
+        response.put("magnitude", command.getIntegerData("magnitude"));
+        response.put("rotation", command.getDoubleData("rotation"));
+        String status = command.getStringData("status");
+        response.put("status", status);
+        response.put("command", Command.Game.UPDATE);
+        template.convertAndSendToUser(oppositePlayer.getUsername(), OUT_BOUND, response.toString());
+        if (status != null && status.equals("EXPLODED")) {
+            game.setExpired(true);
+            leaderboardService.setLoser(user.getId());
+            leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
+            LOGGER.debug("game: {}, has finished!", game.getGameID());
         }
     }
 }
