@@ -71,6 +71,7 @@ public class GameController {
 
     private void loadedAndPing(final User user, final Game game, final Command command) {
         // record gamer's resolutions
+        LOGGER.debug("User: {} -> loaded and ping", user.getUsername());
         game.setGamerResolution(user.getId(), command.getIntegerData("height"), command.getIntegerData("width"));
         final JSONObject response = new JSONObject();
         response.put("gameID", game.getGameID());
@@ -83,6 +84,7 @@ public class GameController {
     }
 
     private void pongAndPrepare(User user, Game game, Command command) {
+        LOGGER.debug("User: {} -> pong and prepare", user.getUsername());
         // calculate the transmission delay
         game.getChallenger().setMessageReceivedTime(System.currentTimeMillis());
         game.getChallenged().setMessageReceivedTime(System.currentTimeMillis());
@@ -114,6 +116,7 @@ public class GameController {
     }
 
     private void readyAndStart(User user, Game game, Command command) {
+        LOGGER.debug("User: {} -> ready and start", user.getUsername());
         GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
         final JSONObject response = new JSONObject();
