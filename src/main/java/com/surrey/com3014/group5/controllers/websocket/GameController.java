@@ -85,10 +85,8 @@ public class GameController {
         response.put("gameID", game.getGameID());
         response.put("command", Command.Game.PING);
         // return the ping message
-        template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, response.toString());
-        game.getChallenger().setMessageSentTime(System.currentTimeMillis());
-        template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
-        game.getChallenged().setMessageSentTime(System.currentTimeMillis());
+        template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+        game.getCurrentPlayer(user.getId()).setMessageSentTime(System.currentTimeMillis());
     }
 
     private void pongAndPrepare(User user, Game game) {
