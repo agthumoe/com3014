@@ -120,11 +120,14 @@ public class GameController {
         GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         currentPlayer.setReady(true);
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
-
-        // only response when both players are ready
-        if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
-            final JSONObject response = new JSONObject();
-            response.put("gameID", game.getGameID());
+        final JSONObject response = new JSONObject();
+        response.put("gameID", game.getGameID());
+        // if game is already started, response with started message
+        if (game.isStarted()) {
+            response.put("command", Command.Game.STARTED);
+            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+        } else if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
+            // only response when both players are ready
             response.put("command", Command.Game.START);
             // start game in time to start - transmission delay
             response.put("start_in", Game.TIME_TO_START - currentPlayer.getPingRate());
@@ -132,6 +135,7 @@ public class GameController {
             LOGGER.debug("Challenger: {} -> start", game.getChallenger().getUsername());
             template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
             LOGGER.debug("Challenged: {} -> start", game.getChallenged().getUsername());
+            game.setStarted(true);
         }
     }
 
