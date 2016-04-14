@@ -1152,7 +1152,6 @@ $(function() {
                          */
                         setStomp: function (stomp, url) {
                             this._stomp = stomp;
-                            this._stomp.debug = null;
                             var that = this;
                             stomp.subscribe(url, function (response) {
                                 var body = JSON.parse(response.body);
@@ -1353,7 +1352,6 @@ $(function() {
                         setStomp: function (stomp, gameID) {
                             this._stomp = stomp;
                             this._gameID = gameID;
-                            this._stomp.debug = null;
                             
                             return this;
                         },
