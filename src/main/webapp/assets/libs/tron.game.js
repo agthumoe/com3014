@@ -64,6 +64,8 @@ $(function() {
                 this._gameSocket = new SockJS(this._gameQueue);
                 this._gameStomp = Stomp.over(this._gameSocket);
                 
+                Crafty.log(this._gameStomp);
+                
                 // Change the debug function of stomp to filter out any game updates.
                 this._gameStomp.debug = function (s) {
                     var um = Stomp.Frame.unmarshall(s);
@@ -71,10 +73,10 @@ $(function() {
                         var unparsed = JSON.parse(um.frames[0].body);
                         
                         if (!String(unparsed.command).match("GAME.UPDATE")) {
-                            console.log(s);
+                            Crafty.log(s);
                         }
                     } else {
-                        console.log(s);
+                        Crafty.log(s);
                     }
                 }
                 
@@ -248,14 +250,14 @@ $(function() {
              * @returns return this;
              */
             _onAssetsLoaded: function () {
-                Crafty.log("Assets loaded, execuing callback");
+                Crafty.log("Assets loaded: now trying to connect the web socket");
                 
                 var gameStomp = this._gameStomp;
-                var that = this;
+                var that = this;                
                 
                 // Connect to the server and subscribe to our personal URL. Then send a message
                 // indicating our status as LOADED.
-                gameStomp.connect({}, function () {
+                this._gameStomp.connect({}, function () {
                     gameStomp.subscribe(that._gameTopic, function (response) {
                         that.handle(JSON.stringify(response.body));
                     });
@@ -268,6 +270,9 @@ $(function() {
                             width: $(window).width()
                         }
                     }));
+                }, function (err) {
+                    Crafty.log("There was an error connecting to the WS");
+                    Crafty.log(err);
                 });
                 
                 return this;
