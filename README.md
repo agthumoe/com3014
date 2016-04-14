@@ -65,3 +65,9 @@ Create ```database.properties``` file with the following codes in the ```resourc
 
 ## ERD
 ![Entity Relationship Diagram](https://agthumoe@bitbucket.org/com3014/documentations.git/raw/master/images/ERD.png)
+
+## Deployment notes
+Need to redirect port 8080 to port 80
+    iptables --insert INPUT --protocol tcp --dport 80 --jump ACCEPT
+    iptables --insert INPUT --protocol tcp --dport 8080 --jump ACCEPT
+    iptables --table nat --append PREROUTING --in-interface eth0 --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
