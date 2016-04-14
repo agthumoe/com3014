@@ -10,13 +10,21 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 /**
+ * This component process user authentication.
+ *
  * @author Aung Thu Moe
  */
 @Component
 public class SecureAuthenticationProvider implements AuthenticationProvider {
+    /**
+     * Userservice to retrieve user information.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Authenticate the login user.
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String name = authentication.getName();
@@ -28,6 +36,9 @@ public class SecureAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);

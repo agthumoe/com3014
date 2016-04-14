@@ -3,7 +3,6 @@ package com.surrey.com3014.group5.security;
 import com.surrey.com3014.group5.models.impl.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,21 +12,27 @@ import java.util.Collection;
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 
 /**
+ * A utility class for spring security.
+ *
  * @author Aung Thu Moe
  */
 public final class SecurityUtils {
+    /**
+     * Just to prevent instantiation
+     */
     private SecurityUtils() {
-        // just to prevent instantiation
     }
 
     /**
-     * Get the login of the current users.
+     * Get current logged in username if user has been logged in.
+     *
+     * @return Current logged in username if user has been logged in, otherwise null.
      */
     public static String getCurrentUsername() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         String userName = null;
-        if(authentication != null) {
+        if (authentication != null) {
             if (authentication.getPrincipal() instanceof UserDetails) {
                 UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
                 userName = springSecurityUser.getUsername();
@@ -41,6 +46,11 @@ public final class SecurityUtils {
         return userName;
     }
 
+    /**
+     * Get the current logged in user if user has been logged in.
+     *
+     * @return Current logged in user if user has been logged in, otherwise null.
+     */
     public static User getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -69,21 +79,5 @@ public final class SecurityUtils {
             }
         }
         return true;
-    }
-
-
-    /**
-     * If the current users has a specific security role.
-     */
-    public static boolean isUserInRole(String role) {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if(authentication != null) {
-            if (authentication.getPrincipal() instanceof UserDetails) {
-                UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-                return springSecurityUser.getAuthorities().contains(new SimpleGrantedAuthority(role));
-            }
-        }
-        return false;
     }
 }

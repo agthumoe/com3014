@@ -13,12 +13,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * This class handles failed authentication attempt.
+ *
  * @author Aung Thu Moe
  */
 @Component
 public class AuthenticationFailureHandler implements org.springframework.security.web.authentication.AuthenticationFailureHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationFailureHandler.class);
 
+    /**
+     * Called when an authentication attempt fails. On every authentication attempt fails,
+     * assign a proper HttpStatus code to the servlet response and redirect back to login page
+     * with a url parameter of status=#code to be handled by the view.
+     *
+     * @param request   the request during which the authentication attempt occurred.
+     * @param response  the response.
+     * @param exception the exception which was thrown to reject the authentication
+     *                  request.
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         LOGGER.debug("Causes: {}, message: {}", exception.getCause().getClass().getName(), exception.getCause().getMessage());
