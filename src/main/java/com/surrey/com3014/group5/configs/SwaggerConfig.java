@@ -35,7 +35,7 @@ public class SwaggerConfig {
     Environment env;
 
     /**
-     * This bean configure the API info
+     * This bean configure the Swagger api documentation
      *
      * @return {@link springfox.documentation.spring.web.plugins.Docket}
      * containing API info.
@@ -46,10 +46,10 @@ public class SwaggerConfig {
             env.getProperty("swagger.api.name"),
             env.getProperty("swagger.api.description"),
             env.getProperty("swagger.api.version"),
-            null,
-            null,
-            null,
-            null
+            env.getProperty("swagger.api.termsOfServiceUrl"),
+            env.getProperty("swagger.api.contact"),
+            env.getProperty("swagger.api.license"),
+            env.getProperty("swagger.api.licenseUrl")
         );
         List<ResponseMessage> responseMessages = new ArrayList<>();
 
