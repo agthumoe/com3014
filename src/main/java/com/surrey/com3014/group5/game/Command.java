@@ -26,6 +26,7 @@ public class Command implements Serializable {
         public static final String FINISHED = "GAME.FINISHED";
         public static final String START = "GAME.START";
         public static final String UPDATE = "GAME.UPDATE";
+        public static final String STARTED = "GAME.STARTED";
     }
 
     public static final class Error {

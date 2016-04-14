@@ -14,7 +14,8 @@ public class Game implements Serializable {
     private String gameID;
     private GamerDTO challenger;
     private GamerDTO challenged;
-    private boolean isExpired = false;
+    private boolean expired = false;
+    private boolean started = false;
 
     public String getGameID() {
         return gameID;
@@ -60,11 +61,11 @@ public class Game implements Serializable {
     }
 
     public boolean isExpired() {
-        return isExpired;
+        return expired;
     }
 
     public void setExpired(boolean expired) {
-        isExpired = expired;
+        this.expired = expired;
     }
 
     @Override
@@ -89,7 +90,8 @@ public class Game implements Serializable {
             "gameID='" + gameID + '\'' +
             ", challenger=" + challenger +
             ", challenged=" + challenged +
-            ", isExpired=" + isExpired +
+            ", expired=" + expired +
+            ", started=" + started +
             '}';
     }
 
@@ -109,5 +111,13 @@ public class Game implements Serializable {
         int bestHeight = challengerResolution.getHeight() < challengedResolution.getHeight() ? challengerResolution.getHeight() : challengedResolution.getHeight();
         int bestWidth = challengerResolution.getWidth() < challengedResolution.getWidth() ? challengerResolution.getWidth() : challengedResolution.getWidth();
         return new Resolution(bestHeight, bestWidth);
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }
