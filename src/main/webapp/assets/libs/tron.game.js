@@ -1,5 +1,16 @@
 $(function() {
     (function (window) {
+        
+        //Utility functions
+        function waitUntil(condition, run) {
+            if (!condition()) {
+                setTimeout(waitUntil, 100, condition, run);
+                return;
+            }
+            
+            run();
+        }
+        
         var TronPreGame = {
             /**
              * Defines the URL to send game updates to.
@@ -9,7 +20,7 @@ $(function() {
             /**
              * Defines the subscription URL specific to the logged in user. 
              */
-            _gameTopic: '/user/{userID}/topic/game',
+            _gameTopic: '/user/{username}/topic/game',
             
             /**
              * A reference to the game socket.
@@ -52,26 +63,32 @@ $(function() {
                 
                 this._gameSocket = new SockJS(this._gameQueue);
                 this._gameStomp = Stomp.over(this._gameSocket);
-                var gameStomp = this._gameStomp;
                 
+                // Change the debug function of stomp to filter out any game updates.
+                this._gameStomp.debug = function (s) {
+                    var um = Stomp.Frame.unmarshall(s);
+                    if (um.frames.length > 0 && um.frames[0].body !== "") {
+                        var unparsed = JSON.parse(um.frames[0].body);
+                        
+                        if (!String(unparsed.command).match("GAME.UPDATE")) {
+                            console.log(s);
+                        }
+                    } else {
+                        console.log(s);
+                    }
+                }
+                
+                // Get the game ID from the URL and replace the subscription URL userID with 
+                // the logged in users username.
                 var path = window.location.pathname.split('/');
                 this._gameID = path[path.length - 1];
+                this._gameTopic = this._gameTopic.replace('{username}', User.username);
                 
-                this._gameTopic = this._gameTopic.replace('{userID}', User.username);
-
-                gameStomp.connect({}, function () {
-                    gameStomp.subscribe(that._gameTopic, function (response) {
-                        that.handle(response);
-                    });
-                
-                    gameStomp.send(that._gameQueue, {}, JSON.stringify({
-                        command: 'GAME.READY',
-                        data: {
-                            gameID: that._gameID,
-                            height: $(window).height(),
-                            width: $(window).width()
-                        }
-                    }));
+                // Generate a game instance and load all assets.
+                var game = TronGame.instance();
+                this._game = game;
+                this._game.loadAssets(function () {
+                    that._onAssetsLoaded();
                 });
                 
                 return this;
@@ -95,22 +112,41 @@ $(function() {
              * @returns void
              */
             handle: function (response) {
-                response = JSON.parse(response.body);
-                
-                if (response.command === "GAME.PREP") {
+                // Go through each possible command and see if we want to handle it.
+                if (response.command === 'GAME.PING') {
                     
                     this._gameStomp.send(this._gameQueue, {}, JSON.stringify({
-                        command: 'GAME.PREP_RECEIVED',
+                        command: 'GAME.PONG',
                         data: {
                             gameID: this._gameID
                         }
                     }));
                     
+                } else if (response.command === "GAME.PREP") {
+                    
                     this._role = response.role;
                     this.initGame(response.height, response.width, response.role);
                     
+                    var that = this;
+                    var game = this._game;
+                    var gameStomp = this._gameStomp;
+                    
+                    // Wait until the game is initialised and then send a ready message.
+                    waitUntil(function () {
+                        return game.isInitialised();
+                    }, function () {
+                        gameStomp.send(that._gameQueue, {}, JSON.stringify({
+                            command: 'GAME.READY',
+                            data: {
+                                gameID: that._gameID
+                            }
+                        }));
+                    });
+                    
                 } else if (response.command === 'GAME.START') {
-                    this.startGame();
+                    
+                    this.startGame(response.start_in);
+                    
                 }
             },
             
@@ -125,8 +161,6 @@ $(function() {
                 
                 if (!this._gameInitialised) {
                     this._gameInitialised = true;
-                    
-                    this._game = TronGame.instance();
                     
                     $('body').append($('<div />').attr({
                         id: 'stage',
@@ -205,7 +239,39 @@ $(function() {
              */
             getGameStomp: function () {
                 return this._gameStomp;
-            }
+            },
+            
+            /**
+             * #._onAssetsLoaded
+             * Called when the assets have been loaded by Crafty.
+             * 
+             * @returns return this;
+             */
+            _onAssetsLoaded: function () {
+                Crafty.log("Assets loaded, execuing callback");
+                
+                var gameStomp = this._gameStomp;
+                var that = this;
+                
+                // Connect to the server and subscribe to our personal URL. Then send a message
+                // indicating our status as LOADED.
+                gameStomp.connect({}, function () {
+                    gameStomp.subscribe(that._gameTopic, function (response) {
+                        that.handle(JSON.stringify(response.body));
+                    });
+                
+                    gameStomp.send(that._gameQueue, {}, JSON.stringify({
+                        command: 'GAME.LOADED',
+                        data: {
+                            gameID: that._gameID,
+                            height: $(window).height(),
+                            width: $(window).width()
+                        }
+                    }));
+                });
+                
+                return this;
+            },
         };
         window.TronPreGame = TronPreGame;
         
@@ -386,7 +452,7 @@ $(function() {
 
                 this._setupCanvas(canvasID);
                 this._defineComponents();
-                this._loadAssets();
+                this.loadAssets();
                 
                 // Wait for the game to have all assets loaded before entering the main scene.
                 (function enterMainScene(game, callback) {
@@ -455,6 +521,16 @@ $(function() {
                 Crafty.stop(clearState);
 
                 return this;
+            },
+            
+            /**
+             * #.isInitialised
+             * Determines whether the game is initialised or not.
+             * 
+             * @return boolean
+             */
+            isInitialised: function () {
+                return this._initialised;
             },
 
             /**
@@ -549,7 +625,7 @@ $(function() {
              */
             lockPlayers: function () {
                 Crafty.log('Locking all players');
-                Crafty('Player').each(function (p) {
+                Crafty('Player').each(function () {
                     this.lock();
                 });
                 
@@ -564,11 +640,30 @@ $(function() {
              */
             unlockPlayers: function () {
                 Crafty.log('Unlocking all players');
-                Crafty('Player').each(function (p) {
+                Crafty('Player').each(function () {
                     this.unlock();
                 });
                 
                 return this;
+            },
+            
+            /**
+             * Loads all necessary images, sprites and audio files.
+             */
+            loadAssets: function (onLoad, onProgress, onError) {
+                if (!TronGame._assetsLoaded) {
+                    onLoad = onLoad || this._config.assetLoadHandlers.onLoad;
+                    onProgress = onProgress || this._config.assetLoadHandlers.onProgress;
+                    onError = onError || this._config.assetLoadHandlers.onError;
+
+                    // Apply the configuration for paths.
+                    Crafty.paths(TronGame._config.assetPaths);
+
+                    Crafty.load(this._assets, function () {
+                        TronGame._assetsLoaded = true;
+                        onLoad();
+                    }, onProgress, onError);
+                }
             },
 
             /**
@@ -611,25 +706,6 @@ $(function() {
                 } else {
                     Crafty.log("Setting up default canvas");
                     Crafty.init();
-                }
-            },
-
-            /**
-             * Loads all necessary images, sprites and audio files.
-             */
-            _loadAssets: function (onLoad, onProgress, onError) {
-                if (!TronGame._assetsLoaded) {
-                    onLoad = onLoad || this._config.assetLoadHandlers.onLoad;
-                    onProgress = onProgress || this._config.assetLoadHandlers.onProgress;
-                    onError = onError || this._config.assetLoadHandlers.onError;
-
-                    // Apply the configuration for paths.
-                    Crafty.paths(TronGame._config.assetPaths);
-
-                    Crafty.load(this._assets, function () {
-                        TronGame._assetsLoaded = true;
-                        onLoad();
-                    }, onProgress, onError);
                 }
             },
 
@@ -1559,7 +1635,6 @@ $(function() {
 
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
-            Crafty.log(maxParticles);
             Crafty.e("2D, Canvas, Particles").particles({
                 // Maximum number of particles in frame at any one time.
                 maxParticles: maxParticles,
