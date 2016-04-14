@@ -116,15 +116,23 @@ public class GameController {
     }
 
     private void readyAndStart(User user, Game game, Command command) {
-        LOGGER.debug("User: {} -> ready and start", user.getUsername());
+        LOGGER.debug("User: {} -> ready", user.getUsername());
         GamerDTO currentPlayer = game.getCurrentPlayer(user.getId());
+        currentPlayer.setReady(true);
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
-        final JSONObject response = new JSONObject();
-        response.put("gameID", game.getGameID());
-        response.put("command", Command.Game.START);
-        // start game in time to start - transmission delay
-        response.put("start_in", Game.TIME_TO_START - currentPlayer.getPingRate());
-        template.convertAndSendToUser(currentPlayer.getUsername(), OUT_BOUND, response.toString());
+
+        // only response when both players are ready
+        if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
+            final JSONObject response = new JSONObject();
+            response.put("gameID", game.getGameID());
+            response.put("command", Command.Game.START);
+            // start game in time to start - transmission delay
+            response.put("start_in", Game.TIME_TO_START - currentPlayer.getPingRate());
+            template.convertAndSendToUser(game.getChallenger().getUsername(), OUT_BOUND, response.toString());
+            LOGGER.debug("Challenger: {} -> start", game.getChallenger().getUsername());
+            template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
+            LOGGER.debug("Challenged: {} -> start", game.getChallenged().getUsername());
+        }
     }
 
     private void update(final User user, final Game game, final Command command) {

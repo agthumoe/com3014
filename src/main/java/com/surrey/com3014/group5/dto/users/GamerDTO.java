@@ -12,6 +12,7 @@ public class GamerDTO extends UserDTO {
     private static final long serialVersionUID = -1223709935605109559L;
     private String role;
     private Resolution resolution = null;
+    private boolean ready = false;
     private GameData gameData = new GameData();
     private long messageSentTime;
 
@@ -27,6 +28,7 @@ public class GamerDTO extends UserDTO {
         setEmail(user.getEmail());
         setName(user.getName());
         this.role = role;
+        this.ready = false;
     }
 
     public long getMessageSentTime() {
@@ -90,6 +92,14 @@ public class GamerDTO extends UserDTO {
         this.gameData.setRotation(rotation);
     }
 
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
     @Override
     public String toString() {
         return "Gamer{" +
@@ -100,6 +110,7 @@ public class GamerDTO extends UserDTO {
             ", role=" + role +
             ", resolution=" + resolution +
             ", gameData=" + gameData +
+            ", ready=" + ready +
             '}';
     }
 
