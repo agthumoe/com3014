@@ -5,12 +5,14 @@ import org.springframework.security.access.AccessDeniedException;
 
 import java.io.Serializable;
 import java.util.Optional;
+import org.springframework.util.Assert;
 
 /**
  * @author Aung Thu Moe
  */
 public class Game implements Serializable {
 //    private static final Logger LOGGER = LoggerFactory.getLogger(Game.class);
+
     private static final long serialVersionUID = -5340436566899111089L;
     public static final int TIME_TO_START = 5000;
     private String gameID;
@@ -40,6 +42,8 @@ public class Game implements Serializable {
     }
 
     public PlayerDTO getCurrentPlayer(long id) {
+        Assert.notNull(this.challenger, "class field: challenger hasn't been set yet");
+        Assert.notNull(this.challenged, "class field: challenged hasn't been set yet");
         if (id == challenger.getId()) {
             return challenger;
         } else if (id == challenged.getId()) {
@@ -72,8 +76,12 @@ public class Game implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Game game = (Game) o;
 
@@ -88,13 +96,13 @@ public class Game implements Serializable {
 
     @Override
     public String toString() {
-        return "Game{" +
-            "gameID='" + gameID + '\'' +
-            ", challenger=" + challenger +
-            ", challenged=" + challenged +
-            ", expired=" + expired +
-            ", started=" + started +
-            '}';
+        return "Game{"
+                + "gameID='" + gameID + '\''
+                + ", challenger=" + challenger
+                + ", challenged=" + challenged
+                + ", expired=" + expired
+                + ", started=" + started
+                + '}';
     }
 
     public void setPlayerResolution(long userID, int height, int width) {

@@ -11,7 +11,7 @@ Tron game development as part of com3014 group coursework
 * ```bower install``` to install web components
 
 ## Configure database
-Create ```database.properties``` file with the following codes in the ```resources/META-INF/resources/properties``` folder.
+Create ```database.properties``` file with the following codes in the ```resources/META-INF``` folder.
 
     # YOUR MYSQL URL (following is the default so will probably work for everyone)
     spring.datasource.url= jdbc:mysql://localhost:3306/trondb
@@ -68,6 +68,12 @@ Create ```database.properties``` file with the following codes in the ```resourc
 
 ## Deployment notes
 Need to redirect port 8080 to port 80
+
     iptables --insert INPUT --protocol tcp --dport 80 --jump ACCEPT
     iptables --insert INPUT --protocol tcp --dport 8080 --jump ACCEPT
     iptables --table nat --append PREROUTING --in-interface eth0 --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
+    // restart the ip tables
+    iptables -P INPUT ACCEPT
+    iptables -P OUTPUT ACCEPT
+    iptables -P FORWARD ACCEPT
+    iptables -F

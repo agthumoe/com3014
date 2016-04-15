@@ -156,6 +156,7 @@ dist/
 nbdist/
 nbactions.xml
 .nb-gradle/
+nb-configuration.xml
 
 ### Directories
 bower_components
@@ -165,4 +166,3 @@ logs
 /src/main/webapp/dist
 /src/main/webapp/META-INF
 /src/main/webapp/assets/styles/*.css
-database.properties
