@@ -164,6 +164,6 @@ logs
 
 ### Project specific
 /src/main/webapp/dist
-/src/main/resources/META-INF/database.properties
+/src/main/resources/config/database.properties
 /src/main/webapp/META-INF
 /src/main/webapp/assets/styles/*.css
