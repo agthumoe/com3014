@@ -970,15 +970,15 @@ $(function() {
                                     //
                                     // The centrepoint is tracked on a frame by frame basis.
                                     if (this._magnitude >= this._trailRequiredMagnitude) {
-                                        var t = Crafty.e('Trail').attr({
-                                            x: (this._absoluteCentre.x),
-                                            y: (this._absoluteCentre.y - 2),
-                                            rotation: this.rotation
-                                        })
-                                        .color(this._trailColour)
-                                        .setPlayer(this);
-
-                                        this._trail.push(t);
+//                                        var t = Crafty.e('Trail').attr({
+//                                            x: (this._absoluteCentre.x),
+//                                            y: (this._absoluteCentre.y - 2),
+//                                            rotation: this.rotation
+//                                        })
+//                                        .color(this._trailColour)
+//                                        .setPlayer(this);
+//
+//                                        this._trail.push(t);
                                     }
                                 }
                             }
