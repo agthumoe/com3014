@@ -69,11 +69,12 @@ public class GameController {
             response.put("command", Command.Error.DENY);
             template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
             return false;
-        } else if (game.isExpired()) {
-            response.put("command", Command.Error.EXPIRED);
-            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
-            return false;
         }
+//        } else if (game.isExpired()) {
+//            response.put("command", Command.Error.EXPIRED);
+//            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+//            return false;
+//        }
         return true;
     }
 
