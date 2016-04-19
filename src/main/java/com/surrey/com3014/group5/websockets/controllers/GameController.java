@@ -155,8 +155,9 @@ public class GameController {
         String status = command.getStringData("status");
         if (status != null && status.equals("EXPLODED")) {
             game.setExpired(true);
-            leaderboardService.setLoser(user.getId());
-            leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
+            //leaderboardService.setLoser(user.getId());
+            //leaderboardService.setWinner(game.getOppositePlayer(user.getId()).getId());
+            leaderboardService.adjustEloRating(game.getOppositePlayer(user.getId()).getId(),user.getId());
             LOGGER.debug("game: {}, has finished!", game.getGameID());
         }
     }

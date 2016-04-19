@@ -19,4 +19,6 @@ public interface LeaderboardService extends MutableService<Leaderboard>{
     void setWinner(long userID);
 
     void setLoser(long userID);
+
+    void adjustEloRating(long winnerID, long loserID);
 }

@@ -39,7 +39,7 @@ public class Leaderboard extends MutableModel {
      */
     @Column(nullable = false)
     @NotNull
-    private double ratio = 0.000;
+    private double ratio = 1500;
 
     /**
      * Default constructor initialise this leaderboard object.
@@ -58,7 +58,7 @@ public class Leaderboard extends MutableModel {
         this.user = user;
         this.wins = 0;
         this.losses = 0;
-        this.ratio = 0.000;
+        this.ratio = 1500;
     }
 
     /**

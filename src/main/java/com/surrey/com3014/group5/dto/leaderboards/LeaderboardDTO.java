@@ -4,6 +4,7 @@ import com.surrey.com3014.group5.dto.users.UserDTO;
 import io.swagger.annotations.ApiModel;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 /**
  * @author Aung Thu Moe
@@ -52,8 +53,10 @@ public class LeaderboardDTO implements Serializable {
         this.losses = losses;
     }
 
-    public double getRatio() {
-        return ratio;
+    public String getRatio() {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return df.format(this.ratio);
+
     }
 
     public void setRatio(double ratio) {

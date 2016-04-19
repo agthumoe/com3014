@@ -117,7 +117,7 @@ $(function () {
                             "data-username": usersToAdd[i].username
                         })
                         .addClass('list-group-item')
-                        .append(usersToAdd[i].name)
+                        .append(usersToAdd[i].name + " [" + usersToAdd[i].rating + "]")
                         .append(this._getChallengeHTML(usersToAdd[i].id, usersToAdd[i].name));
                     this._activeUsers.append(li);
                 }

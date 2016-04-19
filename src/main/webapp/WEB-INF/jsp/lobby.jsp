@@ -19,7 +19,7 @@
                     <th>Username</th>
                     <th>Win</th>
                     <th>Lost</th>
-                    <th>Ratio</th>
+                    <th>Rating</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -75,7 +75,7 @@
             url: '/api/account',
             success: function (response) {
                 window.User = response;
-                
+
                 var challengeManager = Tron('challenge', function (m) {
                     m.init(User.username);
                 });

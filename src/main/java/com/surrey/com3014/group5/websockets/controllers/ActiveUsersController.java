@@ -2,6 +2,7 @@ package com.surrey.com3014.group5.websockets.controllers;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.websockets.dto.ActiveUserDTO;
 import com.surrey.com3014.group5.websockets.services.ActiveUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 @Controller
 public class ActiveUsersController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveUsersController.class);
 
     @Autowired
@@ -29,16 +31,17 @@ public class ActiveUsersController {
 
     @Scheduled(fixedRate = 5000)
     @SendTo("/topic/activeUsers")
-    private List<UserDTO> broadcastActiveUsers() {
+    private List<ActiveUserDTO> broadcastActiveUsers() {
         return activeUserService.getActiveUsers();
     }
 
     @MessageMapping("/queue/activeUsers")
     @SendTo("/topic/activeUsers")
-    public List<UserDTO> activeUser(Message<Object> message) {
+    public List<ActiveUserDTO> activeUser(Message<Object> message) {
         Principal principal = message.getHeaders().get(SimpMessageHeaderAccessor.USER_HEADER, Principal.class);
         User user = (User) ((Authentication) principal).getPrincipal();
-        activeUserService.update(new UserDTO(user));
+        activeUserService.update(new ActiveUserDTO(user));
         return activeUserService.getActiveUsers();
     }
+
 }
