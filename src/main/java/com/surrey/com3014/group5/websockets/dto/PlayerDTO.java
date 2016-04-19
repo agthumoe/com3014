@@ -2,6 +2,8 @@ package com.surrey.com3014.group5.websockets.dto;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.websockets.domains.Resolution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Optional;
@@ -10,7 +12,7 @@ import java.util.Optional;
  * @author Aung Thu Moe
  */
 public class PlayerDTO extends UserDTO {
-//    private static final Logger LOGGEr = LoggerFactory.getLogger(GamerDTO.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerDTO.class);
     public static final String CHALLENGER = "CHALLENGER";
     public static final String CHALLENGED = "CHALLENGED";
     private static final long serialVersionUID = -1223709935605109559L;
@@ -60,10 +62,9 @@ public class PlayerDTO extends UserDTO {
     }
 
     public void setResolution(Resolution resolution) {
-//        LOGGEr.debug("UserID: {} set resolution", getId());
         Assert.notNull(resolution);
         if (this.resolution.isPresent()) {
-            throw new RuntimeException("resolution is already set");
+            LOGGER.warn("Resolution has already set");
         }
         this.resolution = Optional.of(resolution);
     }
