@@ -63,13 +63,14 @@ public class GameController {
     }
 
     private boolean validate(User user, Game game, Command command) {
-        final JSONObject response = new JSONObject();
-        response.put("gameID", game.getGameID());
-        if (game.getGameID() == null) {
-            response.put("command", Command.Error.DENY);
-            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
-            return false;
-        }
+        // disable for the time being, TODO:: enable later
+//        final JSONObject response = new JSONObject();
+//        response.put("gameID", game.getGameID());
+//        if (game.getGameID() == null) {
+//            response.put("command", Command.Error.DENY);
+//            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+//            return false;
+//        }
 //        } else if (game.isExpired()) {
 //            response.put("command", Command.Error.EXPIRED);
 //            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
@@ -128,12 +129,12 @@ public class GameController {
         currentPlayer.setMessageReceivedTime(System.currentTimeMillis());
         final JSONObject response = new JSONObject();
         response.put("gameID", game.getGameID());
-        // if game is already started, response with started message
-        if (game.isStarted()) {
-            LOGGER.debug("User: {}, Server response -> GAME.STARTED", user.getUsername());
-            response.put("command", Command.Game.STARTED);
-            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
-        } else if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
+        // if game is already started, response with started message, TODO:: enable later
+//        if (game.isStarted()) {
+//            LOGGER.debug("User: {}, Server response -> GAME.STARTED", user.getUsername());
+//            response.put("command", Command.Game.STARTED);
+//            template.convertAndSendToUser(user.getUsername(), OUT_BOUND, response.toString());
+//        } else if (game.getChallenged().isReady() && game.getChallenger().isReady()) {
             // only response when both players are ready
             response.put("command", Command.Game.START);
             // start game in time to start - transmission delay
@@ -143,7 +144,7 @@ public class GameController {
             template.convertAndSendToUser(game.getChallenged().getUsername(), OUT_BOUND, response.toString());
             LOGGER.debug("Challenged: {}, Server response -> GAME.START", game.getChallenged().getUsername());
             game.setStarted(true);
-        }
+//        }
     }
 
     private void update(final User user, final Game game, final Command command) {
