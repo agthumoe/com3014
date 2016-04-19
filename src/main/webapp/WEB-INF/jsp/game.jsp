@@ -14,9 +14,6 @@
 <script src="../../bower_components/stomp-websocket/lib/stomp.min.js"></script>
 <script type="text/javascript" src="../../assets/libs/tron.game.js"></script>
 <script type="text/javascript" src="../../assets/libs/tron.js"></script>
-<script type="text/javascript" src="../../assets/libs/crafty_debug/debugBar.js"></script>
-<script type="text/javascript" src="../../assets/libs/crafty_debug/panels/entities.js"></script>
-<script type="text/javascript" src="../../assets/libs/crafty_debug/panels/assets.js"></script>
 <script type="text/javascript">
     $(function () {
         window.User = null;

@@ -158,7 +158,7 @@ $(function() {
                         
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            Crafty.e('CyanPlayer, ControllablePlayer, Challenger').attr({
+                            Crafty.e('CyanPlayer, LocalPlayer, Challenger').attr({
                                 x: 100,
                                 y: 100,
                                 rotation: 90
@@ -178,11 +178,11 @@ $(function() {
                             Crafty.e('CyanPlayer, RemotePlayer, Challenger').attr({
                                 x: 100,
                                 y: 100,
-                                rotation: -90
+                                rotation: 90
                             })
                             .setStomp(that._gameStomp, that._gameTopic);
                         
-                            Crafty.e('OrangePlayer, ControllablePlayer, Challenged').attr({
+                            Crafty.e('OrangePlayer, LocalPlayer, Challenged').attr({
                                 x: width - 100,
                                 y: height - 100,
                                 rotation: -90
@@ -240,18 +240,18 @@ $(function() {
                 this._gameStomp = Stomp.over(this._gameSocket);
                 
                 // Change the debug function of stomp to filter out any game updates.
-                this._gameStomp.debug = function (s) {
-                    var um = Stomp.Frame.unmarshall(s);
-                    if (um.frames.length > 0 && um.frames[0].body !== "") {
-                        var parsed = JSON.parse(um.frames[0].body);
-                        
-                        if (!String(parsed.command).match("GAME.UPDATE")) {
-                            Crafty.log(s);
-                        }
-                    } else {
-                        Crafty.log(s);
-                    }
-                }
+//                this._gameStomp.debug = function (s) {
+//                    var um = Stomp.Frame.unmarshall(s);
+//                    if (um.frames.length > 0 && um.frames[0].body !== "") {
+//                        var parsed = JSON.parse(um.frames[0].body);
+//                        
+//                        if (!String(parsed.command).match("GAME.UPDATE")) {
+//                            Crafty.log(s);
+//                        }
+//                    } else {
+//                        Crafty.log(s);
+//                    }
+//                }
                 
                 var gameStomp = this._gameStomp;
                 var that = this;                
@@ -1108,15 +1108,13 @@ $(function() {
                      * Defines a controllable player.
                      *
                      * This must be listed when calling Crafty.e after the playe type.
-                     *
-                     * @example Crafty.e('CyanPlayer, ControllablePlayer')
                      */
                     Crafty.c('ControllablePlayer', {
                         /**
                          * Object requires motion and keyboard component. Angular motion is handled
                          * manually and so AngularMotion is nto required.
                          */
-                        required: "Player, Motion, Keyboard, Model",
+                        required: "Player, Motion",
 
                         /**
                          * Defines the magnitude used to multiply the movement vector to denote the
@@ -1138,21 +1136,11 @@ $(function() {
                         /**
                          * Defines whether the up key has been pressed or not.
                          */
-                        _keysPressed: {
+                        _movement: {
                             UP: false,
                             LEFT: false,
                             RIGHT: false
                         },
-                        
-                        /**
-                         * A reference to the STOMP interface used to send updates
-                         */
-                        _stomp: null,
-                        
-                        /**
-                         * A reference to the GAME ID sent in every communication with the server
-                         */
-                        _gameID: null,
 
                         /**
                          * Initialiser function to set the objects default properties.
@@ -1165,57 +1153,27 @@ $(function() {
                          * Binds key down and up events and handles movement caps.
                          */
                         events: {
-                            KeyDown: function (e) {
-                                // If we're moving, and the key pressed is a directional change then
-                                // apply some rotation.
-                                if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this.attr('_keysPressed.RIGHT', true);
-                                }
-
-                                if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this.attr('_keysPressed.LEFT', true);
-                                }
-
-                                if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this.attr('_keysPressed.UP', true);
-                                }
-                            },
-
-                            KeyUp: function (e) {
-                                if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this.attr('_keysPressed.RIGHT', false);
-                                }
-
-                                if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this.attr('_keysPressed.LEFT', false);
-                                }
-
-                                if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this.attr('_keysPressed.UP', false);
-                                }
-                            },
-
                             EnterFrame: function () {
                                 // Ensure the object hasn't been locked before manipulating it.
                                 if (!this.isLocked()) {
                                     // Handle rotation of the object. Prevent rotation if both arrows
                                     // are pushed down.
-                                    if (!(this._keysPressed.LEFT && this._keysPressed.RIGHT)
-                                            && (this._keysPressed.LEFT || this._keysPressed.RIGHT)) {
+                                    if (!(this._movement.LEFT && this._movement.RIGHT)
+                                            && (this._movement.LEFT || this._movement.RIGHT)) {
 
-                                        if (this._keysPressed.LEFT) {
+                                        if (this._movement.LEFT) {
                                             this.attr('rotation', 
                                                 this.rotation - this._rotationSpeed);
                                         }
 
-                                        if (this._keysPressed.RIGHT) {
+                                        if (this._movement.RIGHT) {
                                             this.attr('rotation', 
                                                 this.rotation + this._rotationSpeed);
                                         }
                                     }
 
                                     // Does the user want is to move forward?
-                                    if (this._keysPressed.UP) {
+                                    if (this._movement.UP) {
                                         // Adjust the magnitude ensuring we don't go over the limit.
                                         if (this._magnitude <= this._maxMagnitude) {
                                             this.attr('_magnitude', 
@@ -1253,38 +1211,9 @@ $(function() {
                                     this.attr('vx', 0);
                                     this.attr('vy', 0);
                                 }
-                            },
-                            
-                            Remove: function () {
-                                if (this._controlsEnabled) {
-                                    // We want to be sure to send 1 last update containing explode
-                                    // so we know this object blew up on the other client.
-                                    this.sendUpdate();
-                                }
-                            },
-                            
-                            'Change': function (e) {
-                                // Won't send for remote as remote doesn't set via .attr so the 
-                                // change event is never triggered for it.
-                                if (typeof e._keysPressed === "object") {
-                                    this.sendUpdate();
-                                }
                             }
                         },
                         
-                        /**
-                         * #.controls
-                         * A method to allow control of whether the controls for this object
-                         * are on or off.
-                         * @param bool status
-                         * @returns this
-                         */
-                        controls: function (status) {
-                            this._controlsEnabled = status;
-                            
-                            return this;
-                        },
-
                         /**
                          * #.isMoving
                          * Determines if this object is moving or not.
@@ -1294,6 +1223,94 @@ $(function() {
                         isMoving: function () {
                             var v = this.velocity();
                             return (v.x !== 0 || v.y !== 0);
+                        }
+                    });
+                    
+                    /**
+                     * Defines a local controllable player. This player is controlled via 
+                     * keyboard input.
+                     */
+                    Crafty.c('LocalPlayer', {
+                        
+                         /**
+                         * A reference to the STOMP interface used to send updates
+                         */
+                        _stomp: null,
+                        
+                        /**
+                         * A reference to the GAME ID sent in every communication with the server
+                         */
+                        _gameID: null,
+                        
+                        /**
+                         * Requierd components
+                         */
+                        required: 'ControllablePlayer, Keyboard, Model',
+                        
+                        /**
+                         * Events 
+                         */
+                        events: {
+                            KeyDown: function (e) {
+                                // If we're moving, and the key pressed is a directional change then
+                                // apply some rotation.
+                                if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
+                                    this.attr('_movement.RIGHT', true);
+                                }
+
+                                if (e.keyCode === Crafty.keys.LEFT_ARROW) {
+                                    this.attr('_movement.LEFT', true);
+                                }
+
+                                if (e.keyCode === Crafty.keys.UP_ARROW) {
+                                    this.attr('_movement.UP', true);
+                                }
+                            },
+
+                            KeyUp: function (e) {
+                                if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
+                                    this.attr('_movement.RIGHT', false);
+                                }
+
+                                if (e.keyCode === Crafty.keys.LEFT_ARROW) {
+                                    this.attr('_movement.LEFT', false);
+                                }
+
+                                if (e.keyCode === Crafty.keys.UP_ARROW) {
+                                    this.attr('_movement.UP', false);
+                                }
+                            },
+                            
+                            'Change[_movement]': function (e) {
+                                this.sendUpdate(e);
+                            },
+                            
+                            Remove: function () {
+                                this.sendUpdate();
+                            }
+                        },
+                        
+                        /**
+                         * #.sendUpdates
+                         * Sends an update to the server about position, rotation, etc.
+                         * 
+                         * @returns void
+                         */
+                        sendUpdate: function (e) {
+                            // Send information to server about position and rotation.
+                            this._stomp.send(TronPreGame._gameQueue, {}, 
+                                JSON.stringify({
+                                    'command': 'GAME.UPDATE',
+                                    'data': {
+                                        gameID: this._gameID,
+                                        status: this._status,
+                                        _movement: e,
+                                        _rotation: this._rotation,
+                                        x: this.x,
+                                        y: this.y,
+                                    }
+                                })
+                            );
                         },
                         
                         /**
@@ -1311,27 +1328,133 @@ $(function() {
                             
                             return this;
                         },
+                    });
+                    
+                    /**
+                     * Defines a controllable player.
+                     *
+                     * This must be listed when calling Crafty.e after the playe type.
+                     *
+                     * @example Crafty.e('CyanPlayer, ControllablePlayer')
+                     */
+                    Crafty.c('ControllablePlayer2', {
+                        /**
+                         * Object requires motion and keyboard component. Angular motion is handled
+                         * manually and so AngularMotion is nto required.
+                         */
+                        required: "Player, Motion",
+
+                        /**
+                         * Defines the magnitude used to multiply the movement vector to denote the
+                         * maximum velocity the object can travel in in the x and y planes.
+                         */
+                        _maxMagnitude: 300,
+
+                        /**
+                         * Defines the magnitude to apply to the objects acceleration properties when
+                         * manipulating the objects movement vector.
+                         */
+                        _magnitudeIncrement: 5,
+
+                        /**
+                         * Defines the rotational speed of the object.
+                         */
+                        _rotationSpeed: 7,
+
+                        /**
+                         * Defines whether the up key has been pressed or not.
+                         */
+                        _movement: {
+                            UP: false,
+                            LEFT: false,
+                            RIGHT: false
+                        },
+
+                        /**
+                         * Initialiser function to set the objects default properties.
+                         */
+                        init: function () {
+                            this.origin('center');
+                        },
+
+                        /**
+                         * Binds key down and up events and handles movement caps.
+                         */
+                        events: {
+                            EnterFrame: function () {
+                                // Ensure the object hasn't been locked before manipulating it.
+                                if (!this.isLocked()) {
+                                    // Handle rotation of the object. Prevent rotation if both arrows
+                                    // are pushed down.
+                                    if (!(this._movement.LEFT && this._movement.RIGHT)
+                                            && (this._movement.LEFT || this._movement.RIGHT)) {
+
+                                        if (this._movement.LEFT) {
+                                            this.attr('rotation', 
+                                                this.rotation - this._rotationSpeed);
+                                        }
+
+                                        if (this._movement.RIGHT) {
+                                            this.attr('rotation', 
+                                                this.rotation + this._rotationSpeed);
+                                        }
+                                    }
+
+                                    // Does the user want is to move forward?
+                                    if (this._movement.UP) {
+                                        // Adjust the magnitude ensuring we don't go over the limit.
+                                        if (this._magnitude <= this._maxMagnitude) {
+                                            this.attr('_magnitude', 
+                                                this._magnitude + this._magnitudeIncrement);
+                                        }
+
+                                        // Scale the vector to the new magnitude.
+                                        this._vector.scaleToMagnitude(this._magnitude);
+
+                                        // Adjust the x and y velocity of the objet accordingly.
+                                        this.attr('vx', this._vector.x);
+                                        this.attr('vy', this._vector.y);
+                                    } else {
+                                        // Decrease the magnitude while it's greater than 1
+                                        if (this._magnitude > 1) {
+                                            this.attr('_magnitude', 
+                                                this._magnitude - this._magnitudeIncrement);
+                                        }
+
+                                        // If magnitude is less than or equal to 1 we're at the smallest
+                                        // magnitude and want to stop the object moving. If not, we want
+                                        // to apply the reduced magnitude and set the velocity accordingly.
+                                        if (this._magnitude <= 1) {
+                                            this.attr('_magnitude', 1);
+                                            this.attr('vx', 0);
+                                            this.attr('vy', 0);
+                                        } else {
+                                            this._vector.scaleToMagnitude(this._magnitude);
+                                            this.attr('vx', this._vector.x);
+                                            this.attr('vy', this._vector.y);
+                                        }
+                                    }
+                                } else {
+                                    // Object is locked so set all values to 0
+                                    this.attr('vx', 0);
+                                    this.attr('vy', 0);
+                                }
+                            }
+                        },
                         
                         /**
-                         * #.sendUpdates
-                         * Sends an update to the server about position, rotation, etc.
-                         * 
-                         * @returns void
+                         * #.isMoving
+                         * Determines if this object is moving or not.
+                         *
+                         * @returns bool
                          */
-                        sendUpdate: function () {
-                            // Send information to server about position and rotation.
-                            this._stomp.send(TronPreGame._gameQueue, {}, 
-                                JSON.stringify({
-                                    'command': 'GAME.UPDATE',
-                                    'data': {
-                                        gameID: this._gameID,
-                                        status: this._status,
-                                        _keysPressed: this._keysPressed
-                                    }
-                                })
-                            );
+                        isMoving: function () {
+                            var v = this.velocity();
+                            return (v.x !== 0 || v.y !== 0);
                         }
                     });
+                    
+                    
                     
                     /**
                      * A remote player updates by the server.
@@ -1340,13 +1463,16 @@ $(function() {
                         /**
                          * Required modules.
                          */
-                        required: 'Player, Motion',
+                        required: 'ControllablePlayer2',
                         
                         /**
                          * Reference to the STOMP interface to commuicate with the server.
                          */
                         _stomp: null,
                         
+                        /**
+                         * Initialisation
+                         */
                         init: function () {
                             this.origin('center');
                         },
@@ -1360,7 +1486,6 @@ $(function() {
                          * @returns this
                          */
                         setStomp: function (stomp, url) {
-                            
                             this._stomp = stomp;
                             var that = this;
                             
@@ -1369,9 +1494,8 @@ $(function() {
                                 if (body.command === 'GAME.UPDATE') {
                                     // Look at the status and determine if we should blow up or not
                                     if (body.status === 'EXPLODED') {
-                                        
                                         that.lock();
-                                        that._keysPressed = {
+                                        that._movement = {
                                             UP: false,
                                             LEFT: false,
                                             RIGHT: false
@@ -1379,13 +1503,19 @@ $(function() {
                                         that.vx = 0;
                                         that.vy = 0;
                                         that.explode();
-                                        
                                     } else {
+                                        delete body['gameID'];
+                                        delete body['status'];
                                         
-                                        for (var k in body._keysPressed) {
-                                            that._keysPressed[k] = body._keysPressed[k];
+                                        for (var k in body._movement) {
+                                            that._movement[k] = body._movement[k];
                                         }
                                         
+                                        delete body['_movement'];
+                                        
+                                        for (var i in body) {
+                                            that[i] = body[i];
+                                        }
                                     }
                                 }
                             });
