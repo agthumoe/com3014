@@ -83,7 +83,6 @@
 <%@include file="../../template/footer.jsp" %>
 <%@include file="../../template/scripts.jsp" %>
 <script src="../../../assets/scripts/users.js"></script>
-<script src="../../../assets/scripts/delete.js"></script>
 </body>
 </html>
 
