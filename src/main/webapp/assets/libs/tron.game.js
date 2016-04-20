@@ -158,14 +158,14 @@ $(function() {
                         
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            Crafty.e('CyanPlayer, LocalPlayer, Challenger').attr({
+                            Crafty.e('CyanPlayer, LocalPlayer').attr({
                                 x: 100,
                                 y: 100,
                                 rotation: 90
                             })
                             .setStomp(that._gameStomp, that._gameID);
                             
-                            Crafty.e('OrangePlayer, RemotePlayer, Challenged').attr({
+                            Crafty.e('OrangePlayer, RemotePlayer').attr({
                                 x: width - 100,
                                 y: height - 100,
                                 rotation: -90
@@ -175,14 +175,14 @@ $(function() {
                         
                         // Setup required for the challenged player.
                         if (role === 'CHALLENGED') {
-                            Crafty.e('CyanPlayer, RemotePlayer, Challenger').attr({
+                            Crafty.e('CyanPlayer, RemotePlayer').attr({
                                 x: 100,
                                 y: 100,
                                 rotation: 90
                             })
                             .setStomp(that._gameStomp, that._gameTopic);
                         
-                            Crafty.e('OrangePlayer, LocalPlayer, Challenged').attr({
+                            Crafty.e('OrangePlayer, LocalPlayer').attr({
                                 x: width - 100,
                                 y: height - 100,
                                 rotation: -90
@@ -730,60 +730,30 @@ $(function() {
                 // Ensure components haven't been defined yet.
                 if (!TronGame._componentsDefined) {
                     /**
-                     * Define a generic square object.
-                     */
-                    Crafty.c('Square', {
-                        required: '2D, Canvas, Color'
-                    });
-
-                    /**
-                     * Defines a debug point used only when debugging things.
-                     *
-                     * Relatively useful.
-                     */
-                    Crafty.c('DebugPoint', {
-                        required: 'Square',
-
-                        init: function () {
-                            this.h = 2;
-                            this.w = 2;
-                            this.color('red');
-                        }
-                    });
-
-                    /**
                      * Defines a bike trail.
                      */
-                    Crafty.c('Trail', {
+                    Crafty.c('Bullet', {
                         /**
                          * Define required components
                          */
-                        required: 'Square, Collision, Tween',
-
-                        /**
-                         * A reference to the player associated with this trail object.
-                         */
-                        _player: null,
-
-                        /**
-                         * Determines whether this trail object is active or not.
-                         */
+                        required: '2D, Canvas, Color, Motion, Collision',
+                        
+                        _timeout: 500,
+                        
+                        _magnitude: 500,
+                        
                         _active: false,
 
                         /**
                          * Initialise object.
                          */
                         init: function () {
-                            this.h = 6;
+                            this.h = 4;
                             this.w = 1;
                             this.origin('center');
-                            this.checkHits('Player');
+                            //this.checkHits('Player');
                             this.z = 5;
-
-                            // Activate the trail after some time  to avoid blowing ourselves up.
-                            setTimeout(function (trail) {
-                                trail.activate();
-                            }, 200, this);
+                            this.color('cyan');
                         },
 
                         /**
@@ -797,63 +767,40 @@ $(function() {
                                 }
                             }
                         },
-
+                        
                         /**
-                         * #.setPlayer
-                         * Sets the player associated with this object.
-                         *
-                         * @param player
-                         * @return this
+                         * Fires the bullet along a given vector.
+                         * 
+                         * @param Crafty.math.Vector2D vector
+                         * @returns void
                          */
-                        setPlayer: function (player) {
-                            this._player = player;
-                            return this;
+                        fire: function (vector) {
+                            vector.scaleToMagnitude(this._magnitude);
+                            
+                            this.vx = vector.x;
+                            this.vy = vector.y;
+                            
+                            var that = this;
+                            
+                            setTimeout(function () {
+                                that._active = true;
+                            }, 150);
+                            
+                            setTimeout(that.explode, this._timeout);
                         },
-
+                        
                         /**
-                         * #.getPlayer
-                         * Retrieves the player this Trail object is associated with.
-                         *
-                         * @returns Player
+                         * Causes the bullet to blow up.
+                         * 
+                         * @returns void
                          */
-                        getPlayer: function () {
-                            return this._player;
-                        },
-
-                        /**
-                         * #.isActive
-                         * Determines if this object is active or not.
-                         *
-                         * @returns bool
-                         */
-                        isActive: function () {
-                            return this._active;
-                        },
-
-                        /**
-                         * #.activate
-                         * Activates this object making it collidable
-                         *
-                         * @returns this
-                         */
-                        activate: function () {
-                            this._active = true;
-
-                            // Schedule time to remove the trail
-                            setTimeout(function (trail) {
-                                // Tweem the trail out so it's invisible.
-                                trail.tween({
-                                    alpha: 0
-                                }, 500, "easeOutQuad");
-
-                                // Set another event to remove the trail from the map.
-                                setTimeout(function (trail) {
-                                    trail.getPlayer().removeTrail(trail);
-                                    trail.destroy();
-                                }, 500, trail);
-                            }, TronGame._config.trailTimeout, this);
-
-                            return this;
+                        explode: function () {
+                            console.log("Xploded");
+//                            Crafty.e('Explosion')
+//                                .attr({
+//                                    x: this.x,
+//                                    y: this.y
+//                                });
                         }
                     });
 
@@ -864,7 +811,7 @@ $(function() {
                         /**
                          * Define required components.
                          */
-                        required: '2D, Canvas, Collision',
+                        required: '2D, Canvas, Collision, Keyboard',
 
                         /**
                          * Defines the absolute centre point of this object.
@@ -885,21 +832,6 @@ $(function() {
                         _magnitude: 1,
 
                         /**
-                         * Minimum required magnitude before a trail appears.
-                         */
-                        _trailRequiredMagnitude: 150,
-
-                        /**
-                         * The trail objects associated with this Player
-                         */
-                        _trail: [],
-
-                        /**
-                         * Defines the colour of this players trail.
-                         */
-                        _trailColour: 'red',
-
-                        /**
                          * Defines whether this object can be manipulated or not.
                          */
                         _lock: false,                        
@@ -908,6 +840,7 @@ $(function() {
                          * Status of this object.
                          */
                         _status: 'ACTIVE',
+                        
 
                         /**
                          * Initialises the objects properties.
@@ -960,26 +893,16 @@ $(function() {
                                     this.explode();
                                 }
                             },
-
-                            Move: function (oldPosition) {
-                                if (!this.isLocked()) {
-                                    // If we're over a configurable magnitude we want to begin creating
-                                    // a trail. Place the trail objects right behind the bike by negating
-                                    // the bikes vector and giving it a magnitude of 20, then adding
-                                    // the vector to the coordinates of the objects centre point.
-                                    //
-                                    // The centrepoint is tracked on a frame by frame basis.
-                                    if (this._magnitude >= this._trailRequiredMagnitude) {
-                                        var t = Crafty.e('Trail').attr({
-                                            x: (this._absoluteCentre.x),
-                                            y: (this._absoluteCentre.y - 2),
-                                            rotation: this.rotation
+                            
+                            KeyUp: function (e) {
+                                if (e.keyCode === Crafty.keys.SPACE) {
+                                    Crafty.e('Bullet')
+                                        .attr({
+                                            rotation: this.rotation,
+                                            x: this._absoluteCentre.x,
+                                            y: this._absoluteCentre.y
                                         })
-                                        .color(this._trailColour)
-                                        .setPlayer(this);
-
-                                        this._trail.push(t);
-                                    }
+                                        .fire(this._vector);
                                 }
                             }
                         },
@@ -1048,22 +971,6 @@ $(function() {
                                     player.destroy();
                                 }, 100, this);
                             }
-                        },
-
-                        /**
-                         * #.removeTrail
-                         * Removes a trail object from this Players trail.
-                         *
-                         * @param Object the Trail object.
-                         * @return this
-                         */
-                        removeTrail: function (trail) {
-                            var i = this._trail.indexOf(trail);
-                            if (i > -1) {
-                                this._trail.splice(i, 1);
-                            }
-
-                            return this;
                         }
                     });
                     
@@ -1077,14 +984,7 @@ $(function() {
                         /**
                          * Define requierd components.
                          */
-                        required: 'Player, Sprite_BikeOrange',
-
-                        /**
-                         * Initialise the objects parameters.
-                         */
-                        init: function () {
-                            this._trailColour = 'rgb(255, 120, 0)';
-                        }
+                        required: 'Player, Sprite_BikeOrange'
                     });
 
                     /**
@@ -1094,14 +994,7 @@ $(function() {
                         /**
                          * Define requierd components.
                          */
-                        required: 'Player, Sprite_BikeCyan',
-
-                        /**
-                         * Initialise the objects parameters.
-                         */
-                        init: function () {
-                            this._trailColour = 'cyan';
-                        }
+                        required: 'Player, Sprite_BikeCyan'
                     });
 
                     /**
@@ -1331,6 +1224,176 @@ $(function() {
                     });
                     
                     /**
+                     * Define a player object.
+                     */
+                    Crafty.c('Player2', {
+                        /**
+                         * Define required components.
+                         */
+                        required: '2D, Canvas, Collision, Keyboard',
+
+                        /**
+                         * Defines the absolute centre point of this object.
+                         */
+                        _absoluteCentre: {
+                            x: 0,
+                            y: 0
+                        },
+
+                        /**
+                         * Defines the movement vector for this object
+                         */
+                        _vector: new Crafty.math.Vector2D(),
+
+                        /**
+                         * Defines the current magnitude of our movement vector.
+                         */
+                        _magnitude: 1,
+
+                        /**
+                         * Defines whether this object can be manipulated or not.
+                         */
+                        _lock: false,                        
+                        
+                        /**
+                         * Status of this object.
+                         */
+                        _status: 'ACTIVE',
+                        
+
+                        /**
+                         * Initialises the objects properties.
+                         */
+                        init: function () {
+                            this.origin('center');
+                            this.checkHits('Player', 'Trail');
+                            this.z = 10;
+
+                            this.collision([
+                                10, 0,
+                                10, 32,
+                                22, 32,
+                                22, 0,
+                            ]);
+                        },
+
+                        /**
+                         * Defines events to hook in to.
+                         */
+                        events: {
+                            EnterFrame: function () {
+                                // Ensure the player doesn't go flying off the screen never to be
+                                // seen again
+                                if(this.x > Crafty.viewport.width + this.h) {
+                                    this.x = 0-this.h;
+                                }
+
+                                if(this.x < 0-this.h) {
+                                    this.x = Crafty.viewport.width;
+                                }
+
+                                if(this.y > Crafty.viewport.height + this.h) {
+                                    this.y = 0-this.h;
+                                }
+
+                                if(this.y < 0-this.h) {
+                                    this.y = Crafty.viewport.height;
+                                }
+
+                                // Calculate the vectors for the direction of the object.
+                                this._vector.x = Math.sin(Crafty.math.degToRad(this._rotation));
+                                this._vector.y = -Math.cos(Crafty.math.degToRad(this._rotation));
+                                this._absoluteCentre.x = this.x + this._origin.x;
+                                this._absoluteCentre.y = this.y + this._origin.y;
+                            },
+
+                            HitOn: function (collision) {
+                                if (collision[0].obj.has('Player')) {
+                                    this.explode();
+                                }
+                            },
+                            
+                            KeyUp: function (e) {
+                                if (e.keyCode === Crafty.keys.SPACE) {
+                                    Crafty.e('Bullet')
+                                        .attr({
+                                            rotation: this.rotation,
+                                            x: this._absoluteCentre.x,
+                                            y: this._absoluteCentre.y
+                                        })
+                                        .fire(this._vector);
+                                }
+                            }
+                        },
+
+                        /**
+                         * #.lock
+                         * Sets the lock on this object to true.
+                         *
+                         * @return this
+                         */
+                        lock: function () {
+                            this._lock = true;
+                            return this;
+                        },
+                        
+                        /**
+                         * #.unlock
+                         * Unlocks this player object.
+                         * 
+                         * @returns this
+                         */
+                        unlock: function () {
+                            this._lock = false;
+                            return this;
+                        },
+
+                        /**
+                         * #.isLocked
+                         * Determines if this object has been locked.
+                         *
+                         * @return bool
+                         */
+                        isLocked: function () {
+                            return this._lock;
+                        },
+
+                        /**
+                         * #.explode
+                         * Explodes this object replacing itself with an explosion object.
+                         *
+                         * @returns void
+                         */
+                        explode: function () {
+                            if (!this.isLocked()) {
+                                // Let everything know we've been muted.
+                                this.lock();
+
+                                // Rotate back into the 0d position.
+                                this.rotate = 0;
+                                
+                                // Set the exploded state
+                                this._status = 'EXPLODED';
+
+                                // Create a new explision object and offset it by 16 pixels moving it
+                                // up and left so it centres ove the top of the bike.
+                                //
+                                // We offset by 15 because the player is 32x23 and the explosion is
+                                // 64x64 so to centre one over the other we must move by 16.
+                                var e = Crafty.e('Explosion');
+                                e.attr({
+                                    x: this.x - 16,
+                                    y: this.y - 16
+                                });
+
+                                setTimeout(function (player) {
+                                    player.destroy();
+                                }, 100, this);
+                            }
+                        }
+                    });
+                    
+                    /**
                      * Defines a controllable player.
                      *
                      * This must be listed when calling Crafty.e after the playe type.
@@ -1342,7 +1405,7 @@ $(function() {
                          * Object requires motion and keyboard component. Angular motion is handled
                          * manually and so AngularMotion is nto required.
                          */
-                        required: "Player, Motion",
+                        required: "Player2, Motion",
 
                         /**
                          * Defines the magnitude used to multiply the movement vector to denote the
