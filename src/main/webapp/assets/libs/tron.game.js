@@ -795,12 +795,12 @@ $(function() {
                         /**
                          * Timeout before the bullet explodes.
                          */
-                        _timeout: 1000,
+                        _timeout: 1500,
                         
                         /**
                          * Magnitude the bullet should travel at.
                          */
-                        _magnitude: 500,
+                        _magnitude: 600,
                         
                         /**
                          * Indicator as to whether the bullet is active or not.
