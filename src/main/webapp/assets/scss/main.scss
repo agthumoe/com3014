@@ -47,6 +47,14 @@ $message-background-color: #ffffff;
     color: $brand-warning;
 }
 
+.primary {
+    color: $brand-primary;
+}
+
+.info {
+    color: $brand-info;
+}
+
 .list-user {
     list-style-type: none;
 }
@@ -157,4 +165,45 @@ body {
     left: 50%;
     margin-top: -100px;
     margin-left: -250px;
+}
+
+.icon-profile {
+    font-size: $font-size-base * 5;
+    .fa-circle {
+        color: #68abff;
+    }
+    .fa-user {
+        color: #3763b2;
+    }
+}
+
+ul.list {
+  list-style-type: none;
+    li.list-item {
+        position: relative;
+        display: block;
+        padding: 5px 10px;
+        margin-bottom: -1px;
+    }
+}
+
+.x-panel {
+    position: relative;
+    width: 100%;
+    margin: 10px 15px;
+    padding: 10px 15px;
+    display: inline-block;
+    background: #ffffff;
+    .x-panel-heading {
+        @extend h3;
+        margin-top: 5px;
+    }
+}
+
+.border-left-2px {
+    border-left: 2px solid $border-color;
+}
+
+.border-right-2px {
+    border-right: 2px solid $border-color;
 }

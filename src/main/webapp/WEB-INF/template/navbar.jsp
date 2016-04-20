@@ -61,7 +61,7 @@
 									property="principal.username" /> <span class="caret"></span></a>
 							<ul class="dropdown-menu">
 								<li><a
-									href="/account/<sec:authentication property="principal.id"/>"><i
+									href="/account/<sec:authentication property="principal.id"/>/profile"><i
 										class="fa fa-user"></i> Profile</a></li>
 								<li><a
 									href="/account/<sec:authentication property="principal.id"/>/password"><i
