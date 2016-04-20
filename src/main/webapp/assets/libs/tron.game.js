@@ -58,6 +58,12 @@ $(function() {
             _player: null,
             
             /**
+             * The width and height of the game.
+             */
+            _height: 0,
+            _width: 0,
+            
+            /**
              * #.init
              * Initialises the TronGameFactory instance.
              * 
@@ -116,6 +122,8 @@ $(function() {
                 } else if (response.command === "GAME.PREP") {
                     
                     this._role = response.role;
+                    this._width = response.width;
+                    this._height = response.height;
                     this.initGame(response.height, response.width, response.role);
                     
                     var that = this;
@@ -163,21 +171,21 @@ $(function() {
                         
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            this._player = Crafty.e('Player')
+                            that._player = Crafty.e('Player')
                                 .requires('CyanPlayer, LocalPlayer')
                                 .attr({
-                                    x: 100,
-                                    y: 100,
-                                    rotation: 90
+                                    x: width / 2 - 200,
+                                    y: height / 2,
+                                    rotation: -90
                                 })
                                 .setStomp(that._gameStomp, that._gameID);
                             
                             Crafty.e('Player')
                                 .requires('OrangePlayer, RemotePlayer')
                                 .attr({
-                                    x: width - 100,
-                                    y: height - 100,
-                                    rotation: -90
+                                    x: width / 2 + 200,
+                                    y: height / 2,
+                                    rotation: 90
                                 })
                                 .setStomp(that._gameStomp, that._gameTopic);
                         }
@@ -187,18 +195,18 @@ $(function() {
                             Crafty.e('Player')
                                 .requires('CyanPlayer, RemotePlayer')
                                 .attr({
-                                    x: 100,
-                                    y: 100,
-                                    rotation: 90
+                                    x: width / 2 - 200,
+                                    y: height / 2,
+                                    rotation: -90
                                 })
                                 .setStomp(that._gameStomp, that._gameTopic);
                         
-                            this._player = Crafty.e('Player')
+                            that._player = Crafty.e('Player')
                                 .requires('OrangePlayer, LocalPlayer')
                                 .attr({
-                                    x: width - 100,
-                                    y: height - 100,
-                                    rotation: -90
+                                    x: width / 2 + 200,
+                                    y: height / 2,
+                                    rotation: 90
                                 })
                                 .setStomp(that._gameStomp, that._gameID);
                         }
@@ -208,10 +216,48 @@ $(function() {
             },
             
             startGame: function (startIn) {
-                // Zoom in on the persons player and then zoom out.
                 
+                var countdown = Crafty.e('2D, Text, DOM').attr({
+                    h: 50,
+                    w: 400,
+                    x: Crafty.viewport.width / 2 - 180,
+                    y: Crafty.viewport.height / 2 - 10,
+                })
+                .textFont({
+                    font: 'Impact, Charcoal, sans-serif',
+                    size: '30pt',
+                    weight: 'bold'
+                })
+                .css({
+                    'text-align': 'center'
+                });
                 
-                this._game.start();
+                if (this._player.has('CyanPlayer')) {
+                    countdown.text('You are blue!').textColor('rgba(39, 200, 200, 0.3)');
+                } else {
+                    countdown.text('You are orange!').textColor('rgba(232, 139, 29, 0.3)');
+                }
+                
+                var that = this;
+                
+                function countDownDisplay(n) {
+                    if (n === 0) {
+                        countdown.text('GO!');
+                        setTimeout(function () {
+                            countdown.remove();
+                        }, 500);
+                        that._game.start();
+                        return;
+                    } else if (n === 4) {
+                        countdown.text('Get ready!');
+                    } else {
+                        countdown.text(n);
+                    }
+                    
+                    setTimeout(countDownDisplay, 1000, --n);
+                };
+                
+                setTimeout(countDownDisplay, startIn - 4000, 4);
             },
             
             endGame: function () {
@@ -830,6 +876,7 @@ $(function() {
                             HitOn: function (hit) {
                                 var o = hit[0].obj;
                                 if (o.has('Player') && this._active) {
+                                    this.destroy();
                                     o.destroy();
                                 }
                             }
