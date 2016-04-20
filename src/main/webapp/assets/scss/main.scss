@@ -207,3 +207,9 @@ ul.list {
 .border-right-2px {
     border-right: 2px solid $border-color;
 }
+
+.badge-large {
+    @extend .badge;
+    font-size: $font-size-large;
+    padding: 6px 14px;
+}

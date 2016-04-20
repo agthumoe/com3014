@@ -2,6 +2,7 @@ package com.surrey.com3014.group5.controllers;
 
 import com.surrey.com3014.group5.dto.users.ManagedUserDTO;
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
+import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,7 +51,23 @@ public class AdminController {
     }
 
     @RequestMapping("/admin/users")
-    public String index() {
+    public String index(Model model) {
+        List<User> users = this.userService.getAll();
+        int activeUsers = 0;
+        int numberOfAdmins = 0;
+        final Authority admin = authorityService.getAdmin();
+        for (User user: users) {
+            if (user.isEnabled()) {
+                activeUsers++;
+            }
+            if (user.getAuthorities().contains(admin)) {
+                numberOfAdmins++;
+            }
+        }
+        model.addAttribute("totalUsers", users.size());
+        model.addAttribute("activeUsers", activeUsers);
+        model.addAttribute("bannedUsers", users.size() - activeUsers);
+        model.addAttribute("numberOfAdmins", numberOfAdmins);
         return "admin/index";
     }
 

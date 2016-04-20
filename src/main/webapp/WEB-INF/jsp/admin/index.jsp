@@ -10,25 +10,29 @@
 <%@include file="../../template/navbar.jsp" %>
 <div class="container">
     <div class="row">
-        <div class="col-xs-6 col-md-4 col-lg-4">
-                <a href="#">
-                    <h3>Total Users</h3>
-                    <p class="badge">30</p>
-                </a>
-        </div>
-        <div class="col-xs-6 col-md-4 col-lg-4">
-            <div>
-                <a href="#">
-                    <h3>New Users Today</h3>
-                    <p class="badge">10</p>
-                </a>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3 border-right-2px">
+            <div class="x-panel info text-center">
+                <div class="x-panel-heading">Total Users</div>
+                <span class="badge-large">${totalUsers}</span>
             </div>
         </div>
-        <div class="col-xs-6 col-md-4 col-lg-4">
-                <a href="#">
-                    <h3>Online Users</h3>
-                    <p class="badge">4</p>
-                </a>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3 border-right-2px">
+            <div class="x-panel success text-center">
+                <div class="x-panel-heading">Active Users</div>
+                <span class="badge-large">${activeUsers}</span>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3 border-right-2px">
+            <div class="x-panel danger text-center">
+                <div class="x-panel-heading">Banned Users</div>
+                <span class="badge-large">${bannedUsers}</span>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+            <div class="x-panel warning text-center">
+                <div class="x-panel-heading">Admins</div>
+                <span class="badge-large">${numberOfAdmins}</span>
+            </div>
         </div>
     </div>
     <hr>
