@@ -1659,7 +1659,12 @@ $(function() {
         TronGame.addScene('Main', function () {
             Crafty.background('rgb(40, 40, 40) url("/assets/images/game/bg.png") center no-repeat');
 
-            //Crafty.audio.play('Background', -1, 0.05);
+            Crafty.audio.play('Background', -1, 0.1);
+
+            Crafty.e('SpeakerControl').attr({
+                x: Crafty.viewport.width - 64,
+                y: 32
+            }).setAudioID('Background');
 
             var maxParticles = Math.round(
                 Crafty.viewport.height / 300 * Crafty.viewport.width / 300 * 6);
