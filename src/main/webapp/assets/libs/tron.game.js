@@ -53,6 +53,11 @@ $(function() {
             _role: null,
             
             /**
+             * A refrence to the users player object.
+             */
+            _player: null,
+            
+            /**
              * #.init
              * Initialises the TronGameFactory instance.
              * 
@@ -158,7 +163,7 @@ $(function() {
                         
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            Crafty.e('Player')
+                            this._player = Crafty.e('Player')
                                 .requires('CyanPlayer, LocalPlayer')
                                 .attr({
                                     x: 100,
@@ -188,7 +193,7 @@ $(function() {
                                 })
                                 .setStomp(that._gameStomp, that._gameTopic);
                         
-                            Crafty.e('Player')
+                            this._player = Crafty.e('Player')
                                 .requires('OrangePlayer, LocalPlayer')
                                 .attr({
                                     x: width - 100,
@@ -203,12 +208,8 @@ $(function() {
             },
             
             startGame: function (startIn) {
-                if (this._role === 'CHALLENGED') {
-                    //var pos = Crafty('Challenged').get(0).pos();
-                    //Crafty.log(pos);
-                } else {
-                    
-                }
+                // Zoom in on the persons player and then zoom out.
+                
                 
                 this._game.start();
             },
