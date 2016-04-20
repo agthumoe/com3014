@@ -5,7 +5,7 @@
     <%@include file="../template/head.jsp" %>
 </head>
 <%@include file="../template/browserupgrade.jsp" %>
-<body>
+<body style="overflow: hidden;">
 <span data-game-id="${gameID}"></span>
 <%@include file="../template/scripts.jsp" %>
 <script type="text/javascript" src="../../bower_components/jquery.cookie/jquery.cookie.js"></script>

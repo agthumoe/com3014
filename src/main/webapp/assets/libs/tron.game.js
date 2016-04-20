@@ -158,36 +158,44 @@ $(function() {
                         
                         // Setup required for the challenger player.
                         if (role === 'CHALLENGER') {
-                            Crafty.e('CyanPlayer, LocalPlayer, Challenger').attr({
-                                x: 100,
-                                y: 100,
-                                rotation: 90
-                            })
-                            .setStomp(that._gameStomp, that._gameID);
+                            Crafty.e('Player')
+                                .requires('CyanPlayer, LocalPlayer')
+                                .attr({
+                                    x: 100,
+                                    y: 100,
+                                    rotation: 90
+                                })
+                                .setStomp(that._gameStomp, that._gameID);
                             
-                            Crafty.e('OrangePlayer, RemotePlayer, Challenged').attr({
-                                x: width - 100,
-                                y: height - 100,
-                                rotation: -90
-                            })
-                            .setStomp(that._gameStomp, that._gameTopic);
+                            Crafty.e('Player')
+                                .requires('OrangePlayer, RemotePlayer')
+                                .attr({
+                                    x: width - 100,
+                                    y: height - 100,
+                                    rotation: -90
+                                })
+                                .setStomp(that._gameStomp, that._gameTopic);
                         }
                         
                         // Setup required for the challenged player.
                         if (role === 'CHALLENGED') {
-                            Crafty.e('CyanPlayer, RemotePlayer, Challenger').attr({
-                                x: 100,
-                                y: 100,
-                                rotation: 90
-                            })
-                            .setStomp(that._gameStomp, that._gameTopic);
+                            Crafty.e('Player')
+                                .requires('CyanPlayer, RemotePlayer')
+                                .attr({
+                                    x: 100,
+                                    y: 100,
+                                    rotation: 90
+                                })
+                                .setStomp(that._gameStomp, that._gameTopic);
                         
-                            Crafty.e('OrangePlayer, LocalPlayer, Challenged').attr({
-                                x: width - 100,
-                                y: height - 100,
-                                rotation: -90
-                            })
-                            .setStomp(that._gameStomp, that._gameID);
+                            Crafty.e('Player')
+                                .requires('OrangePlayer, LocalPlayer')
+                                .attr({
+                                    x: width - 100,
+                                    y: height - 100,
+                                    rotation: -90
+                                })
+                                .setStomp(that._gameStomp, that._gameID);
                         }
                         
                     });
@@ -196,8 +204,8 @@ $(function() {
             
             startGame: function (startIn) {
                 if (this._role === 'CHALLENGED') {
-                    var pos = Crafty('Challenged').get(0).pos();
-                    Crafty.log(pos);
+                    //var pos = Crafty('Challenged').get(0).pos();
+                    //Crafty.log(pos);
                 } else {
                     
                 }
@@ -511,6 +519,7 @@ $(function() {
                     
                     Crafty.log("Starting TronGame on attempt " + attempt);
                     game._started = true;
+                    Crafty.trigger('TronGameStart');
                     that.unlockPlayers();
                 })(1, this);
                 
@@ -729,205 +738,33 @@ $(function() {
             _defineComponents: function () {
                 // Ensure components haven't been defined yet.
                 if (!TronGame._componentsDefined) {
-                    /**
-                     * Define a generic square object.
-                     */
-                    Crafty.c('Square', {
-                        required: '2D, Canvas, Color'
-                    });
-
-                    /**
-                     * Defines a debug point used only when debugging things.
-                     *
-                     * Relatively useful.
-                     */
-                    Crafty.c('DebugPoint', {
-                        required: 'Square',
-
-                        init: function () {
-                            this.h = 2;
-                            this.w = 2;
-                            this.color('red');
-                        }
-                    });
-
-                    /**
-                     * Defines a bike trail.
-                     */
-                    Crafty.c('Trail', {
+                    Crafty.c('Challenger', {});
+                    Crafty.c('Challenged', {});
+                    
+                    Crafty.c('OrangePlayer', {
                         /**
-                         * Define required components
+                         * Define requierd components.
                          */
-                        required: 'Square, Collision, Tween',
-
-                        /**
-                         * A reference to the player associated with this trail object.
-                         */
-                        _player: null,
-
-                        /**
-                         * Determines whether this trail object is active or not.
-                         */
-                        _active: false,
-
-                        /**
-                         * Initialise object.
-                         */
-                        init: function () {
-                            this.h = 6;
-                            this.w = 1;
-                            this.origin('center');
-                            this.checkHits('Player');
-                            this.z = 5;
-
-                            // Activate the trail after some time  to avoid blowing ourselves up.
-                            setTimeout(function (trail) {
-                                trail.activate();
-                            }, 200, this);
-                        },
-
-                        /**
-                         * Define events for the trail.
-                         */
-                        events: {
-                            HitOn: function (hit) {
-                                var o = hit[0].obj;
-                                if (o.has('Player') && this._active) {
-                                    o.explode();
-                                }
-                            }
-                        },
-
-                        /**
-                         * #.setPlayer
-                         * Sets the player associated with this object.
-                         *
-                         * @param player
-                         * @return this
-                         */
-                        setPlayer: function (player) {
-                            this._player = player;
-                            return this;
-                        },
-
-                        /**
-                         * #.getPlayer
-                         * Retrieves the player this Trail object is associated with.
-                         *
-                         * @returns Player
-                         */
-                        getPlayer: function () {
-                            return this._player;
-                        },
-
-                        /**
-                         * #.isActive
-                         * Determines if this object is active or not.
-                         *
-                         * @returns bool
-                         */
-                        isActive: function () {
-                            return this._active;
-                        },
-
-                        /**
-                         * #.activate
-                         * Activates this object making it collidable
-                         *
-                         * @returns this
-                         */
-                        activate: function () {
-                            this._active = true;
-
-                            // Schedule time to remove the trail
-                            setTimeout(function (trail) {
-                                // Tweem the trail out so it's invisible.
-                                trail.tween({
-                                    alpha: 0
-                                }, 500, "easeOutQuad");
-
-                                // Set another event to remove the trail from the map.
-                                setTimeout(function (trail) {
-                                    trail.getPlayer().removeTrail(trail);
-                                    trail.destroy();
-                                }, 500, trail);
-                            }, TronGame._config.trailTimeout, this);
-
-                            return this;
-                        }
-                    });
-
-                    /**
-                     * Define a player object.
-                     */
-                    Crafty.c('Player', {
-                        /**
-                         * Define required components.
-                         */
-                        required: '2D, Canvas, Collision',
-
-                        /**
-                         * Defines the absolute centre point of this object.
-                         */
-                        _absoluteCentre: {
-                            x: 0,
-                            y: 0
-                        },
-
-                        /**
-                         * Defines the movement vector for this object
-                         */
-                        _vector: new Crafty.math.Vector2D(),
-
-                        /**
-                         * Defines the current magnitude of our movement vector.
-                         */
-                        _magnitude: 1,
-
-                        /**
-                         * Minimum required magnitude before a trail appears.
-                         */
-                        _trailRequiredMagnitude: 150,
-
-                        /**
-                         * The trail objects associated with this Player
-                         */
-                        _trail: [],
-
-                        /**
-                         * Defines the colour of this players trail.
-                         */
-                        _trailColour: 'red',
-
-                        /**
-                         * Defines whether this object can be manipulated or not.
-                         */
-                        _lock: false,                        
+                        required: 'Sprite_BikeOrange, Player',
                         
-                        /**
-                         * Status of this object.
-                         */
-                        _status: 'ACTIVE',
-
-                        /**
-                         * Initialises the objects properties.
-                         */
                         init: function () {
-                            this.origin('center');
-                            this.checkHits('Player', 'Trail');
-                            this.z = 10;
-
-                            this.collision([
-                                10, 0,
-                                10, 32,
-                                22, 32,
-                                22, 0,
-                            ]);
-                        },
-
+                            Crafty.log("Setting color");
+                            this.setBulletColor('rgb(248,148,0)');
+                        }
+                    });
+                    
+                    Crafty.c('CyanPlayer', {
                         /**
-                         * Defines events to hook in to.
+                         * Define requierd components.
                          */
+                        required: 'Sprite_BikeCyan, Player',
+                        
+                        init: function () {
+                            this.setBulletColor('cyan');
+                        }
+                    });
+                    
+                    Crafty.c('WrapAroundMap', {
                         events: {
                             EnterFrame: function () {
                                 // Ensure the player doesn't go flying off the screen never to be
@@ -947,43 +784,189 @@ $(function() {
                                 if(this.y < 0-this.h) {
                                     this.y = Crafty.viewport.height;
                                 }
+                            }
+                        }
+                    });
+                    
+                    Crafty.c('Bullet', {
+                        
+                        required: '2D, Canvas, Color, Motion, Collision, WrapAroundMap',
+                        
+                        /**
+                         * Timeout before the bullet explodes.
+                         */
+                        _timeout: 1500,
+                        
+                        /**
+                         * Magnitude the bullet should travel at.
+                         */
+                        _magnitude: 600,
+                        
+                        /**
+                         * Indicator as to whether the bullet is active or not.
+                         */
+                        _active: false,
+                        
+                        /**
+                         * Default color of a bullet.
+                         */
+                        _defaultColor: 'white',
+                        
+                        init: function () {
+                            this.h = 4;
+                            this.w = 1;
+                            this.origin('center');
+                            this.checkHits('Player');
+                            this.z = 5;
+                            this.color(this._defaultColor);
+                        },
+                        
+                        remove: function () {
+                            this.explode();
+                        },
+                        
+                        events: {
+                            HitOn: function (hit) {
+                                var o = hit[0].obj;
+                                if (o.has('Player') && this._active) {
+                                    o.destroy();
+                                }
+                            }
+                        },
+                        
+                        /**
+                         * Fires the bullet along a given vector.
+                         * 
+                         * @param Crafty.math.Vector2D vector
+                         * @returns void
+                         */
+                        fire: function (vector) {
+                            vector.scaleToMagnitude(this._magnitude);
+                            
+                            this.vx = vector.x;
+                            this.vy = vector.y;
+                            
+                            var that = this;
+                            
+                            setTimeout(function () {
+                                that._active = true;
+                            }, 150);
+                            
+                            setTimeout(function () {
+                                that.destroy();
+                            }, this._timeout);
+                        },
+                        
+                        /**
+                         * Causes the bullet to blow up.
+                         * 
+                         * @returns void
+                         */
+                        explode: function () {
+                            Crafty.e('Explosion')
+                                .attr({
+                                    x: this.x - 16,
+                                    y: this.y - 16
+                                });
+                        }
+                    });
+                    
+                    Crafty.c('Player', {
+                        
+                        required: '2D, Canvas, Collision, Keyboard, WrapAroundMap',
+                        
+                        /**
+                         * Defines the aboslute centre of this object.
+                         */
+                        _absoluteCentreX: 0,
+                        _absoluteCentreY: 0,
 
+                        /**
+                         * Defines the movement vector for this object
+                         */
+                        _vectorX: 0,
+                        _vectorY: 0,
+
+                        /**
+                         * Defines the current magnitude of our movement vector.
+                         */
+                        _magnitude: 1,
+
+                        /**
+                         * Defines whether this object can be manipulated or not.
+                         */
+                        _lock: false,                        
+                        
+                        /**
+                         * Status of this object.
+                         */
+                        _status: 'ACTIVE',
+                        
+                        /**
+                         * Defines the bullet colour.
+                         */
+                        _bulletColor: 'white',
+                        
+                        init: function () {
+                            this.origin('center');
+                            this.checkHits('Player', 'Trail');
+                            this.z = 10;
+                            
+                            this._Vector = new Crafty.math.Vector2D();
+
+                            this.collision([
+                                10, 0,
+                                10, 32,
+                                22, 32,
+                                22, 0,
+                            ]);
+                        },
+                        
+                        remove: function (destroy) {
+                            this.explode();
+                        },
+                        
+                        events: {
+                            EnterFrame: function () {
                                 // Calculate the vectors for the direction of the object.
-                                this._vector.x = Math.sin(Crafty.math.degToRad(this._rotation));
-                                this._vector.y = -Math.cos(Crafty.math.degToRad(this._rotation));
-                                this._absoluteCentre.x = this.x + this._origin.x;
-                                this._absoluteCentre.y = this.y + this._origin.y;
+                                this._vectorX = Math.sin(Crafty.math.degToRad(this._rotation));
+                                this._vectorY = -Math.cos(Crafty.math.degToRad(this._rotation));
+                                this._absoluteCentreX = this.x + this._origin.x;
+                                this._absoluteCentreY = this.y + this._origin.y;
                             },
 
                             HitOn: function (collision) {
                                 if (collision[0].obj.has('Player')) {
-                                    this.explode();
-                                }
-                            },
-
-                            Move: function (oldPosition) {
-                                if (!this.isLocked()) {
-                                    // If we're over a configurable magnitude we want to begin creating
-                                    // a trail. Place the trail objects right behind the bike by negating
-                                    // the bikes vector and giving it a magnitude of 20, then adding
-                                    // the vector to the coordinates of the objects centre point.
-                                    //
-                                    // The centrepoint is tracked on a frame by frame basis.
-                                    if (this._magnitude >= this._trailRequiredMagnitude) {
-                                        var t = Crafty.e('Trail').attr({
-                                            x: (this._absoluteCentre.x),
-                                            y: (this._absoluteCentre.y - 2),
-                                            rotation: this.rotation
-                                        })
-                                        .color(this._trailColour)
-                                        .setPlayer(this);
-
-                                        this._trail.push(t);
-                                    }
+                                    this.destroy();
                                 }
                             }
                         },
-
+                        
+                        /**
+                         * #.setBulletColor
+                         * Sets the colour of this players bullet.
+                         * 
+                         * @param string color
+                         */
+                        setBulletColor: function (color) {
+                            this._bulletColor = color;
+                        },
+                        
+                        /**
+                         * #.fireBullet
+                         * Fires a bullet from this player.
+                         */
+                        fireBullet: function () {
+                            Crafty.e('Bullet')
+                                .attr({
+                                    rotation: this.rotation,
+                                    x: this._absoluteCentreX,
+                                    y: this._absoluteCentreY
+                                })
+                                .color(this._bulletColor)
+                                .fire(this.getVector());
+                        },
+                            
                         /**
                          * #.lock
                          * Sets the lock on this object to true.
@@ -1038,77 +1021,24 @@ $(function() {
                                 //
                                 // We offset by 15 because the player is 32x23 and the explosion is
                                 // 64x64 so to centre one over the other we must move by 16.
-                                var e = Crafty.e('Explosion');
-                                e.attr({
-                                    x: this.x - 16,
-                                    y: this.y - 16
-                                });
-
-                                setTimeout(function (player) {
-                                    player.destroy();
-                                }, 100, this);
+                                Crafty.e('Explosion')
+                                    .attr({
+                                        x: this.x - 16,
+                                        y: this.y - 16
+                                    });
                             }
                         },
-
+                        
                         /**
-                         * #.removeTrail
-                         * Removes a trail object from this Players trail.
-                         *
-                         * @param Object the Trail object.
-                         * @return this
+                         * Gets a vector object using the vector arguments for this object.
+                         * 
+                         * @returns {Crafty.math.Vector2D}
                          */
-                        removeTrail: function (trail) {
-                            var i = this._trail.indexOf(trail);
-                            if (i > -1) {
-                                this._trail.splice(i, 1);
-                            }
-
-                            return this;
-                        }
-                    });
-                    
-                    Crafty.c('Challenger', {});
-                    Crafty.c('Challenged', {});
-
-                    /**
-                     * Defines an enemy player.
-                     */
-                    Crafty.c('OrangePlayer', {
-                        /**
-                         * Define requierd components.
-                         */
-                        required: 'Player, Sprite_BikeOrange',
-
-                        /**
-                         * Initialise the objects parameters.
-                         */
-                        init: function () {
-                            this._trailColour = 'rgb(255, 120, 0)';
+                        getVector: function () {
+                            return new Crafty.math.Vector2D(this._vectorX, this._vectorY);
                         }
                     });
 
-                    /**
-                     * Defines a friendly player.
-                     */
-                    Crafty.c('CyanPlayer', {
-                        /**
-                         * Define requierd components.
-                         */
-                        required: 'Player, Sprite_BikeCyan',
-
-                        /**
-                         * Initialise the objects parameters.
-                         */
-                        init: function () {
-                            this._trailColour = 'cyan';
-                        }
-                    });
-
-                    /**
-                     * Defines a controllable player.
-                     *
-                     * This must be listed when calling Crafty.e after the playe type.
-                     */
                     Crafty.c('ControllablePlayer', {
                         /**
                          * Object requires motion and keyboard component. Angular motion is handled
@@ -1132,48 +1062,39 @@ $(function() {
                          * Defines the rotational speed of the object.
                          */
                         _rotationSpeed: 7,
-
-                        /**
-                         * Defines whether the up key has been pressed or not.
-                         */
-                        _movement: {
-                            UP: false,
-                            LEFT: false,
-                            RIGHT: false
-                        },
-
-                        /**
-                         * Initialiser function to set the objects default properties.
-                         */
+                        
+                        _movementUP: false,
+                        _movementLEFT: false,
+                        _movementRIGHT: false,
+                        
                         init: function () {
                             this.origin('center');
                         },
-
-                        /**
-                         * Binds key down and up events and handles movement caps.
-                         */
+                        
                         events: {
                             EnterFrame: function () {
                                 // Ensure the object hasn't been locked before manipulating it.
                                 if (!this.isLocked()) {
                                     // Handle rotation of the object. Prevent rotation if both arrows
                                     // are pushed down.
-                                    if (!(this._movement.LEFT && this._movement.RIGHT)
-                                            && (this._movement.LEFT || this._movement.RIGHT)) {
+                                    if (!(this._movementLEFT && this._movementRIGHT)
+                                            && (this._movementLEFT || this._movementRIGHT)) {
 
-                                        if (this._movement.LEFT) {
+                                        if (this._movementLEFT) {
                                             this.attr('rotation', 
                                                 this.rotation - this._rotationSpeed);
                                         }
 
-                                        if (this._movement.RIGHT) {
+                                        if (this._movementRIGHT) {
                                             this.attr('rotation', 
                                                 this.rotation + this._rotationSpeed);
                                         }
                                     }
+                                    
+                                    var vector = this.getVector();
 
                                     // Does the user want is to move forward?
-                                    if (this._movement.UP) {
+                                    if (this._movementUP) {
                                         // Adjust the magnitude ensuring we don't go over the limit.
                                         if (this._magnitude <= this._maxMagnitude) {
                                             this.attr('_magnitude', 
@@ -1181,11 +1102,11 @@ $(function() {
                                         }
 
                                         // Scale the vector to the new magnitude.
-                                        this._vector.scaleToMagnitude(this._magnitude);
+                                        vector.scaleToMagnitude(this._magnitude);
 
                                         // Adjust the x and y velocity of the objet accordingly.
-                                        this.attr('vx', this._vector.x);
-                                        this.attr('vy', this._vector.y);
+                                        this.attr('vx', vector.x);
+                                        this.attr('vy', vector.y);
                                     } else {
                                         // Decrease the magnitude while it's greater than 1
                                         if (this._magnitude > 1) {
@@ -1201,9 +1122,9 @@ $(function() {
                                             this.attr('vx', 0);
                                             this.attr('vy', 0);
                                         } else {
-                                            this._vector.scaleToMagnitude(this._magnitude);
-                                            this.attr('vx', this._vector.x);
-                                            this.attr('vy', this._vector.y);
+                                            vector.scaleToMagnitude(this._magnitude);
+                                            this.attr('vx', vector.x);
+                                            this.attr('vy', vector.y);
                                         }
                                     }
                                 } else {
@@ -1226,11 +1147,12 @@ $(function() {
                         }
                     });
                     
-                    /**
-                     * Defines a local controllable player. This player is controlled via 
-                     * keyboard input.
-                     */
                     Crafty.c('LocalPlayer', {
+                        
+                        /**
+                         * Requierd components
+                         */
+                        required: 'ControllablePlayer, Keyboard, Model',
                         
                          /**
                          * A reference to the STOMP interface used to send updates
@@ -1242,10 +1164,9 @@ $(function() {
                          */
                         _gameID: null,
                         
-                        /**
-                         * Requierd components
-                         */
-                        required: 'ControllablePlayer, Keyboard, Model',
+                        remove: function (destroy) {
+                            this.sendUpdate();
+                        },
                         
                         /**
                          * Events 
@@ -1255,38 +1176,45 @@ $(function() {
                                 // If we're moving, and the key pressed is a directional change then
                                 // apply some rotation.
                                 if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this.attr('_movement.RIGHT', true);
+                                    this.attr('_movementRIGHT', true);
                                 }
 
                                 if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this.attr('_movement.LEFT', true);
+                                    this.attr('_movementLEFT', true);
                                 }
 
                                 if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this.attr('_movement.UP', true);
+                                    this.attr('_movementUP', true);
+                                }
+                                
+                                if (e.keyCode === Crafty.keys.SPACE) {
+                                    this.fireBullet();
+                                    this.sendUpdate('status', 'BULLET_FIRED');
                                 }
                             },
 
                             KeyUp: function (e) {
                                 if (e.keyCode === Crafty.keys.RIGHT_ARROW) {
-                                    this.attr('_movement.RIGHT', false);
+                                    this.attr('_movementRIGHT', false);
                                 }
 
                                 if (e.keyCode === Crafty.keys.LEFT_ARROW) {
-                                    this.attr('_movement.LEFT', false);
+                                    this.attr('_movementLEFT', false);
                                 }
 
                                 if (e.keyCode === Crafty.keys.UP_ARROW) {
-                                    this.attr('_movement.UP', false);
+                                    this.attr('_movementUP', false);
                                 }
                             },
                             
-                            'Change[_movement]': function (e) {
-                                this.sendUpdate(e);
+                            'Change[_movementUP]': function (state) {
+                                this.sendUpdate('_movementUP', state);
                             },
-                            
-                            Remove: function () {
-                                this.sendUpdate();
+                            'Change[_movementLEFT]': function (state) {
+                                this.sendUpdate('_movementLEFT', state);
+                            },
+                            'Change[_movementRIGHT]': function (state) {
+                                this.sendUpdate('_movementRIGHT', state);
                             }
                         },
                         
@@ -1296,21 +1224,25 @@ $(function() {
                          * 
                          * @returns void
                          */
-                        sendUpdate: function (e) {
-                            // Send information to server about position and rotation.
-                            this._stomp.send(TronPreGame._gameQueue, {}, 
-                                JSON.stringify({
-                                    'command': 'GAME.UPDATE',
-                                    'data': {
-                                        gameID: this._gameID,
-                                        status: this._status,
-                                        _movement: e,
-                                        _rotation: this._rotation,
-                                        x: this.x,
-                                        y: this.y,
-                                    }
-                                })
-                            );
+                        sendUpdate: function () {                            
+                            data = {
+                                gameID: this._gameID,
+                                status: this._status,
+                                x: this.x,
+                                y: this.y,
+                                rotation: this.rotation
+                            };
+                            
+                            if (arguments.length === 2) {
+                                data[arguments[0]] = arguments[1];
+                            }
+                            
+                            var jsonUpdate = JSON.stringify({
+                                command: 'GAME.UPDATE',
+                                data: data
+                            });
+                            
+                            this._stomp.send(TronPreGame._gameQueue, {}, jsonUpdate);
                         },
                         
                         /**
@@ -1331,139 +1263,13 @@ $(function() {
                     });
                     
                     /**
-                     * Defines a controllable player.
-                     *
-                     * This must be listed when calling Crafty.e after the playe type.
-                     *
-                     * @example Crafty.e('CyanPlayer, ControllablePlayer')
-                     */
-                    Crafty.c('ControllablePlayer2', {
-                        /**
-                         * Object requires motion and keyboard component. Angular motion is handled
-                         * manually and so AngularMotion is nto required.
-                         */
-                        required: "Player, Motion",
-
-                        /**
-                         * Defines the magnitude used to multiply the movement vector to denote the
-                         * maximum velocity the object can travel in in the x and y planes.
-                         */
-                        _maxMagnitude: 300,
-
-                        /**
-                         * Defines the magnitude to apply to the objects acceleration properties when
-                         * manipulating the objects movement vector.
-                         */
-                        _magnitudeIncrement: 5,
-
-                        /**
-                         * Defines the rotational speed of the object.
-                         */
-                        _rotationSpeed: 7,
-
-                        /**
-                         * Defines whether the up key has been pressed or not.
-                         */
-                        _movement: {
-                            UP: false,
-                            LEFT: false,
-                            RIGHT: false
-                        },
-
-                        /**
-                         * Initialiser function to set the objects default properties.
-                         */
-                        init: function () {
-                            this.origin('center');
-                        },
-
-                        /**
-                         * Binds key down and up events and handles movement caps.
-                         */
-                        events: {
-                            EnterFrame: function () {
-                                // Ensure the object hasn't been locked before manipulating it.
-                                if (!this.isLocked()) {
-                                    // Handle rotation of the object. Prevent rotation if both arrows
-                                    // are pushed down.
-                                    if (!(this._movement.LEFT && this._movement.RIGHT)
-                                            && (this._movement.LEFT || this._movement.RIGHT)) {
-
-                                        if (this._movement.LEFT) {
-                                            this.attr('rotation', 
-                                                this.rotation - this._rotationSpeed);
-                                        }
-
-                                        if (this._movement.RIGHT) {
-                                            this.attr('rotation', 
-                                                this.rotation + this._rotationSpeed);
-                                        }
-                                    }
-
-                                    // Does the user want is to move forward?
-                                    if (this._movement.UP) {
-                                        // Adjust the magnitude ensuring we don't go over the limit.
-                                        if (this._magnitude <= this._maxMagnitude) {
-                                            this.attr('_magnitude', 
-                                                this._magnitude + this._magnitudeIncrement);
-                                        }
-
-                                        // Scale the vector to the new magnitude.
-                                        this._vector.scaleToMagnitude(this._magnitude);
-
-                                        // Adjust the x and y velocity of the objet accordingly.
-                                        this.attr('vx', this._vector.x);
-                                        this.attr('vy', this._vector.y);
-                                    } else {
-                                        // Decrease the magnitude while it's greater than 1
-                                        if (this._magnitude > 1) {
-                                            this.attr('_magnitude', 
-                                                this._magnitude - this._magnitudeIncrement);
-                                        }
-
-                                        // If magnitude is less than or equal to 1 we're at the smallest
-                                        // magnitude and want to stop the object moving. If not, we want
-                                        // to apply the reduced magnitude and set the velocity accordingly.
-                                        if (this._magnitude <= 1) {
-                                            this.attr('_magnitude', 1);
-                                            this.attr('vx', 0);
-                                            this.attr('vy', 0);
-                                        } else {
-                                            this._vector.scaleToMagnitude(this._magnitude);
-                                            this.attr('vx', this._vector.x);
-                                            this.attr('vy', this._vector.y);
-                                        }
-                                    }
-                                } else {
-                                    // Object is locked so set all values to 0
-                                    this.attr('vx', 0);
-                                    this.attr('vy', 0);
-                                }
-                            }
-                        },
-                        
-                        /**
-                         * #.isMoving
-                         * Determines if this object is moving or not.
-                         *
-                         * @returns bool
-                         */
-                        isMoving: function () {
-                            var v = this.velocity();
-                            return (v.x !== 0 || v.y !== 0);
-                        }
-                    });
-                    
-                    
-                    
-                    /**
                      * A remote player updates by the server.
                      */
                     Crafty.c('RemotePlayer', {
                         /**
                          * Required modules.
                          */
-                        required: 'ControllablePlayer2',
+                        required: 'ControllablePlayer',
                         
                         /**
                          * Reference to the STOMP interface to commuicate with the server.
@@ -1495,23 +1301,17 @@ $(function() {
                                     // Look at the status and determine if we should blow up or not
                                     if (body.status === 'EXPLODED') {
                                         that.lock();
-                                        that._movement = {
-                                            UP: false,
-                                            LEFT: false,
-                                            RIGHT: false
-                                        };
+                                        that._movementUP = false;
+                                        that._movementLEFT = false;
+                                        that._movementRIGHT = false;
                                         that.vx = 0;
                                         that.vy = 0;
                                         that.explode();
+                                    } else if (body.status === 'BULLET_FIRED') {
+                                        that.fireBullet();
                                     } else {
                                         delete body['gameID'];
                                         delete body['status'];
-                                        
-                                        for (var k in body._movement) {
-                                            that._movement[k] = body._movement[k];
-                                        }
-                                        
-                                        delete body['_movement'];
                                         
                                         for (var i in body) {
                                             that[i] = body[i];
@@ -1528,16 +1328,13 @@ $(function() {
                      * Defines an explosion object.
                      */
                     Crafty.c('Explosion', {
-                        /**
-                         * Define required components.
-                         */
-                        required: 'Sprite_Explosion_0, Canvas, SpriteAnimation, Tween',
+                        
+                        required: 'Sprite_Explosion_0, Canvas, SpriteAnimation, Tween, Collision',
 
-                        /**
-                         * Initialise the attributes.
-                         */
                         init: function () {
                             this.origin('center');
+                            
+                            this.checkHits('Player');
                             this.z = 20;
                             this.rotation = Crafty.math.randomNumber(0, 359);
 
@@ -1546,19 +1343,30 @@ $(function() {
                             // Create an explosion reel and begin the animation.
                             this.reel('ExplosionAnimation', 250, 0, 0, 6)
                                     .animate('ExplosionAnimation');
+                                
+                            var that = this;
 
                             // Set timeout and tween down the alpha setting for the explosion when,
                             // we're close to removing the explosion.
-                            setTimeout(function (explosion) {
-                                explosion.tween({
+                            setTimeout(function () {
+                                that.tween({
                                     alpha: 0
                                 }, 500);
-                            }, TronGame._config.explosionTimeout - 500, this);
+                            }, TronGame._config.explosionTimeout - 500);
 
                             // Remove the explosion after configured time.
-                            setTimeout(function (explosion) {
-                                explosion.destroy();
-                            }, TronGame._config.explosionTimeout, this);
+                            setTimeout(function () {
+                                that.destroy();
+                            }, TronGame._config.explosionTimeout);
+                        },
+                        
+                        events: {
+                            HitOn: function (hit) {
+                                var o = hit[0].obj;
+                                if (o.has('Player')) {
+                                    o.destroy();
+                                }
+                            }
                         }
                     });
 
@@ -1566,9 +1374,7 @@ $(function() {
                      * Speaker control component that allows for muting and unmuting when clicked.
                      */
                     Crafty.c('SpeakerControl', {
-                        /**
-                         * Define required components
-                         */
+                        
                         required: '2D, DOM, Sprite_SpeakerActive, Mouse',
 
                         /**
@@ -1581,9 +1387,6 @@ $(function() {
                          */
                         _pause: false,
 
-                        /**
-                         * Initialise the speaker giving dimensions.
-                         */
                         init: function () {
                             this.h = 32;
                             this.w = 32;
