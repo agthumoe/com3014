@@ -1,8 +1,10 @@
 package com.surrey.com3014.group5.websockets.controllers;
 
+import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
 import com.surrey.com3014.group5.websockets.domains.Command;
 import com.surrey.com3014.group5.websockets.domains.Game;
+import com.surrey.com3014.group5.websockets.services.ActiveUserService;
 import com.surrey.com3014.group5.websockets.services.GameService;
 import com.surrey.com3014.group5.websockets.domains.Resolution;
 import com.surrey.com3014.group5.models.impl.User;
@@ -36,6 +38,9 @@ public class GameController {
 
     @Autowired
     private LeaderboardService leaderboardService;
+
+    @Autowired
+    private ActiveUserService activeUserService;
 
     @MessageMapping(IN_BOUND)
     public void request(String message, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
@@ -152,7 +157,11 @@ public class GameController {
         String status = command.getStringData("status");
         if (status != null && status.equals("EXPLODED")) {
             game.setExpired(true);
-            leaderboardService.adjustEloRating(game.getOppositePlayer(user.getId()).getId(),user.getId());
+            leaderboardService.adjustEloRating(oppositePlayer.getId(),user.getId());
+            Leaderboard winnersLeaderboard = leaderboardService.findByUserID(oppositePlayer.getId()).get();
+            Leaderboard losersLeaderboard = leaderboardService.findByUserID(user.getId()).get();
+            activeUserService.updateUserRating(oppositePlayer.getId(), winnersLeaderboard.getRating());
+            activeUserService.updateUserRating(user.getId(), losersLeaderboard.getRating());
             LOGGER.debug("game: {}, has finished!", game.getGameID());
         }
     }

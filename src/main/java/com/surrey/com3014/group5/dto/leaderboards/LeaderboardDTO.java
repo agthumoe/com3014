@@ -16,17 +16,17 @@ public class LeaderboardDTO implements Serializable {
     private UserDTO user;
     private long wins;
     private long losses;
-    private double ratio;
+    private double rating;
 
     public LeaderboardDTO() {
         super();
     }
 
-    public LeaderboardDTO(UserDTO user, long wins, long losses, double ratio) {
+    public LeaderboardDTO(UserDTO user, long wins, long losses, double rating) {
         this.user = user;
         this.wins = wins;
         this.losses = losses;
-        this.ratio = ratio;
+        this.rating = rating;
     }
 
     public UserDTO getUser() {
@@ -53,14 +53,14 @@ public class LeaderboardDTO implements Serializable {
         this.losses = losses;
     }
 
-    public String getRatio() {
+    public String getRating() {
         DecimalFormat df = new DecimalFormat("#.##");
-        return df.format(this.ratio);
+        return df.format(this.rating);
 
     }
 
-    public void setRatio(double ratio) {
-        this.ratio = ratio;
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class LeaderboardDTO implements Serializable {
             ", user='" + user + '\'' +
             ", wins=" + wins +
             ", losses=" + losses +
-            ", ratio=" + ratio +
+            ", rating=" + rating +
             '}';
     }
 }

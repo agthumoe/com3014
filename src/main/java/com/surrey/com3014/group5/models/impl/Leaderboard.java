@@ -35,11 +35,11 @@ public class Leaderboard extends MutableModel {
     private long losses = 0;
 
     /**
-     * Ratio = wins / (wins + losses)
+     * Elo Rating
      */
     @Column(nullable = false)
     @NotNull
-    private double ratio = 1500;
+    private double rating = 1500;
 
     /**
      * Default constructor initialise this leaderboard object.
@@ -58,7 +58,7 @@ public class Leaderboard extends MutableModel {
         this.user = user;
         this.wins = 0;
         this.losses = 0;
-        this.ratio = 1500;
+        this.rating = 1500;
     }
 
     /**
@@ -116,23 +116,23 @@ public class Leaderboard extends MutableModel {
     }
 
     /**
-     * Get win/loss ratio.
+     * Get Elo rating.
      *
-     * @return win/loss ratio
-     * @see #ratio
+     * @return Elo rating
+     * @see #rating
      */
-    public double getRatio() {
-        return ratio;
+    public double getRating() {
+        return rating;
     }
 
     /**
-     * Set win/loss ratio.
+     * Set Elo rating.
      *
-     * @param ratio win/loss ratio
-     * @see #ratio
+     * @param rating Elo rating
+     * @see #rating
      */
-    public void setRatio(double ratio) {
-        this.ratio = ratio;
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     /**
@@ -147,7 +147,7 @@ public class Leaderboard extends MutableModel {
             "lastModifiedDate='" + getLastModifiedDate() + '\'' +
             ", wins=" + wins +
             ", losses=" + losses +
-            ", ratio=" + ratio +
+            ", rating=" + rating +
             '}';
     }
 

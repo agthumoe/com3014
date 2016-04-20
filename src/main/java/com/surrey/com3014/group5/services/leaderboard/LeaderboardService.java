@@ -14,11 +14,7 @@ public interface LeaderboardService extends MutableService<Leaderboard>{
 
     Optional<Leaderboard> findByUserID(long userID);
 
-    List<Leaderboard> findAllByOrderByRatioDescUserAsc();
-
-    void setWinner(long userID);
-
-    void setLoser(long userID);
+    List<Leaderboard> findAllByOrderByRatingDescUserAsc();
 
     void adjustEloRating(long winnerID, long loserID);
 }

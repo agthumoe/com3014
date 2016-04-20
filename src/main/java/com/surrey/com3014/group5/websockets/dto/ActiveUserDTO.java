@@ -14,9 +14,13 @@ public class ActiveUserDTO extends UserDTO{
 
     private double rating;
 
+    public ActiveUserDTO(long userId) {
+        super.setId(userId);
+    }
+
     public ActiveUserDTO(User user) {
         super(user);
-        this.rating = user.getLeaderboard().getRatio();
+        this.rating = user.getLeaderboard().getRating();
     }
 
     public String getRating() {
