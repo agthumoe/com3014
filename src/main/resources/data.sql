@@ -7,9 +7,9 @@ INSERT INTO user VALUES(3, '2016-01-18', '2016-01-18', 'user2@localhost.com', b'
 INSERT INTO user VALUES(4, '2016-01-19', '2016-01-30', 'user3@localhost.com', b'1', 'Alex', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user3');
 INSERT INTO user VALUES(5, '2016-02-06', '2016-03-07', 'user4@localhost.com', b'1', 'Peter', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user4');
 INSERT INTO user VALUES(6, '2016-02-12', '2016-02-15', 'user5@localhost.com', b'1', 'Eric', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user5');
-INSERT INTO user VALUES(7, '2016-02-14', '2016-04-03', 'user6@localhost.com', b'0', 'John', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user6');
-INSERT INTO user VALUES(8, '2016-03-11', '2016-03-12', 'user7@localhost.com', b'0', 'Bobby', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user7');
-INSERT INTO user VALUES(9, '2016-03-20', '2016-03-25', 'user8@localhost.com', b'0', 'Daniel', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user8');
+INSERT INTO user VALUES(7, '2016-02-14', '2016-04-03', 'user6@localhost.com', b'1', 'John', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user6');
+INSERT INTO user VALUES(8, '2016-03-11', '2016-03-12', 'user7@localhost.com', b'1', 'Bobby', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user7');
+INSERT INTO user VALUES(9, '2016-03-20', '2016-03-25', 'user8@localhost.com', b'1', 'Daniel', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user8');
 INSERT INTO user VALUES(10, '2016-03-27', '2016-04-02', 'user9@localhost.com', b'0', 'Berry', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user9');
 INSERT INTO user VALUES(11, '2016-04-03', '2016-04-07', 'user10@localhost.com', b'0', 'Andy', '$2a$10$2OgstxRgNX02h58I8J6sJeyjwy8R7JGrxdKzvOvh92cs04jr0F6/O', 'user10');
 

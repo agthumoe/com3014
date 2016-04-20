@@ -130,7 +130,7 @@ public class PlayerDTO extends UserDTO implements EloRating {
 
     @Override
     public double getRating() {
-        return this.rating;
+        return (double) Math.round(this.rating * 100.0) / 100.0;
     }
 
     @Override

@@ -54,12 +54,12 @@
     </div>
     <div class="row">
         <nav class="centre">
-            <ul class="pagination pagination-sm">
-                <li><span><i class="fa fa-angle-double-left"></i></span></li>
-                <li><span class="prev"><i class="fa fa-angle-left"></i></span></li>
-                <li class="active"><span>1</span></li>
-                <li><span class="next"><i class="fa fa-angle-right"></i></span></li>
-                <li><span><i class="fa fa-angle-double-right"></i></span></li>
+            <ul class="pagination pagination-sm" id="pagination">
+                <%--<li><span><i class="fa fa-angle-double-left"></i></span></li>--%>
+                <%--<li><span class="prev"><i class="fa fa-angle-left"></i></span></li>--%>
+                <%--<li class="active"><span>1</span></li>--%>
+                <%--<li><span class="next"><i class="fa fa-angle-right"></i></span></li>--%>
+                <%--<li><span><i class="fa fa-angle-double-right"></i></span></li>--%>
             </ul>
         </nav>
     </div>
@@ -82,6 +82,7 @@
 </div>
 <%@include file="../../template/footer.jsp" %>
 <%@include file="../../template/scripts.jsp" %>
+<script src="../../../bower_components/jQuery-Pagination-Plugin/js/jquery.yzePagination.min.js"></script>
 <script src="../../../assets/scripts/users.js"></script>
 </body>
 </html>
