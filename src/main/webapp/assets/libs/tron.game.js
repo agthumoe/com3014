@@ -212,6 +212,10 @@ $(function() {
                         }
                         
                     });
+                    
+                    Crafty.bind('GameOver', function (result) {
+                        that.endGame(result);
+                    });
                 }
             },
             
@@ -260,8 +264,38 @@ $(function() {
                 setTimeout(countDownDisplay, startIn - 4000, 4);
             },
             
-            endGame: function () {
+            endGame: function (result) {
+                // Stop the game
+                // Bring up winner and looser.
+                // redirect to lobby.
                 
+                this._game.stop();
+                
+                var resultDisplay = Crafty.e('2D, Text, DOM').attr({
+                    h: 50,
+                    w: 400,
+                    x: Crafty.viewport.width / 2 - 180,
+                    y: Crafty.viewport.height / 2 - 10,
+                })
+                .textFont({
+                    font: 'Impact, Charcoal, sans-serif',
+                    size: '30pt',
+                    weight: 'bold'
+                })
+                .css({
+                    'text-align': 'center'
+                })
+                .textColor('rgba(0, 0, 0, 0.3)');
+                
+                if (result === 'w') {
+                    resultDisplay.text('You WON!');
+                } else {
+                    resultDisplay.text('You LOST!');
+                }
+                
+                setTimeout(function () {
+                    window.location.href = '/lobby';
+                }, 2000);
             },
             
             /**
@@ -572,24 +606,15 @@ $(function() {
                 
                 return this;
             },
-
+            
             /**
-             * TronGame.stop
-             * Stops the game completely and optionally resets the game state.
-             *
-             * @param bool If true, clears the game state resetting everything.
-             * @return this
+             * #.stop 
+             * Stops the game.
              */
-            unload: function (clearState) {
-                Crafty.log("Unloading game");
-
-                // Default clear state to false if not set.
-                clearState = (typeof clearState === "undefined" ? false : clearState);
-
+            stop: function () {
+                // Lock all objects.
+                this.lockPlayers();
                 Crafty.audio.stop();
-                Crafty.stop(clearState);
-
-                return this;
             },
             
             /**
@@ -877,7 +902,7 @@ $(function() {
                                 var o = hit[0].obj;
                                 if (o.has('Player') && this._active) {
                                     this.destroy();
-                                    o.destroy();
+                                    o.explode();
                                 }
                             }
                         },
@@ -968,10 +993,6 @@ $(function() {
                                 22, 32,
                                 22, 0,
                             ]);
-                        },
-                        
-                        remove: function (destroy) {
-                            this.explode();
                         },
                         
                         events: {
@@ -1074,6 +1095,7 @@ $(function() {
                                         x: this.x - 16,
                                         y: this.y - 16
                                     });
+                                this.destroy();
                             }
                         },
                         
@@ -1212,8 +1234,13 @@ $(function() {
                          */
                         _gameID: null,
                         
-                        remove: function (destroy) {
+                        remove: function () {
+                            
                             this.sendUpdate();
+                            
+                            if (this._status === 'EXPLODED') {
+                                Crafty.trigger('GameOver', 'l');
+                            }
                         },
                         
                         /**
@@ -1235,7 +1262,7 @@ $(function() {
                                     this.attr('_movementUP', true);
                                 }
                                 
-                                if (e.keyCode === Crafty.keys.SPACE) {
+                                if (e.keyCode === Crafty.keys.SPACE && !this.isLocked()) {
                                     this.fireBullet();
                                     this.sendUpdate('status', 'BULLET_FIRED');
                                 }
@@ -1348,13 +1375,14 @@ $(function() {
                                 if (body.command === 'GAME.UPDATE') {
                                     // Look at the status and determine if we should blow up or not
                                     if (body.status === 'EXPLODED') {
+                                        that.explode();
                                         that.lock();
                                         that._movementUP = false;
                                         that._movementLEFT = false;
                                         that._movementRIGHT = false;
                                         that.vx = 0;
                                         that.vy = 0;
-                                        that.explode();
+                                        Crafty.trigger('GameOver', 'w');
                                     } else if (body.status === 'BULLET_FIRED') {
                                         that.fireBullet();
                                     } else {
@@ -1412,7 +1440,7 @@ $(function() {
                             HitOn: function (hit) {
                                 var o = hit[0].obj;
                                 if (o.has('Player')) {
-                                    o.destroy();
+                                    o.explode();
                                 }
                             }
                         }
