@@ -7,8 +7,11 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,7 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 @Api(value = "User", description = "Operation about user", consumes = "application/json")
 public class UserResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
     @Autowired
     private UserService userService;
 
@@ -104,6 +108,9 @@ public class UserResource {
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAll(@ApiIgnore Pageable pageRequest) {
         Page<User> pages = userService.getPagedList(pageRequest);
+        if (pages.getNumber() >= pages.getTotalPages()) {
+            pages = userService.getPagedList(new PageRequest(pages.getTotalPages() -1, pageRequest.getPageSize(), pageRequest.getSort()));
+        }
         PagedListDTO<ManagedUserDTO> pagedListDTO = new PagedListDTO<>();
         List<ManagedUserDTO> list = new ArrayList<>();
         pages.forEach(user -> list.add(new ManagedUserDTO(user)));

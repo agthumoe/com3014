@@ -18,7 +18,8 @@
     "font-awesome": "^4.5.0",
     "sockjs": "^0.3.4",
     "stomp-websocket": "^2.3.4",
-    "jquery.cookie": "jquery-cookie#^1.4.1"
+    "jquery.cookie": "jquery-cookie#^1.4.1",
+    "jQuery-Pagination-Plugin": "*"
   },
   "resolutions": {
     "jquery": "2.2.0"

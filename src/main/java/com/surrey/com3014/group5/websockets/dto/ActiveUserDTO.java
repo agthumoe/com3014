@@ -23,9 +23,8 @@ public class ActiveUserDTO extends UserDTO {
         this.rating = user.getLeaderboard().getRating();
     }
 
-    public String getRating() {
-        DecimalFormat df = new DecimalFormat("#.##");
-        return df.format(this.rating);
+    public double getRating() {
+        return (double) Math.round(this.rating * 100.0) / 100.0;
     }
 
     public void setRating(double rating) {
