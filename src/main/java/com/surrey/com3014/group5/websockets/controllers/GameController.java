@@ -1,6 +1,5 @@
 package com.surrey.com3014.group5.websockets.controllers;
 
-import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
 import com.surrey.com3014.group5.websockets.domains.Command;
 import com.surrey.com3014.group5.websockets.domains.Game;
@@ -150,18 +149,19 @@ public class GameController {
     }
 
     private void update(final User user, final Game game, final Command command) {
-        PlayerDTO oppositePlayer = game.getOppositePlayer(user.getId());
+        final PlayerDTO currentPlayer = game.getCurrentPlayer(user.getId());
+        final PlayerDTO oppositePlayer = game.getOppositePlayer(user.getId());
         final JSONObject response = command.getData();
         response.put("command", Command.Game.UPDATE);
         template.convertAndSendToUser(oppositePlayer.getUsername(), OUT_BOUND, response.toString());
         String status = command.getStringData("status");
         if (status != null && status.equals("EXPLODED")) {
             game.setExpired(true);
-            leaderboardService.adjustEloRating(oppositePlayer.getId(),user.getId());
-            Leaderboard winnersLeaderboard = leaderboardService.findByUserID(oppositePlayer.getId()).get();
-            Leaderboard losersLeaderboard = leaderboardService.findByUserID(user.getId()).get();
-            activeUserService.updateUserRating(oppositePlayer.getId(), winnersLeaderboard.getRating());
-            activeUserService.updateUserRating(user.getId(), losersLeaderboard.getRating());
+            // adjust and update the elo rating in the database.
+            leaderboardService.adjustEloRating(oppositePlayer, currentPlayer);
+            // update the rating in the active user lists.
+            activeUserService.updateUserRating(oppositePlayer);
+            activeUserService.updateUserRating(currentPlayer);
             LOGGER.debug("game: {}, has finished!", game.getGameID());
         }
     }

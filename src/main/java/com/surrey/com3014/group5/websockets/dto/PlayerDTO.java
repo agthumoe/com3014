@@ -1,6 +1,8 @@
 package com.surrey.com3014.group5.websockets.dto;
 
 import com.surrey.com3014.group5.dto.users.UserDTO;
+import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.websockets.domains.EloRating;
 import com.surrey.com3014.group5.websockets.domains.Resolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +13,7 @@ import java.util.Optional;
 /**
  * @author Aung Thu Moe
  */
-public class PlayerDTO extends UserDTO {
+public class PlayerDTO extends UserDTO implements EloRating {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerDTO.class);
     public static final String CHALLENGER = "CHALLENGER";
     public static final String CHALLENGED = "CHALLENGED";
@@ -20,19 +22,17 @@ public class PlayerDTO extends UserDTO {
     private Optional<Resolution> resolution = Optional.empty();
     private boolean ready = false;
     private GameData gameData = new GameData();
+    private double rating = 1500;
     private long messageSentTime;
-
     private long messageReceivedTime;
 
-    public PlayerDTO() {
-        super();
+    public PlayerDTO(User user) {
+        super(user);
+        this.rating = user.getLeaderboard().getRating();
     }
 
-    public PlayerDTO(UserDTO user, String role) {
-        setId(user.getId());
-        setUsername(user.getUsername());
-        setEmail(user.getEmail());
-        setName(user.getName());
+    public PlayerDTO(User user, String role) {
+        this(user);
         this.role = role;
         this.ready = false;
     }
@@ -121,6 +121,21 @@ public class PlayerDTO extends UserDTO {
             ", gameData=" + gameData +
             ", ready=" + ready +
             '}';
+    }
+
+    @Override
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    @Override
+    public double getRating() {
+        return this.rating;
+    }
+
+    @Override
+    public long getUserId() {
+        return getId();
     }
 
     private final class GameData {

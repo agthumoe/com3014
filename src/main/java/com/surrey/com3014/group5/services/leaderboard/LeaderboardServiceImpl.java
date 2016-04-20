@@ -7,6 +7,7 @@ import com.surrey.com3014.group5.repositories.LeaderboardRepository;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.user.UserService;
 import com.surrey.com3014.group5.helpers.EloHelper;
+import com.surrey.com3014.group5.websockets.domains.EloRating;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +56,14 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
     }
 
     @Override
-    public void adjustEloRating(long winnerID, long loserID) {
+    public void adjustEloRating(EloRating winner, EloRating loser) {
 
-        Optional<Leaderboard> maybeWinnerLeaderboard = findByUserID(winnerID);
+        Optional<Leaderboard> maybeWinnerLeaderboard = findByUserID(winner.getUserId());
         if (!maybeWinnerLeaderboard.isPresent()) {
             throw new ResourceNotFoundException("The requested resource does not exist");
         }
 
-        Optional<Leaderboard> maybeLoserLeaderboard = findByUserID(loserID);
+        Optional<Leaderboard> maybeLoserLeaderboard = findByUserID(loser.getUserId());
         if (!maybeLoserLeaderboard.isPresent()) {
             throw new ResourceNotFoundException("The requested resource does not exist");
         }
@@ -71,17 +72,24 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
 
         final Leaderboard leaderboardLoser = maybeLoserLeaderboard.get();
 
-        EloHelper winner = new EloHelper(leaderboardWinner.getRating());
-        EloHelper loser = new EloHelper(leaderboardLoser.getRating());
+        final EloHelper winnerRating = new EloHelper(leaderboardWinner.getRating());
+        final EloHelper loserRating = new EloHelper(leaderboardLoser.getRating());
 
-        EloHelper.adjust(winner, loser);
+        EloHelper.adjust(winnerRating, loserRating);
 
-        leaderboardWinner.setRating(winner.getRating());
-        leaderboardLoser.setRating(loser.getRating());
+        // update the rating of winner and loser
+        winner.setRating(winnerRating.getRating());
+        loser.setRating(loserRating.getRating());
 
+        // update the leaderboard rating in the database.
+        leaderboardWinner.setRating(winnerRating.getRating());
+        leaderboardLoser.setRating(loserRating.getRating());
+
+        // update the leaderboard win and lose count in the database
         leaderboardWinner.setWins(leaderboardWinner.getWins() + 1);
         leaderboardLoser.setLosses(leaderboardLoser.getLosses() + 1);
 
+        // save the results
         getLeaderboardRepository().save(leaderboardWinner);
         getLeaderboardRepository().save(leaderboardLoser);
     }
