@@ -25,12 +25,12 @@ public interface LeaderboardRepository extends Repository<Leaderboard> {
     Optional<Leaderboard> findByUser(User user);
 
     /**
-     * Retrieves pageable list of {@link Leaderboard} ordered by ratio in descending order,
+     * Retrieves pageable list of {@link Leaderboard} ordered by rating in descending order,
      * ordered by username in ascending order.
      *
      * @param pageable A Paganation information from the cleint
      * @return List of {@link Leaderboard} satisfying the provided {@link Pageable} information
      */
-    List<Leaderboard> findAllByOrderByRatioDescUserUsernameAsc(Pageable pageable);
+    List<Leaderboard> findAllByOrderByRatingDescUserUsernameAsc(Pageable pageable);
 
 }

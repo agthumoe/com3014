@@ -8,15 +8,19 @@ import java.text.DecimalFormat;
 /**
  * @author Spyridon Balkonis
  */
-public class ActiveUserDTO extends UserDTO{
+public class ActiveUserDTO extends UserDTO {
 
     private static final long serialVersionUID = -2623220141304335028L;
 
     private double rating;
 
+    public ActiveUserDTO(long userId) {
+        super.setId(userId);
+    }
+
     public ActiveUserDTO(User user) {
         super(user);
-        this.rating = user.getLeaderboard().getRatio();
+        this.rating = user.getLeaderboard().getRating();
     }
 
     public String getRating() {

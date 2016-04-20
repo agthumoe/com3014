@@ -1,6 +1,5 @@
 package com.surrey.com3014.group5.websockets.domains;
 
-import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 
 import java.io.Serializable;
@@ -14,8 +13,8 @@ public class GameRequest implements Serializable {
     private static final int TIMEOUT = 10000;
     private String gameID;
     private final AtomicLong requestedTime;
-    private UserDTO challenger;
-    private UserDTO challenged;
+    private User challenger;
+    private User challenged;
 
     public GameRequest() {
         this.requestedTime = new AtomicLong(System.currentTimeMillis());
@@ -29,20 +28,20 @@ public class GameRequest implements Serializable {
         this.gameID = gameID;
     }
 
-    public UserDTO getChallenger() {
+    public User getChallenger() {
         return challenger;
     }
 
     public void setChallenger(User challenger) {
-        this.challenger = new UserDTO(challenger);
+        this.challenger = challenger;
     }
 
-    public UserDTO getChallenged() {
+    public User getChallenged() {
         return challenged;
     }
 
     public void setChallenged(User challenged) {
-        this.challenged = new UserDTO(challenged);
+        this.challenged = challenged;
     }
 
     public AtomicLong getRequestedTime() {

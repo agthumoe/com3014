@@ -1,6 +1,5 @@
 package com.surrey.com3014.group5.websockets.controllers;
 
-import com.surrey.com3014.group5.dto.users.UserDTO;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.websockets.dto.ActiveUserDTO;
 import com.surrey.com3014.group5.websockets.services.ActiveUserService;
