@@ -1002,12 +1002,6 @@ $(function() {
                                 this._vectorY = -Math.cos(Crafty.math.degToRad(this._rotation));
                                 this._absoluteCentreX = this.x + this._origin.x;
                                 this._absoluteCentreY = this.y + this._origin.y;
-                            },
-
-                            HitOn: function (collision) {
-                                if (collision[0].obj.has('Player')) {
-                                    this.destroy();
-                                }
                             }
                         },
                         
