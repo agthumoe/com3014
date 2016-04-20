@@ -1,9 +1,6 @@
 package com.surrey.com3014.group5.controllers;
 
-import com.surrey.com3014.group5.dto.users.RegisterUserDTO;
-import com.surrey.com3014.group5.dto.users.UpdatePasswordDTO;
-import com.surrey.com3014.group5.dto.users.UpdateUserDTO;
-import com.surrey.com3014.group5.dto.users.UserDTO;
+import com.surrey.com3014.group5.dto.users.*;
 import com.surrey.com3014.group5.exceptions.BadRequestException;
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
 import com.surrey.com3014.group5.models.impl.User;
@@ -124,6 +121,21 @@ public class AccountController {
             LOGGER.debug("New users registered: " + registerUserDTO.toString());
             return "redirect:/index";
         }
+    }
+
+    @RequestMapping(value = "/account/{id}/profile", method = RequestMethod.GET)
+    public String profile(@PathVariable("id") long id, Model model) {
+        Optional<User> maybeUser = userService.findOne(id);
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            // check users has the right authority to see the users info
+            if (SecurityUtils.isAuthenticated() && user.getUsername().equals(SecurityUtils.getCurrentUsername())) {
+                model.addAttribute("userDTO", new UserProfileDTO(user));
+                return "account/profile";
+            }
+            throw new BadRequestException("You are not authorised to see this page");
+        }
+        throw new ResourceNotFoundException("User (id: " + id + ") does not exist!");
     }
 
     @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
