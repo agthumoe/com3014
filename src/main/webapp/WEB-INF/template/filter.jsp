@@ -8,6 +8,7 @@
                     <option value="email">Email</option>
                     <option value="name">Name</option>
                     <option value="enabled">Status</option>
+                    <option value="role">Role</option>
                 </select>
             </div>
         </div>

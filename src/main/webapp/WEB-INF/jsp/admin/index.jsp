@@ -8,7 +8,7 @@
 <%@include file="../../template/browserupgrade.jsp" %>
 <body>
 <%@include file="../../template/navbar.jsp" %>
-<div class="container">
+<div class="container" id="page-wrapper">
     <div class="row">
         <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3 border-right-2px">
             <div class="x-panel info text-center">
@@ -74,11 +74,6 @@
     <jsp:param name="btn_no_label" value="Close"/>
 </jsp:include>
 
-<div id="notification" class="alert alert-info alert-dismissible top-right notification" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-        aria-hidden="true">&times;</span></button>
-    <strong>Info!</strong> <span id="notification-message"></span>
-</div>
 <%@include file="../../template/footer.jsp" %>
 <%@include file="../../template/scripts.jsp" %>
 <script src="../../../bower_components/jQuery-Pagination-Plugin/js/jquery.yzePagination.min.js"></script>

@@ -1,15 +1,38 @@
 $('document').ready(function () {
     var deleteModal = $('#delete-modal');
-    var notification = $('#notification');
     deleteModal.modal({show: false});
-    notification.hide();
 
-    function paginate(data) {
+    function paginate(response) {
         $('#pagination').pagination({
-            totalPage: data.totalPages,
+            totalPage: response.totalPages,
             callback: function (currentPage) {
                 populateUsersTable(currentPage - 1);
             }
+        });
+    }
+
+    function notify(message, type) {
+        type = type.toLowerCase();
+        var notification = $('<div />').addClass("alert alert-dismissible top-right notification alert-" + type);
+        notification.append("<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>");
+        var icon = $('<i />').addClass('fa').attr('aria-hidden', true);
+        if (type === 'success') {
+            icon.addClass("fa-check-circle");
+        } else if (type === 'info') {
+            icon.addClass("fa-info-circle");
+        } else if (type === 'warning') {
+            icon.addClass("fa-exclamation-circle");
+        } else if (type === 'danger') {
+            icon.addClass("fa-times-circle");
+        } else {
+            console.error("Invalid type argument: " + type);
+        }
+        notification.append(icon).append("&nbsp;<span>" + message + "</span>");
+        $('#page-wrapper').append(notification);
+        notification.show();
+        notification.fadeTo(3000, 500).slideUp(500, function () {
+            notification.alert('close');
+            notification.remove();
         });
     }
 
@@ -17,11 +40,12 @@ $('document').ready(function () {
         $.ajax({
             url: url,
             type: 'GET',
-            success: function (data) {
+            success: function (response) {
+                console.log(response);
                 var tbody = $('#user-table tbody');
                 tbody.html("");
-
-                $.each(data.pagedList, function (k, v) {
+                var list = response.hasOwnProperty('pagedList') ? response.pagedList : response;
+                $.each(list, function (k, v) {
                     var status = v.enabled ? '<i class="fa fa-check success"></i>' : '<i class="fa fa-ban danger"></i>';
                     var role = $('<td />').addClass("text-center");
                     if (v.admin) {
@@ -46,11 +70,7 @@ $('document').ready(function () {
                                     type: 'DELETE',
                                     success: function () {
                                         deleteModal.modal("hide");
-                                        $('#notification-message').html("User has been deleted!");
-                                        notification.show();
-                                        notification.fadeTo(3000, 500).slideUp(500, function () {
-                                            notification.alert('close');
-                                        });
+                                        notify("User has been deleted!", "info");
                                         // refresh the page or clear and reload the table
                                         queryUsers(url, callback);
                                     }
@@ -86,8 +106,11 @@ $('document').ready(function () {
                 });
                 $('#pagination').html("");
                 if (typeof callback !== 'undefined') {
-                    callback(data);
+                    callback(response);
                 }
+            },
+            error: function (response) {
+                notify(response.responseJSON.message, "danger");
             }
         });
     }
@@ -102,7 +125,6 @@ $('document').ready(function () {
         var filter = $('#filter_type').val();
         var limit = $('#filter_limit').val();
         var url = '/api/users/filter?filterBy=' + filterBy + '&filter=' + filter + '&limit=' + limit;
-        console.log(url);
         queryUsers(url);
     });
 

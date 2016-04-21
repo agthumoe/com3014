@@ -131,7 +131,6 @@ public class UserResource {
         @RequestParam(value = "filter") String filter,
         @RequestParam(value = "limit", required = false, defaultValue = "10") long limit) {
         filterBy = filterBy.toLowerCase().trim();
-        LOGGER.debug("filterBy: {}", filterBy);
         List<User> users = new ArrayList<>();
         if (filterBy.equals("username")) {
             users = userService.findByUsernameContaining(filter);
@@ -140,15 +139,53 @@ public class UserResource {
         } else if (filterBy.equals("name")) {
             users = userService.findByNameContaining(filter);
         } else if (filterBy.equals("enabled")) {
-            final boolean enabled = filter.equals("true") || filter.equals("1") || filter.equals("yes");
-            users = userService.findByEnabled(enabled);
+            return filterByEnabled(filter, limit);
+        } else if (filterBy.equals("role")) {
+            return filterByRole(filter, limit);
         }
         List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
         for (int i = 0; i < users.size() && i < limit; i++) {
             managedUserDTOs.add(new ManagedUserDTO(users.get(i)));
         }
-        PagedListDTO<ManagedUserDTO> pagedListDTO = new PagedListDTO<>();
-        pagedListDTO.setPagedList(managedUserDTOs);
-        return ResponseEntity.ok(pagedListDTO);
+        return ResponseEntity.ok(managedUserDTOs);
+    }
+
+    private ResponseEntity<?> filterByRole(String filter, long limit) {
+        boolean isAdmin;
+        if (filter.equals("admin")) {
+            isAdmin = true;
+        } else if (filter.equals("user")) {
+            isAdmin = false;
+        } else {
+            return new ResponseEntity<>(new ErrorDTO(HttpStatus.BAD_REQUEST, "Invalid query: " + filter), HttpStatus.BAD_REQUEST);
+        }
+        List<User> users = userService.getAll();
+        List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
+        for (User user: users) {
+            ManagedUserDTO managedUserDTO = new ManagedUserDTO(user);
+            if (managedUserDTO.isAdmin() == isAdmin && managedUserDTOs.size() < limit) {
+                managedUserDTOs.add(managedUserDTO);
+                if (managedUserDTOs.size() >= limit) {
+                    break;
+                }
+            }
+        }
+        return ResponseEntity.ok(managedUserDTOs);
+    }
+
+    private ResponseEntity<?> filterByEnabled(String filter, long limit) {
+        List<User> users;
+        if (filter.equals("true") || filter.equals("1") || filter.equals("yes")) {
+            users = userService.findByEnabled(true);
+        } else if(filter.equals("false") || filter.equals("0") || filter.equals("no")) {
+            users = userService.findByEnabled(false);
+        } else {
+            return new ResponseEntity<>(new ErrorDTO(HttpStatus.BAD_REQUEST, "Invalid query: " + filter), HttpStatus.BAD_REQUEST);
+        }
+        List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
+        for (int i = 0; i < users.size() && i < limit; i++) {
+            managedUserDTOs.add(new ManagedUserDTO(users.get(i)));
+        }
+        return ResponseEntity.ok(managedUserDTOs);
     }
 }
