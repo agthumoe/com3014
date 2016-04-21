@@ -22,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Spring MVC controller to handle user registration and management.
@@ -37,36 +38,36 @@ public class UserResource {
     @Autowired
     private UserService userService;
 
-    /**
-     * Get by username or email
-     */
-    @ApiOperation(value = "Filter by username or email", notes = "This can only be done by logged in user with ADMIN permission")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class),
-        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class),
-        @ApiResponse(code = 404, message = "The requested user with the provided information does not exist", response = ErrorDTO.class)
-    })
-    @RequestMapping(method = RequestMethod.GET, value = "/filter")
-    @ResponseBody
-    @Transactional(readOnly = true)
-    public ResponseEntity<?> filteredBy(
-        @ApiParam(value = "username to be filtered by", required = false) @RequestParam(value = "username", required = false) String username,
-        @ApiParam(value = "email to be filtered by", required = false) @RequestParam(value = "email", required = false) String email) {
-        Optional<User> maybeUser = userService.findByUsername(username);
-        User user = null;
-        if (maybeUser.isPresent()) {
-            user = maybeUser.get();
-            user.getAuthorities().size();
-            return ResponseEntity.ok(new ManagedUserDTO(user));
-        }
-        maybeUser = userService.findByEmail(email);
-        if (maybeUser.isPresent()) {
-            user = maybeUser.get();
-            user.getAuthorities().size();
-            return ResponseEntity.ok(new ManagedUserDTO(user));
-        }
-        return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
-    }
+//    /**
+//     * Get by username or email
+//     */
+//    @ApiOperation(value = "Filter by username or email", notes = "This can only be done by logged in user with ADMIN permission")
+//    @ApiResponses(value = {
+//        @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class),
+//        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class),
+//        @ApiResponse(code = 404, message = "The requested user with the provided information does not exist", response = ErrorDTO.class)
+//    })
+//    @RequestMapping(method = RequestMethod.GET, value = "/filter")
+//    @ResponseBody
+//    @Transactional(readOnly = true)
+//    public ResponseEntity<?> filteredBy(
+//        @ApiParam(value = "username to be filtered by", required = false) @RequestParam(value = "username", required = false) String username,
+//        @ApiParam(value = "email to be filtered by", required = false) @RequestParam(value = "email", required = false) String email) {
+//        Optional<User> maybeUser = userService.findByUsername(username);
+//        User user = null;
+//        if (maybeUser.isPresent()) {
+//            user = maybeUser.get();
+//            user.getAuthorities().size();
+//            return ResponseEntity.ok(new ManagedUserDTO(user));
+//        }
+//        maybeUser = userService.findByEmail(email);
+//        if (maybeUser.isPresent()) {
+//            user = maybeUser.get();
+//            user.getAuthorities().size();
+//            return ResponseEntity.ok(new ManagedUserDTO(user));
+//        }
+//        return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
+//    }
 
     /**
      * Delete the user given the id
@@ -122,15 +123,29 @@ public class UserResource {
         return ResponseEntity.ok(pagedListDTO);
     }
 
-    @ApiOperation(value = "Get total number of users", notes = "This can only be done by logged in user with ADMIN permission")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK", response = Long.class),
-        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class)
-    })
-    @RequestMapping(method = RequestMethod.GET, value = "/count")
+    @RequestMapping(method = RequestMethod.GET, value = "/filter")
     @ResponseBody
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getCount() {
-        return ResponseEntity.ok("{\"count\": " + userService.count() + "}");
+    public ResponseEntity<?> filter(
+        @RequestParam(value = "filterBy") String filterBy,
+        @RequestParam(value = "filter") String filter,
+        @RequestParam(value = "limit", required = false, defaultValue = "10") long limit) {
+        filterBy = filterBy.toLowerCase().trim();
+        List<User> users = new ArrayList<>();
+        if (filterBy.equals("username")) {
+            users = userService.findByUsernameContaining(filter);
+        } else if (filterBy.equals("email")) {
+            users = userService.findByEmailContaining(filter);
+        } else if (filterBy.equals("name")) {
+            users = userService.findByNameContaining(filter);
+        } else if (filterBy.equals("enabled")) {
+            boolean enabled = Boolean.parseBoolean(filter);
+            users = userService.findByEnabled(enabled);
+        }
+        List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
+        for (int i = 0; i < users.size() && i < limit; i++) {
+            managedUserDTOs.add(new ManagedUserDTO(users.get(i)));
+        }
+        return ResponseEntity.ok(managedUserDTOs);
     }
 }

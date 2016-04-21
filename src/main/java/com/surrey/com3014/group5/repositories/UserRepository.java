@@ -2,6 +2,7 @@ package com.surrey.com3014.group5.repositories;
 
 import com.surrey.com3014.group5.models.impl.User;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,4 +31,11 @@ public interface UserRepository extends Repository<User> {
      */
     Optional<User> findByEmail(String email);
 
+    List<User> findByUsernameContaining(String username);
+
+    List<User> findByEmailContaining(String email);
+
+    List<User> findByNameContaining(String name);
+
+    List<User> findByEnabled(boolean enabled);
 }

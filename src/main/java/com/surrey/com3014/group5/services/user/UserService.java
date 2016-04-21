@@ -1,5 +1,6 @@
 package com.surrey.com3014.group5.services.user;
 
+import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.UserRepository;
 import com.surrey.com3014.group5.services.MutableService;
@@ -19,6 +20,14 @@ public interface UserService extends MutableService<User> {
 
     Optional<User> findByEmail(String email);
 
+    List<User> findByUsernameContaining(String username);
+
+    List<User> findByEmailContaining(String email);
+
+    List<User> findByNameContaining(String name);
+
+    List<User> findByEnabled(boolean enabled);
+
     boolean validate(long id, String password);
 
     boolean validate(String password);
@@ -31,7 +40,7 @@ public interface UserService extends MutableService<User> {
 
     List<User> getAll();
 
-    Page<User> getPagedList(Pageable pageRequest);
+    Page<User> getPagedList(Pageable pageable);
 
     void updatePassword(User user);
 

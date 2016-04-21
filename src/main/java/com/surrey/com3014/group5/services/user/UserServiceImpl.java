@@ -48,6 +48,26 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
         return getUserRepository().findByEmail(email);
     }
 
+    @Override
+    public List<User> findByUsernameContaining(String username) {
+        return getUserRepository().findByUsernameContaining(username);
+    }
+
+    @Override
+    public List<User> findByEmailContaining(String email) {
+        return getUserRepository().findByEmailContaining(email);
+    }
+
+    @Override
+    public List<User> findByNameContaining(String name) {
+        return getUserRepository().findByNameContaining(name);
+    }
+
+    @Override
+    public List<User> findByEnabled(boolean enabled) {
+        return getUserRepository().findByEnabled(enabled);
+    }
+
     public UserRepository getUserRepository() {
         return (UserRepository) super.getRepository();
     }
