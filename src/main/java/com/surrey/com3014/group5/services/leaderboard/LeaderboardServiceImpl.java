@@ -8,8 +8,6 @@ import com.surrey.com3014.group5.repositories.LeaderboardRepository;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.user.UserService;
 import com.surrey.com3014.group5.websockets.domains.EloRating;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import java.util.Optional;
  */
 @Service("leaderboardService")
 public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> implements LeaderboardService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeaderboardServiceImpl.class);
     /**
      * Userservice to access user information.
      */
