@@ -1,20 +1,19 @@
 package com.surrey.com3014.group5.websockets.controllers;
 
-import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
-import com.surrey.com3014.group5.websockets.domains.Command;
-import com.surrey.com3014.group5.websockets.domains.Game;
-import com.surrey.com3014.group5.websockets.services.ActiveUserService;
-import com.surrey.com3014.group5.websockets.services.GameService;
-import com.surrey.com3014.group5.websockets.domains.Resolution;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.services.leaderboard.LeaderboardService;
+import com.surrey.com3014.group5.websockets.domains.Command;
+import com.surrey.com3014.group5.websockets.domains.Game;
+import com.surrey.com3014.group5.websockets.domains.Resolution;
+import com.surrey.com3014.group5.websockets.dto.PlayerDTO;
+import com.surrey.com3014.group5.websockets.services.ActiveUserService;
+import com.surrey.com3014.group5.websockets.services.GameService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
@@ -22,27 +21,54 @@ import java.security.Principal;
 import java.util.Optional;
 
 /**
+ * This class is the main game websocket protocol. Handle all the messages regarding the game playing information.
+ *
  * @author Aung Thu Moe
  */
 @Controller
 public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
+    /**
+     * Outgoing websocket address.
+     */
     private static final String OUT_BOUND = "/topic/game";
+    /**
+     * Incoming websocket address
+     */
     private static final String IN_BOUND = "/queue/game";
+
+    /**
+     * This messaging template provides a method to send message to a specific users or all users.
+     */
     @Autowired
     private SimpMessagingTemplate template;
 
+    /**
+     * GameService to access all game information stored in the cache.
+     */
     @Autowired
     private GameService gameService;
 
+    /**
+     * LeaderboardService to update leaderboard information after the game has finished.
+     */
     @Autowired
     private LeaderboardService leaderboardService;
 
+    /**
+     * ActiveUserService to update the rating of the active users stored in the cache.
+     */
     @Autowired
     private ActiveUserService activeUserService;
 
+    /**
+     * Handle the incoming the game message.
+     *
+     * @param message   the incoming message.
+     * @param principal current user principal.
+     */
     @MessageMapping(IN_BOUND)
-    public void request(String message, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
+    public void request(String message, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         Command command = new Command(message);
         try {
@@ -66,6 +92,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Validate if the gameId is exist or if the game is expired.
+     *
+     * @param user    current user principal.
+     * @param game    current playing game.
+     * @param command current game command.
+     * @return true if the game id exist and game is not yet expired, false otherwise.
+     */
     private boolean validate(User user, Game game, Command command) {
         final JSONObject response = new JSONObject();
         response.put("gameID", game.getGameID());
@@ -81,6 +115,13 @@ public class GameController {
         return true;
     }
 
+    /**
+     * If the clients response with LOAD message, the server response with PING message.
+     *
+     * @param user    current user principal.
+     * @param game    current playing game.
+     * @param command current game command.
+     */
     private void loadedAndPing(final User user, final Game game, final Command command) {
         // record player's resolutions
         LOGGER.debug("User: {}, Server response -> GAME.PING", user.getUsername());
@@ -93,6 +134,14 @@ public class GameController {
         game.getCurrentPlayer(user.getId()).setMessageSentTime(System.currentTimeMillis());
     }
 
+    /**
+     * If the clients response with PONG message, server responses with PREPARE message with the recommended screen
+     * resolution for both palyers. Recommended resolution is only sent when both players has been provided their
+     * screen resolution. This method also calculates the transmission delays.
+     *
+     * @param user current user principal.
+     * @param game current playing game.
+     */
     private void pongAndPrepare(User user, Game game) {
         LOGGER.debug("User: {}, Server response -> GAME.PREPARE", user.getUsername());
         // calculate the transmission delay
@@ -125,6 +174,12 @@ public class GameController {
         }
     }
 
+    /**
+     * If both clients response that they are ready, the server replies with START message.
+     *
+     * @param user current user principal.
+     * @param game current playing game.
+     */
     private void readyAndStart(User user, Game game) {
         PlayerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         currentPlayer.setReady(true);
@@ -148,6 +203,13 @@ public class GameController {
         }
     }
 
+    /**
+     * This method just redirects the message from one player to the other player in the same game.
+     *
+     * @param user    current user principal.
+     * @param game    current playing game.
+     * @param command current game command.
+     */
     private void update(final User user, final Game game, final Command command) {
         final PlayerDTO currentPlayer = game.getCurrentPlayer(user.getId());
         final PlayerDTO oppositePlayer = game.getOppositePlayer(user.getId());
@@ -155,6 +217,8 @@ public class GameController {
         response.put("command", Command.Game.UPDATE);
         template.convertAndSendToUser(oppositePlayer.getUsername(), OUT_BOUND, response.toString());
         String status = command.getStringData("status");
+        // if one player sent with EXPLODED message, the opposite player was won and update the leaderboard,
+        // activeUsers cache and end the game.
         if (status != null && status.equals("EXPLODED")) {
             game.setExpired(true);
             // adjust and update the elo rating in the database.

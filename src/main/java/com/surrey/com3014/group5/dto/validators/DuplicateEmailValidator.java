@@ -8,18 +8,29 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
+ * Validate the provided email has already been registered.
+ *
  * @author Aung Thu Moe
  */
 @Component("duplicateEmailValidator")
 public class DuplicateEmailValidator implements Validator {
+    /**
+     * Userservice to check if the email has already been registered.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supports(Class<?> clazz) {
         return UserDTO.class.isAssignableFrom(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validate(Object target, Errors errors) {
         UserDTO userDTO = (UserDTO) target;

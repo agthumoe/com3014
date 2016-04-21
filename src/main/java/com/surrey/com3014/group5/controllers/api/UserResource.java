@@ -7,8 +7,6 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.user.UserService;
 import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,10 +20,9 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
- * Spring MVC controller to handle user registration and management.
+ * Spring Rest controller to handle user registration and management.
  *
  * @author Aung Thu Moe
  * @author Spyros Balkonis
@@ -34,40 +31,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/users")
 @Api(value = "User", description = "Operation about user", consumes = "application/json")
 public class UserResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
+    /**
+     * Userservice to access user dao.
+     */
     @Autowired
     private UserService userService;
-
-//    /**
-//     * Get by username or email
-//     */
-//    @ApiOperation(value = "Filter by username or email", notes = "This can only be done by logged in user with ADMIN permission")
-//    @ApiResponses(value = {
-//        @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class),
-//        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class),
-//        @ApiResponse(code = 404, message = "The requested user with the provided information does not exist", response = ErrorDTO.class)
-//    })
-//    @RequestMapping(method = RequestMethod.GET, value = "/filter")
-//    @ResponseBody
-//    @Transactional(readOnly = true)
-//    public ResponseEntity<?> filteredBy(
-//        @ApiParam(value = "username to be filtered by", required = false) @RequestParam(value = "username", required = false) String username,
-//        @ApiParam(value = "email to be filtered by", required = false) @RequestParam(value = "email", required = false) String email) {
-//        Optional<User> maybeUser = userService.findByUsername(username);
-//        User user = null;
-//        if (maybeUser.isPresent()) {
-//            user = maybeUser.get();
-//            user.getAuthorities().size();
-//            return ResponseEntity.ok(new ManagedUserDTO(user));
-//        }
-//        maybeUser = userService.findByEmail(email);
-//        if (maybeUser.isPresent()) {
-//            user = maybeUser.get();
-//            user.getAuthorities().size();
-//            return ResponseEntity.ok(new ManagedUserDTO(user));
-//        }
-//        return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
-//    }
 
     /**
      * Delete the user given the id
@@ -94,6 +62,12 @@ public class UserResource {
         return new ResponseEntity<>(new ErrorDTO(HttpStatus.NOT_FOUND, "The requested user with the provided information does not exist"), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Get all user.
+     *
+     * @param pageRequest pagination information.
+     * @return all users satisfing the provided pageRequest.
+     */
     @ApiOperation(value = "Get all user", notes = "This can only be done by logged in user with ADMIN permission")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK", response = PagedListDTO.class),
@@ -110,7 +84,7 @@ public class UserResource {
     public ResponseEntity<?> getAll(@ApiIgnore Pageable pageRequest) {
         Page<User> pages = userService.getPagedList(pageRequest);
         if (pages.getNumber() >= pages.getTotalPages()) {
-            pages = userService.getPagedList(new PageRequest(pages.getTotalPages() -1, pageRequest.getPageSize(), pageRequest.getSort()));
+            pages = userService.getPagedList(new PageRequest(pages.getTotalPages() - 1, pageRequest.getPageSize(), pageRequest.getSort()));
         }
         PagedListDTO<ManagedUserDTO> pagedListDTO = new PagedListDTO<>();
         List<ManagedUserDTO> list = new ArrayList<>();
@@ -123,6 +97,26 @@ public class UserResource {
         return ResponseEntity.ok(pagedListDTO);
     }
 
+    /**
+     * Filter users by the provided filter method.
+     *
+     * @param filterBy column name to be used to filter the users.
+     * @param filter   value to filter the users.
+     * @param limit    number of results.
+     * @return List of users satisfing the provided filters information.
+     */
+    @ApiOperation(value = "Filter by username, email, name, status or role", notes = "This can only be done by logged in user with ADMIN permission")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = ManagedUserDTO.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid query", response = ErrorDTO.class),
+        @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class),
+        @ApiResponse(code = 404, message = "The requested user with the provided information does not exist", response = ErrorDTO.class)
+    })
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "filterBy", value = "Column name to be filtered by", dataType = "string", paramType = "query", allowableValues = "[username,email,name,enabled,role]"),
+        @ApiImplicitParam(name = "filter", value = "Query string to be filtered", dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "limit", value = "Number of results to be limited", dataType = "int", paramType = "query")
+    })
     @RequestMapping(method = RequestMethod.GET, value = "/filter")
     @ResponseBody
     @Transactional(readOnly = true)
@@ -150,6 +144,13 @@ public class UserResource {
         return ResponseEntity.ok(managedUserDTOs);
     }
 
+    /**
+     * Filter by role.
+     *
+     * @param filter specific query provied by user.
+     * @param limit  number of results
+     * @return List of users filtered by role.
+     */
     private ResponseEntity<?> filterByRole(String filter, long limit) {
         boolean isAdmin;
         if (filter.equals("admin")) {
@@ -161,7 +162,7 @@ public class UserResource {
         }
         List<User> users = userService.getAll();
         List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
-        for (User user: users) {
+        for (User user : users) {
             ManagedUserDTO managedUserDTO = new ManagedUserDTO(user);
             if (managedUserDTO.isAdmin() == isAdmin && managedUserDTOs.size() < limit) {
                 managedUserDTOs.add(managedUserDTO);
@@ -173,11 +174,18 @@ public class UserResource {
         return ResponseEntity.ok(managedUserDTOs);
     }
 
+    /**
+     * Filter by enabled (status).
+     *
+     * @param filter specific query provided by user.
+     * @param limit  number of results.
+     * @return list of users filtered by enabled (status).
+     */
     private ResponseEntity<?> filterByEnabled(String filter, long limit) {
         List<User> users;
         if (filter.equals("true") || filter.equals("1") || filter.equals("yes")) {
             users = userService.findByEnabled(true);
-        } else if(filter.equals("false") || filter.equals("0") || filter.equals("no")) {
+        } else if (filter.equals("false") || filter.equals("0") || filter.equals("no")) {
             users = userService.findByEnabled(false);
         } else {
             return new ResponseEntity<>(new ErrorDTO(HttpStatus.BAD_REQUEST, "Invalid query: " + filter), HttpStatus.BAD_REQUEST);

@@ -21,57 +21,91 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Implementation of UserService.
+ *
  * @author Spyros Balkonis
  * @author Aung Thu Moe
  */
 @Service("userService")
 public class UserServiceImpl extends AbstractMutableService<User> implements UserService {
 
+    /**
+     * To encode password.
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * To access leaderboard information.
+     */
     @Autowired
     private LeaderboardService leaderboardService;
 
+    /**
+     * Create a new UserService with the provided userRepository.
+     *
+     * @param userRepository to access user information.
+     */
     @Autowired
-    public UserServiceImpl(UserRepository userRepository){
+    public UserServiceImpl(UserRepository userRepository) {
         super(userRepository);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<User> findByUsername(String username) {
         return getUserRepository().findByUsername(username);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<User> findByEmail(String email) {
         return getUserRepository().findByEmail(email);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<User> findByUsernameContaining(String username) {
         return getUserRepository().findByUsernameContaining(username);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<User> findByEmailContaining(String email) {
         return getUserRepository().findByEmailContaining(email);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<User> findByNameContaining(String name) {
         return getUserRepository().findByNameContaining(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<User> findByEnabled(boolean enabled) {
         return getUserRepository().findByEnabled(enabled);
     }
 
-    public UserRepository getUserRepository() {
+    private UserRepository getUserRepository() {
         return (UserRepository) super.getRepository();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends User> S create(S s) {
         s.setPassword(passwordEncoder.encode(s.getPassword())); //Password hashed and salt added.
@@ -82,15 +116,9 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
         return s;
     }
 
-    @Override
-    public boolean validate(long id, String password) {
-        Optional<User> maybeUser = findOne(id);
-        if (maybeUser.isPresent()) {
-            return passwordEncoder.matches(password, maybeUser.get().getPassword());
-        }
-        return false;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UsernamePasswordAuthenticationToken authenticate(final String username, final String password) {
@@ -109,21 +137,34 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Transactional(readOnly = true)
     public Optional<User> getCurrentLogin() {
         return getUserRepository().findByUsername(SecurityUtils.getCurrentUsername());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<User> getAll() {
         return getUserRepository().findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updatePassword(User user) {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean validate(String password) {
         Optional<User> maybeUser = findByUsername(SecurityUtils.getCurrentUsername());
@@ -133,6 +174,9 @@ public class UserServiceImpl extends AbstractMutableService<User> implements Use
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<User> getPagedList(Pageable pageRequest) {
         return getUserRepository().findAll(pageRequest);

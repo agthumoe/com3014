@@ -1,47 +1,64 @@
 package com.surrey.com3014.group5.websockets.controllers;
 
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
+import com.surrey.com3014.group5.models.impl.User;
+import com.surrey.com3014.group5.services.user.UserService;
 import com.surrey.com3014.group5.websockets.domains.Command;
 import com.surrey.com3014.group5.websockets.domains.GameRequest;
 import com.surrey.com3014.group5.websockets.services.GameRequestService;
 import com.surrey.com3014.group5.websockets.services.GameService;
-import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.websockets.utils.RandomUtils;
-import com.surrey.com3014.group5.services.user.UserService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+
 import java.security.Principal;
 import java.util.Optional;
 
 /**
+ * Websocket controller to handle new game challenge
+ *
  * @author Aung Thu Moe
  */
 @Controller
 public class GameChallengeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameChallengeController.class);
 
-    @Autowired
-    private TaskScheduler scheduler;
-
+    /**
+     * This messaging template provides a method to send message to a specific users or all users.
+     */
     @Autowired
     private SimpMessagingTemplate template;
 
+    /**
+     * Userservice to access user dao.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * GameRequestService to access all game request stored in the cache.
+     */
     @Autowired
     private GameRequestService gameRequestService;
 
+    /**
+     * GameService to access all game information stored in the cache.
+     */
     @Autowired
     private GameService gameService;
 
+    /**
+     * Handle all commands sent to <code>/queue/challenge</code> channel.
+     *
+     * @param message   A websocket command message.
+     * @param principal current user principal.
+     */
     @MessageMapping("/queue/challenge")
     public void handleCommand(String message, Principal principal) {
         User challenger = (User) ((Authentication) principal).getPrincipal();
@@ -61,6 +78,12 @@ public class GameChallengeController {
         }
     }
 
+    /**
+     * Handle new game challenge command.
+     *
+     * @param challenger of new game.
+     * @param challenged of new game.
+     */
     private void newChallenge(User challenger, User challenged) {
         final GameRequest gameRequest = this.gameRequestService.registerGameRequest(RandomUtils.getRandom(), challenger, challenged);
         JSONObject response = new JSONObject();
@@ -73,6 +96,11 @@ public class GameChallengeController {
         LOGGER.debug("new challenge: " + gameRequest.toString());
     }
 
+    /**
+     * Handle challenge deny command.
+     *
+     * @param gameID of the new game.
+     */
     private void denyChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
         if (gameRequest.isExpired()) {
@@ -89,6 +117,11 @@ public class GameChallengeController {
         }
     }
 
+    /**
+     * Handle challenge accept command.
+     *
+     * @param gameID of the new game.
+     */
     private void acceptChallenge(String gameID) {
         final GameRequest gameRequest = this.gameRequestService.getGameRequest(gameID);
         if (gameRequest.isExpired()) {
@@ -107,6 +140,11 @@ public class GameChallengeController {
         }
     }
 
+    /**
+     * Handle if the challenge is expired or not. Send message to user if the game was expired.
+     *
+     * @param gameRequest GameRequest sent by a player.
+     */
     private void sendExpiredChallengeMessage(GameRequest gameRequest) {
         LOGGER.debug("send expiration message");
         JSONObject response = new JSONObject();

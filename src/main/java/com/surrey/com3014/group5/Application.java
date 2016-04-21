@@ -28,14 +28,6 @@ public class Application extends SpringBootServletInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class.getName());
 
     /**
-     * Configure this application as a spring-boot application.
-     */
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class);
-    }
-
-    /**
      * Entry point of the application.
      */
     public static void main(String[] args) throws UnknownHostException {
@@ -48,6 +40,14 @@ public class Application extends SpringBootServletInitializer {
         if (env.getActiveProfiles().length != 0) {
             LOGGER.info("Active Profiles:\t\t{}", StringUtils.arrayToDelimitedString(env.getActiveProfiles(), ", "));
         }
+    }
+
+    /**
+     * Configure this application as a spring-boot application.
+     */
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
     }
 
 }

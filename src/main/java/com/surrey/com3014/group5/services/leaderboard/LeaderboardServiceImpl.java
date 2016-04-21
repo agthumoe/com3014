@@ -1,12 +1,12 @@
 package com.surrey.com3014.group5.services.leaderboard;
 
 import com.surrey.com3014.group5.exceptions.ResourceNotFoundException;
+import com.surrey.com3014.group5.helpers.EloHelper;
 import com.surrey.com3014.group5.models.impl.Leaderboard;
 import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.repositories.LeaderboardRepository;
 import com.surrey.com3014.group5.services.AbstractMutableService;
 import com.surrey.com3014.group5.services.user.UserService;
-import com.surrey.com3014.group5.helpers.EloHelper;
 import com.surrey.com3014.group5.websockets.domains.EloRating;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,28 +19,49 @@ import java.util.Optional;
 
 
 /**
+ * Implementation of LeaderboardService
+ *
  * @author Spyros Balkonis
  */
 @Service("leaderboardService")
 public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> implements LeaderboardService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LeaderboardServiceImpl.class);
+    /**
+     * Userservice to access user information.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Create LeaderboardService with the provided leaderboardRepository
+     *
+     * @param leaderboardRepository to access leaderboard information.
+     */
     @Autowired
     public LeaderboardServiceImpl(LeaderboardRepository leaderboardRepository) {
         super(leaderboardRepository);
     }
 
-    public LeaderboardRepository getLeaderboardRepository() {
+    /**
+     * Get LeaderboardRepository
+     *
+     * @return LeaderboardRepository
+     */
+    private LeaderboardRepository getLeaderboardRepository() {
         return (LeaderboardRepository) super.getRepository();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends Leaderboard> S create(S s) {
         return super.create(s);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Leaderboard> findByUserID(long userID) {
         Optional<User> maybeUser = userService.findOne(userID);
@@ -50,11 +71,17 @@ public class LeaderboardServiceImpl extends AbstractMutableService<Leaderboard> 
         return this.getLeaderboardRepository().findByUser(maybeUser.get());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Leaderboard> findAllByOrderByRatingDescUserAsc() {
         return this.getLeaderboardRepository().findAllByOrderByRatingDescUserUsernameAsc(new PageRequest(0, 10));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void adjustEloRating(EloRating winner, EloRating loser) {
 

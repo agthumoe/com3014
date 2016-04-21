@@ -7,8 +7,6 @@ import com.surrey.com3014.group5.models.impl.User;
 import com.surrey.com3014.group5.security.SecurityUtils;
 import com.surrey.com3014.group5.services.authority.AuthorityService;
 import com.surrey.com3014.group5.services.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,44 +21,87 @@ import java.util.Optional;
 
 /**
  * @author Aung Thu Moe
+ *         Spring mvc controller to handle account management.
  */
 @Controller
 public class AccountController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
-
+    /**
+     * Userservice to access user dao.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * AuthorityService to access authority dao.
+     */
     @Autowired
     private AuthorityService authorityService;
 
+    /**
+     * To validate duplicated username.
+     */
     @Resource(name = "duplicateUsernameValidator")
     private Validator duplicateUsernameValidator;
 
+    /**
+     * To validate duplicated email.
+     */
     @Resource(name = "duplicateEmailValidator")
     private Validator duplicateEmailValidator;
 
+    /**
+     * To validate current login password.
+     */
     @Resource(name = "currentPasswordValidator")
     private Validator currentPasswordValidator;
 
+    /**
+     * To validate confirm password is the same as current password.
+     */
     @Resource(name = "confirmPasswordValidator")
     private Validator confirmPasswordValidator;
 
+    /**
+     * Initialise RegisterUserDTO to supply to the controller.
+     *
+     * @return new RegisterUserDTO object.
+     */
     @ModelAttribute("registerUserDTO")
     public RegisterUserDTO getRegisterUserDTO() {
         return new RegisterUserDTO();
     }
 
+    /**
+     * Initialise UpdateUserDTO to supply to the controller.
+     *
+     * @return new UpdateUserDTO object.
+     */
     @ModelAttribute("updateUserDTO")
     public UpdateUserDTO getUpdateUserDTO() {
         return new UpdateUserDTO();
     }
 
+    /**
+     * Initialise UpdatePasswordDTO to supply to the controller
+     *
+     * @return new UpdatePasswordDTO object.
+     */
     @ModelAttribute("updatePasswordDTO")
     public UpdatePasswordDTO getUpdatePasswordDTO() {
         return new UpdatePasswordDTO();
     }
 
+    /**
+     * Get login page. Based on the different Httpstatus code provided,
+     * notification message will be displayed based on the status code.<br>
+     * Status code is also applied to the servlet response.
+     *
+     * @param status   HttpStatus code
+     * @param logout   logout url
+     * @param response HttpServletResponse to set status code.
+     * @param model    Holder for model attributes.
+     * @return login page
+     */
     @RequestMapping(value = "/account/login")
     public String getLoginPage(
         @RequestParam(value = "status", required = false) Long status,
@@ -92,6 +133,13 @@ public class AccountController {
         return "account/login";
     }
 
+    /**
+     * Get registration form. Redirect to the last access page if user has
+     * already logged in.
+     *
+     * @param model Holder for model attributes.
+     * @return registraion form.
+     */
     @RequestMapping(value = "/account/register", method = RequestMethod.GET)
     public String getRegistrationForm(Model model) {
         if (SecurityUtils.isAuthenticated()) {
@@ -103,6 +151,13 @@ public class AccountController {
         return "account/register";
     }
 
+    /**
+     * Process registration form queries.
+     *
+     * @param registerUserDTO Registration form data.
+     * @return redirect to register page if there is any validation error,
+     * otherwise, redirect to index page.
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/account/register")
     public String register(
         @Validated @ModelAttribute("registerUserDTO") RegisterUserDTO registerUserDTO,
@@ -118,11 +173,18 @@ public class AccountController {
             User user = new User(registerUserDTO.getUsername(), registerUserDTO.getPassword(), registerUserDTO.getEmail(), registerUserDTO.getName(), true);
             user.addAuthority(authorityService.getUser());
             userService.create(user);
-            LOGGER.debug("New users registered: " + registerUserDTO.toString());
             return "redirect:/index";
         }
     }
 
+    /**
+     * Get user profile.
+     *
+     * @param id the requested user's id.
+     * @return Get the requested user's profile
+     * @throws BadRequestException       if user try to access other's profile.
+     * @throws ResourceNotFoundException if user id does not exist.
+     */
     @RequestMapping(value = "/account/{id}/profile", method = RequestMethod.GET)
     public String profile(@PathVariable("id") long id, Model model) {
         Optional<User> maybeUser = userService.findOne(id);
@@ -138,6 +200,14 @@ public class AccountController {
         throw new ResourceNotFoundException("User (id: " + id + ") does not exist!");
     }
 
+    /**
+     * Get the update page of the requested user profile.
+     *
+     * @param id the requested user's id.
+     * @return Get the update page of the requested user profile.
+     * @throws BadRequestException       if user try to access other's profile.
+     * @throws ResourceNotFoundException if user id does not exist.
+     */
     @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
     public String view(@PathVariable("id") long id, Model model) {
         Optional<User> maybeUser = userService.findOne(id);
@@ -153,6 +223,15 @@ public class AccountController {
         throw new ResourceNotFoundException("User (id: " + id + ") does not exist!");
     }
 
+    /**
+     * Update the current user profile information.
+     *
+     * @param id            the requested user's id.
+     * @param updateUserDTO Update form data.
+     * @return redirect to update page if there is any validation error,
+     * otherwise, redirect to index page.
+     * @throws ResourceNotFoundException if user id does not exist.
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/account/{id}")
     public String update(
         @PathVariable("id") long id,
@@ -166,7 +245,7 @@ public class AccountController {
         }
         User user = maybeUser.get();
         if (!(SecurityUtils.isAuthenticated() &&
-            SecurityUtils.getCurrentUsername().equals(user.getUsername()))){
+            SecurityUtils.getCurrentUsername().equals(user.getUsername()))) {
             throw new BadRequestException("You are not authorised to see this page");
         }
 
@@ -187,11 +266,17 @@ public class AccountController {
             user.setName(updateUserDTO.getName());
             user.setEmail(updateUserDTO.getEmail());
             userService.update(user);
-            LOGGER.debug("User: " + user.getId() + ", has been updated");
             return "redirect:/index";
         }
     }
 
+    /**
+     * Get update password page.
+     *
+     * @param id the requested user's id.
+     * @return update password page.
+     * @throws ResourceNotFoundException if user id does not exist.
+     */
     @RequestMapping(value = "/account/{id}/password")
     public String getUpdatePasswordPage(@PathVariable("id") long id, Model model) {
         Optional<User> maybeUser = this.userService.findOne(id);
@@ -202,6 +287,15 @@ public class AccountController {
         return "account/update_password";
     }
 
+    /**
+     * Update password of the current user.
+     *
+     * @param id                the requested user's id.
+     * @param updatePasswordDTO update password form data.
+     * @return redirect to update password page if there is any validation error,
+     * otherwise, redirect to user's profile.
+     * @throws ResourceNotFoundException if user id does not exist.
+     */
     @RequestMapping(value = "/account/{id}/password", method = RequestMethod.POST)
     public String updatePassword(
         @PathVariable("id") long id,
@@ -214,7 +308,7 @@ public class AccountController {
 
         User user = maybeUser.get();
         if (!(SecurityUtils.isAuthenticated() &&
-            SecurityUtils.getCurrentUsername().equals(user.getUsername()))){
+            SecurityUtils.getCurrentUsername().equals(user.getUsername()))) {
             throw new BadRequestException("You are not authorised to see this page");
         }
 
@@ -227,7 +321,6 @@ public class AccountController {
             user.setPassword(updatePasswordDTO.getPassword());
             this.userService.updatePassword(user);
             this.userService.update(user);
-            LOGGER.debug("Password of User {id: " + id + "} has been updated");
             return "redirect:/account/" + id;
         }
     }

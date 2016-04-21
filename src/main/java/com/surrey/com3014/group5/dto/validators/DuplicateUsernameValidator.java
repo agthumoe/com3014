@@ -8,6 +8,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
+ * Validate the provided username has already been register.
+ *
  * @author Aung Thu Moe
  */
 @Component("duplicateUsernameValidator")

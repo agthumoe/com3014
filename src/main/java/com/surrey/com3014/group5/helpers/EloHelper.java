@@ -1,6 +1,8 @@
 package com.surrey.com3014.group5.helpers;
 
 /**
+ * Elo helper to calculate game ranking. We got the logic and the code from the provided links.
+ *
  * @author Spyridon Balkonis
  * @author Aung Thu Moe
  * @see <a href="https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/">How to calculate elo rating</a>
@@ -26,6 +28,17 @@ public class EloHelper {
      */
     public EloHelper(double rating) {
         this.rating = rating;
+    }
+
+    /**
+     * A helper method to adjust the scores of a winner and loser.
+     *
+     * @param winner The player that won
+     * @param loser  The player that lost
+     */
+    public static void adjust(EloHelper winner, EloHelper loser) {
+        winner.adjustFromWin(loser);
+        loser.adjustFromLoss(winner);
     }
 
     /**
@@ -94,17 +107,6 @@ public class EloHelper {
      */
     public void adjustFromLoss(EloHelper opponent) {
         this.setRating(this.newRatingLoss(opponent));
-    }
-
-    /**
-     * A helper method to adjust the scores of a winner and loser.
-     *
-     * @param winner The player that won
-     * @param loser  The player that lost
-     */
-    public static void adjust(EloHelper winner, EloHelper loser) {
-        winner.adjustFromWin(loser);
-        loser.adjustFromLoss(winner);
     }
 
 }

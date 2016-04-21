@@ -33,7 +33,8 @@ public class ErrorDTO implements Serializable {
 
     /**
      * Create errors message.
-     * @param status Http response status
+     *
+     * @param status  Http response status
      * @param message detailed errors message
      */
     public ErrorDTO(HttpStatus status, String message) {
@@ -41,8 +42,10 @@ public class ErrorDTO implements Serializable {
         this.message = message;
         this.error = status.getReasonPhrase();
     }
+
     /**
      * Get Http status code
+     *
      * @return Http status code
      */
     public final int getStatus() {
@@ -51,6 +54,7 @@ public class ErrorDTO implements Serializable {
 
     /**
      * String representation of Http status code
+     *
      * @return string representation of Http status code
      */
     public final String getError() {
@@ -59,6 +63,7 @@ public class ErrorDTO implements Serializable {
 
     /**
      * Get detailed errors message of the exception
+     *
      * @return detailed errors message
      */
     public String getMessage() {

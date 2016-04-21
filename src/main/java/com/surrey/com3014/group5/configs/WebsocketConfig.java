@@ -32,11 +32,6 @@ import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
     /**
-     * IP Address attribute label to be used.
-     */
-    public static final String IP_ADDRESS = "IP_ADDRESS";
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -63,21 +58,6 @@ public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
                     }
                     return principal;
                 }
-            }).withSockJS().setInterceptors(new HandshakeInterceptor() {
-            @Override
-            public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                           WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-                if (request instanceof ServletServerHttpRequest) {
-                    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-                    attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
-                }
-                return true;
-            }
-
-            @Override
-            public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                       WebSocketHandler wsHandler, Exception exception) {
-            }
-        });
+            }).withSockJS();
     }
 }

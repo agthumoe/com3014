@@ -144,7 +144,6 @@ $(function () {
                     });
                 $('body > div.container').prepend($notification);
                 $notification.slideDown();
-                $notification.remove();
 
                 var that = this;
                 setTimeout(function () {
@@ -248,7 +247,7 @@ $(function () {
                 }));
 
                 this._$challengeModal.modal('hide');
-
+                $('.alert').remove();
                 var $notification = $('<div />').addClass('alert alert-success')
                     .html('Prepare to play!')
                     .css({

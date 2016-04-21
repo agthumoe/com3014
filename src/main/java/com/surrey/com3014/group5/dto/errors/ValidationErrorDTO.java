@@ -28,6 +28,7 @@ public class ValidationErrorDTO extends ErrorDTO {
 
     /**
      * Create a new validation errors message.
+     *
      * @param status Http response status
      */
     public ValidationErrorDTO(HttpStatus status) {
@@ -37,8 +38,9 @@ public class ValidationErrorDTO extends ErrorDTO {
 
     /**
      * Add new validation errors message.
+     *
      * @param propertyName which failed the validation
-     * @param message detailed errors message
+     * @param message      detailed errors message
      */
     public void addMessage(final String propertyName, final String message) {
         if (null == propertyName || null == message) throw new NullPointerException("key or value must not be null");
@@ -47,6 +49,7 @@ public class ValidationErrorDTO extends ErrorDTO {
 
     /**
      * Get validation errors messages.
+     *
      * @return validation errors messages
      */
     @JsonProperty("messages")

@@ -22,18 +22,13 @@ public class UpdateUserDTO extends UserDTO implements Verifiable {
         this.currentPassword = null;
     }
 
-    public UpdateUserDTO(long id, String username, String email, String name, String currentPassword) {
-        super(id, username, email, name);
-        this.currentPassword = currentPassword;
+    @Override
+    public String getCurrentPassword() {
+        return this.currentPassword;
     }
 
     @Override
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
-    }
-
-    @Override
-    public String getCurrentPassword() {
-        return this.currentPassword;
     }
 }

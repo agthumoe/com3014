@@ -13,21 +13,36 @@ import static com.surrey.com3014.group5.security.AuthoritiesConstants.ADMIN;
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.USER;
 
 /**
+ * Implementation of AuthorityService.
+ *
  * @author Aung Thu Moe
+ * @see AuthorityService
  */
 @Service
 public class AuthorityServiceImpl extends AbstractService<Authority> implements AuthorityService {
 
+    /**
+     * Create a new AuthorityService with the AuthorityRepository
+     *
+     * @param repository AuthorityRepository to access authority data from persistent storage.
+     */
     @Autowired
     public AuthorityServiceImpl(Repository<Authority> repository) {
         super(repository);
     }
 
-    @Override
-    public AuthorityRepository getAuthorityRepository() {
+    /**
+     * Get AuthorityRepository
+     *
+     * @return AuthorityRepository
+     */
+    private AuthorityRepository getAuthorityRepository() {
         return (AuthorityRepository) super.getRepository();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Authority getAdmin() {
         Optional<Authority> maybe = getAuthorityRepository().findByType(ADMIN);
@@ -37,6 +52,9 @@ public class AuthorityServiceImpl extends AbstractService<Authority> implements 
         throw new IllegalArgumentException("datasource is not properly setup");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Authority getUser() {
         Optional<Authority> maybe = getAuthorityRepository().findByType(USER);

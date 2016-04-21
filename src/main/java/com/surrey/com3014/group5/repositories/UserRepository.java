@@ -31,11 +31,35 @@ public interface UserRepository extends Repository<User> {
      */
     Optional<User> findByEmail(String email);
 
-    List<User> findByUsernameContaining(String username);
+    /**
+     * Find by username containing the query provided.
+     *
+     * @param query to be searched by
+     * @return List of user satisfying the query.
+     */
+    List<User> findByUsernameContaining(String query);
 
-    List<User> findByEmailContaining(String email);
+    /**
+     * Find by email containing the query provided.
+     *
+     * @param query to be searched by
+     * @return List of user satisfying the query.
+     */
+    List<User> findByEmailContaining(String query);
 
-    List<User> findByNameContaining(String name);
+    /**
+     * find by name containing the query provided.
+     *
+     * @param query to be searched by
+     * @return List of user satisfying the query.
+     */
+    List<User> findByNameContaining(String query);
 
+    /**
+     * Find by enabled (user status)
+     *
+     * @param enabled user status
+     * @return List of user of the provided user status.
+     */
     List<User> findByEnabled(boolean enabled);
 }
