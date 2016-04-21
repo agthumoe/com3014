@@ -41,7 +41,6 @@ $('document').ready(function () {
             url: url,
             type: 'GET',
             success: function (response) {
-                console.log(response);
                 var tbody = $('#user-table tbody');
                 tbody.html("");
                 var list = response.hasOwnProperty('pagedList') ? response.pagedList : response;

@@ -135,6 +135,7 @@ $(function () {
              * @returns this
              */
             _commandAcceptedChallenge: function (response) {
+                $(".alert").remove();
                 var $notification = $('<div />').addClass('alert alert-success')
                     .html('<strong>' + response.challenged.name + '</strong> accepted your ' +
                         'invitation. Prepare to play!')
@@ -143,6 +144,7 @@ $(function () {
                     });
                 $('body > div.container').prepend($notification);
                 $notification.slideDown();
+                $notification.remove();
 
                 var that = this;
                 setTimeout(function () {
@@ -160,6 +162,7 @@ $(function () {
              * @returns this
              */
             _commandDeniedChallenge: function (response) {
+                $(".alert").remove();
                 var $notification = $('<div />').addClass('alert alert-warning')
                     .html('<strong>' + response.challenged.name + '</strong> declined your ' +
                         'invitation.')
@@ -168,6 +171,7 @@ $(function () {
                     });
                 $('body > div.container').prepend($notification);
                 $notification.slideDown();
+                console.log("denied");
                 setTimeout(function () {
                     $notification.slideUp();
                     $notification.remove();
@@ -184,6 +188,7 @@ $(function () {
              * @returns this
              */
             _handleTimeoutChallenge: function (name) {
+                $(".alert").remove();
                 var $notification = $('<div />').addClass('alert alert-info')
                     .css({
                         display: 'none'

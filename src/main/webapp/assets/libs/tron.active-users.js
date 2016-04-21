@@ -58,9 +58,9 @@ $(function () {
              * @param onlineUsersID The ID of the div containing online users.
              * @return void
              */
-            init: function (onlineUsersID, challengeCallback) {
+            init: function (currentUser, onlineUsersID, challengeCallback) {
                 var that = this;
-
+                this._currentUser = currentUser;
                 this._challengeCallback = challengeCallback;
 
                 // Wrap the online users div in jQuery object.
@@ -110,6 +110,9 @@ $(function () {
 
                 // Add the users to the DOM and to the internal cache so we can track them easily.
                 for (var i in usersToAdd) {
+                    if (this._currentUser.username === usersToAdd[i].username) {
+                        continue;
+                    }
                     this._activeUsersCache.push(usersToAdd[i].username);
 
                     var li = $('<li />')
