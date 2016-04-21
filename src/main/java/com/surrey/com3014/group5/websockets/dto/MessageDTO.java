@@ -1,7 +1,7 @@
 package com.surrey.com3014.group5.websockets.dto;
 
 import java.io.Serializable;
-
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 /**
  * @author Aung Thu Moe
  */
@@ -11,7 +11,7 @@ public class MessageDTO implements Serializable {
     private String message;
 
     public String getMessage() {
-        return message;
+        return escapeHtml4(message);
     }
 
     public void setMessage(String message) {
