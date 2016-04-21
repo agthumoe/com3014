@@ -131,6 +131,7 @@ public class UserResource {
         @RequestParam(value = "filter") String filter,
         @RequestParam(value = "limit", required = false, defaultValue = "10") long limit) {
         filterBy = filterBy.toLowerCase().trim();
+        LOGGER.debug("filterBy: {}", filterBy);
         List<User> users = new ArrayList<>();
         if (filterBy.equals("username")) {
             users = userService.findByUsernameContaining(filter);
@@ -139,13 +140,15 @@ public class UserResource {
         } else if (filterBy.equals("name")) {
             users = userService.findByNameContaining(filter);
         } else if (filterBy.equals("enabled")) {
-            boolean enabled = Boolean.parseBoolean(filter);
+            final boolean enabled = filter.equals("true") || filter.equals("1") || filter.equals("yes");
             users = userService.findByEnabled(enabled);
         }
         List<ManagedUserDTO> managedUserDTOs = new ArrayList<>();
         for (int i = 0; i < users.size() && i < limit; i++) {
             managedUserDTOs.add(new ManagedUserDTO(users.get(i)));
         }
-        return ResponseEntity.ok(managedUserDTOs);
+        PagedListDTO<ManagedUserDTO> pagedListDTO = new PagedListDTO<>();
+        pagedListDTO.setPagedList(managedUserDTOs);
+        return ResponseEntity.ok(pagedListDTO);
     }
 }

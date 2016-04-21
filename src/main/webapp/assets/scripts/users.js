@@ -4,10 +4,18 @@ $('document').ready(function () {
     deleteModal.modal({show: false});
     notification.hide();
 
-    (function populateUsersTable(pageNumber) {
-        var paginationUrl = '/api/users?page=' + pageNumber + '&size=10&sort=id,asc';
+    function paginate(data) {
+        $('#pagination').pagination({
+            totalPage: data.totalPages,
+            callback: function (currentPage) {
+                populateUsersTable(currentPage - 1);
+            }
+        });
+    }
+
+    function queryUsers(url, callback) {
         $.ajax({
-            url: paginationUrl,
+            url: url,
             type: 'GET',
             success: function (data) {
                 var tbody = $('#user-table tbody');
@@ -44,7 +52,7 @@ $('document').ready(function () {
                                             notification.alert('close');
                                         });
                                         // refresh the page or clear and reload the table
-                                        populateUsersTable(pageNumber);
+                                        queryUsers(url, callback);
                                     }
                                 });
                             });
@@ -76,13 +84,34 @@ $('document').ready(function () {
                             )
                     );
                 });
-                $('#pagination').pagination({
-                    totalPage: data.totalPages,
-                    callback: function (currentPage) {
-                        populateUsersTable(currentPage - 1);
-                    }
-                });
+                $('#pagination').html("");
+                if (typeof callback !== 'undefined') {
+                    callback(data);
+                }
             }
         });
-    })(0);
+    }
+
+    function populateUsersTable(pageNumber) {
+        var paginationUrl = '/api/users?page=' + pageNumber + '&size=10&sort=id,asc';
+        queryUsers(paginationUrl, paginate);
+    }
+
+    $('#btn-filter').click(function () {
+        var filterBy = $('#filter_by option:selected').val();
+        var filter = $('#filter_type').val();
+        var limit = $('#filter_limit').val();
+        var url = '/api/users/filter?filterBy=' + filterBy + '&filter=' + filter + '&limit=' + limit;
+        console.log(url);
+        queryUsers(url);
+    });
+
+    $('#btn-reset-filter').click(function () {
+        populateUsersTable(0);
+        $('#filter_by option:selected').val("username");
+        $('#filter_type').val("");
+        $('#filter_limit').val(10);
+    });
+
+    populateUsersTable(0);
 });
