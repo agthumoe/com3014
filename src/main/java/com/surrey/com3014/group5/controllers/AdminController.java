@@ -205,7 +205,7 @@ public class AdminController {
                 userService.updatePassword(user);
             }
             userService.update(user);
-            return "redirect:/admin/index";
+            return "redirect:/admin/users";
         }
     }
 }

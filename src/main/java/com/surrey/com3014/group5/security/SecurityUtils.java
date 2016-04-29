@@ -1,5 +1,6 @@
 package com.surrey.com3014.group5.security;
 
+import com.surrey.com3014.group5.models.impl.Authority;
 import com.surrey.com3014.group5.models.impl.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Set;
 
 import static com.surrey.com3014.group5.security.AuthoritiesConstants.ANONYMOUS;
 
@@ -79,5 +81,20 @@ public final class SecurityUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Check if the current user has ADMIN role
+     *
+     * @return true if the current login user is ADMIN, false if the login user has only USER role or ANONYMOUS.
+     */
+    public static boolean isAdmin() {
+        final Set<Authority> authorities = getCurrentUser().getAuthorities();
+        for (Authority authority: authorities) {
+            if (authority.getAuthority().equals(AuthoritiesConstants.ADMIN)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

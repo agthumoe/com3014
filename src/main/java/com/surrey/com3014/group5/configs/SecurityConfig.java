@@ -1,6 +1,7 @@
 package com.surrey.com3014.group5.configs;
 
 import com.surrey.com3014.group5.security.AuthenticationFailureHandler;
+import com.surrey.com3014.group5.security.AuthenticationSuccessHandler;
 import com.surrey.com3014.group5.security.SecureAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SessionRegistry sessionRegistry;
 
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+
     /**
      * Autowired
      * {@link com.surrey.com3014.group5.security.AuthenticationFailureHandler}
@@ -106,6 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
             .authorizeRequests()
                 .antMatchers("/admin/**").hasAuthority(ADMIN)
+                .antMatchers("/swagger-ui/**").hasAuthority(ADMIN)
                 .antMatchers("/game/**").hasAuthority(USER)
                 .antMatchers("/lobby/**").hasAuthority(USER)
                 .antMatchers("/api/**").authenticated()
@@ -130,6 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .usernameParameter("username")
             .passwordParameter("currentPassword")
                 .failureHandler(authenticationFailureHandler)
+                .successHandler(authenticationSuccessHandler)
                 .permitAll()
         .and()
             .csrf().disable(); // disable csrf for the time being

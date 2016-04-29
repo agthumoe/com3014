@@ -143,7 +143,10 @@ public class AccountController {
     @RequestMapping(value = "/account/register", method = RequestMethod.GET)
     public String getRegistrationForm(Model model) {
         if (SecurityUtils.isAuthenticated()) {
-            return "redirect:/";
+            if (SecurityUtils.isAdmin()) {
+                return "redirect:/admin/users";
+            }
+            return "redirect:/lobby";
         }
 
         model.addAttribute("title", "User Registration");
@@ -156,7 +159,7 @@ public class AccountController {
      *
      * @param registerUserDTO Registration form data.
      * @return redirect to register page if there is any validation error,
-     * otherwise, redirect to index page.
+     * otherwise, redirect to lobby page.
      */
     @RequestMapping(method = RequestMethod.POST, value = "/account/register")
     public String register(
@@ -173,7 +176,7 @@ public class AccountController {
             User user = new User(registerUserDTO.getUsername(), registerUserDTO.getPassword(), registerUserDTO.getEmail(), registerUserDTO.getName(), true);
             user.addAuthority(authorityService.getUser());
             userService.create(user);
-            return "redirect:/index";
+            return "redirect:/lobby";
         }
     }
 
@@ -266,7 +269,7 @@ public class AccountController {
             user.setName(updateUserDTO.getName());
             user.setEmail(updateUserDTO.getEmail());
             userService.update(user);
-            return "redirect:/index";
+            return "redirect:/account/" + id + "/profile";
         }
     }
 
@@ -321,7 +324,7 @@ public class AccountController {
             user.setPassword(updatePasswordDTO.getPassword());
             this.userService.updatePassword(user);
             this.userService.update(user);
-            return "redirect:/account/" + id;
+            return "redirect:/account/" + id + "/profile";
         }
     }
 

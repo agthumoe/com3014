@@ -1,5 +1,6 @@
 package com.surrey.com3014.group5.controllers;
 
+import com.surrey.com3014.group5.security.SecurityUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +15,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
 
     /**
-     * Get index page.
+     * Redirect to login page if user hasn't logged in yet.
+     * Redirect to dashboard if user has logged in and has ADMIN role.
+     * Redirect to lobby page if user has logged in and has USER role.
      *
-     * @return index page.
+     * @return appropiate page based on authentication and authorization.
      */
     @RequestMapping({"/", "index"})
     public String index() {
-        return "index";
+        if (SecurityUtils.isAuthenticated()) {
+            if (SecurityUtils.isAdmin()) {
+                return "redirect:/admin/users";
+            }
+            return "redirect:/lobby";
+        }
+        return "redirect:/account/login";
     }
 
     /**

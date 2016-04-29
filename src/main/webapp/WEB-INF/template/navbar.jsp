@@ -20,14 +20,6 @@
 
             <div class="collapse navbar-collapse" id="js-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <c:choose>
-                        <c:when test="${param.active == 'game_info'}">
-                            <li class="active"><a href="#">Game Info</a></li>
-                        </c:when>
-                        <c:otherwise>
-                            <li><a href="/">Game Info</a></li>
-                        </c:otherwise>
-                    </c:choose>
                     <sec:authorize access="isAuthenticated()">
                         <c:choose>
                             <c:when test="${param.active == 'lobby'}">
