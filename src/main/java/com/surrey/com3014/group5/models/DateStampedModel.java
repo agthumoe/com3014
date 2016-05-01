@@ -14,7 +14,7 @@ import java.util.Date;
  * @author Spyros Balkonis
  */
 @MappedSuperclass
-public class DateStampedModel extends Model {
+public abstract class DateStampedModel extends Model {
 
     private static final long serialVersionUID = 7177871077863701747L;
 
