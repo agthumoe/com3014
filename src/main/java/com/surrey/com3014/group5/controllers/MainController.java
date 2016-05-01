@@ -63,4 +63,9 @@ public class MainController {
         model.addAttribute("gameID", gameID);
         return "game";
     }
+
+    @RequestMapping("/swagger")
+    public String swagger() {
+        return "swagger/index";
+    }
 }

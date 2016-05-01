@@ -1,8 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec"
            uri="http://www.springframework.org/security/tags" %>
-<%@ page
-    import="com.surrey.com3014.group5.security.AuthoritiesConstants" %>
 <div class="header">
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container">
@@ -65,8 +63,7 @@
                                         Dashboard</a></li>
                                 </sec:authorize>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="/logout"><i class="fa fa-sign-out"></i>
-                                    Logout</a></li>
+                                <li><a href="#" id="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
                             </ul>
                         </li>
                     </sec:authorize>

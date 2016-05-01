@@ -1,4 +1,6 @@
 $('document').ready(function () {
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
     var deleteModal = $('#delete-modal');
     deleteModal.modal({show: false});
 
@@ -67,6 +69,9 @@ $('document').ready(function () {
                                 $.ajax({
                                     url: '/api/users/' + id,
                                     type: 'DELETE',
+                                    beforeSend: function (xhr) {
+                                        xhr.setRequestHeader(header, token);
+                                    },
                                     success: function () {
                                         deleteModal.modal("hide");
                                         notify("User has been deleted!", "info");
@@ -119,6 +124,18 @@ $('document').ready(function () {
         queryUsers(paginationUrl, paginate);
     }
 
+    function filter() {
+        var filterBy = $('#filter_by option:selected').val();
+        var filter = $('#filter_type').val();
+        var limit = $('#filter_limit').val();
+        var url = '/api/users/filter?filterBy=' + filterBy + '&filter=' + filter + '&limit=' + limit;
+        if (filter != '') {
+            queryUsers(url);
+        } else {
+            populateUsersTable(0);
+        }
+    }
+
     $('#btn-filter').click(function () {
         var filterBy = $('#filter_by option:selected').val();
         var filter = $('#filter_type').val();
@@ -127,6 +144,9 @@ $('document').ready(function () {
         queryUsers(url);
     });
 
+    $('#filter_type').keyup(function (e) {
+        filter();
+    });
     $('#btn-reset-filter').click(function () {
         populateUsersTable(0);
         $('#filter_by option:selected').val("username");

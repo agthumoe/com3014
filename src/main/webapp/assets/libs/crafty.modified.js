@@ -7725,7 +7725,7 @@ Crafty.c("HTML", {
      * ~~~
      * Crafty.e("HTML")
      *    .attr({x:20, y:20, w:100, h:100})
-     *    .replace("<a href='index.html'>Index</a>");
+     *    .replace("<a href='index.jsp'>Index</a>");
      * ~~~
      */
     replace: function (new_html) {
@@ -7747,7 +7747,7 @@ Crafty.c("HTML", {
      * ~~~
      * Crafty.e("HTML")
      *    .attr({x:20, y:20, w:100, h:100})
-     *    .append("<a href='index.html'>Index</a>");
+     *    .append("<a href='index.jsp'>Index</a>");
      * ~~~
      */
     append: function (new_html) {
@@ -7769,7 +7769,7 @@ Crafty.c("HTML", {
      * ~~~
      * Crafty.e("HTML")
      *    .attr({x:20, y:20, w:100, h:100})
-     *    .prepend("<a href='index.html'>Index</a>");
+     *    .prepend("<a href='index.jsp'>Index</a>");
      * ~~~
      */
     prepend: function (new_html) {

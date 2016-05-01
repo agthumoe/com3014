@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring()
             .antMatchers("/bower_components/**")
             .antMatchers("/assets/**")
-            .antMatchers("/swagger-ui/index.html");
+            .antMatchers("/swagger-ui/index.jsp");
     }
 
     /**
@@ -138,6 +138,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(authenticationSuccessHandler)
                 .permitAll()
         .and()
-            .csrf().disable(); // disable csrf for the time being
+            .csrf();
     }
 }

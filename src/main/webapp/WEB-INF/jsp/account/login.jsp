@@ -26,6 +26,7 @@
         <h2>Please Login</h2>
         <input type="text" class="form-control" id="username" name="username" placeholder="Username" required/>
         <input type="password" class="form-control" id="currentPassword" name="currentPassword" placeholder="Password" required/>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
     </form>
 </div>

@@ -176,7 +176,7 @@ public class AccountController {
             User user = new User(registerUserDTO.getUsername(), registerUserDTO.getPassword(), registerUserDTO.getEmail(), registerUserDTO.getName(), true);
             user.addAuthority(authorityService.getUser());
             userService.create(user);
-            return "redirect:/lobby";
+            return "redirect:/account/login";
         }
     }
 
