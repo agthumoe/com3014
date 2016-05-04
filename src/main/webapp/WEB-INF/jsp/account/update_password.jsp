@@ -36,7 +36,7 @@
 
             <spring:bind path="confirmPassword">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
-                    <label class="col-sm-4 control-label">Current Password</label>
+                    <label class="col-sm-4 control-label">Confirm Password</label>
                     <div class="col-sm-8">
                         <form:password path="confirmPassword" cssClass="form-control" id="confirmPassword"
                                     placeholder="Confirm Password" required="" />
