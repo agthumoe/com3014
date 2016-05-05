@@ -23,8 +23,11 @@
 </c:if>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="_csrf" content="${_csrf.token}"/>
-<meta name="_csrf_header" content="${_csrf.headerName}"/>
+<c:if test="${param.csrf_token == 'enabled'}">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+</c:if>
+
 <link rel="stylesheet" href="../../bower_components/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="../../assets/styles/main.css">
 <script src="../../bower_components/modernizr-built/dist/modernizr.min.js"></script>

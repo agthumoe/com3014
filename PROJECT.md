@@ -9,12 +9,14 @@ Swagger
 SASS
 
 ###### Libraries
-AngularJS
 jQuery
 CraftJS
+SockJS
+STOMP
 
 Spring Boot
 Spring Security
+Spring Websocket
 Hibernate
 Log4J
 

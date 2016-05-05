@@ -11,6 +11,9 @@
 </jsp:include>
 <div class="container">
     <h1 class="page-header">Help</h1>
+    <div class="alert alert-warning">
+        <strong>Note:</strong> Please use a modern web browser with Javascript enabled to play Tron Game.
+    </div>
     <h2>Registration</h2>
     <p>When first accessing the application the User will be asked to login. If not yet registered, a new user can
         create

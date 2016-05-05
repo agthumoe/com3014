@@ -40,20 +40,18 @@ public class UserResource {
     /**
      * Delete the user given the id
      */
-    @ApiOperation(value = "Delete specific user", notes = "This can only be done by logged in user with ADMIN permission")
+    @ApiOperation(value = "Delete specific user", notes = "This can only be done by logged in user with ADMIN permission. Need to disable CSRF token to test this feature")
     @ApiResponses(
         value = {
             @ApiResponse(code = 204, message = "User has been deleted"),
             @ApiResponse(code = 401, message = "You are not authorized to access this resource", response = ErrorDTO.class),
             @ApiResponse(code = 404, message = "The requested user with the provided information does not exist", response = ErrorDTO.class)
         })
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "User id to be deleted", dataType = "int", paramType = "query"),
-        @ApiImplicitParam(name = "X-CSRF-TOKEN", value = "CSRF Token", dataType = "string", paramType = "header")
-    })
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    public ResponseEntity<?> delete(
+        @ApiParam(value = "User id to be deleted", required = true)
+        @PathVariable("id") long id) {
         if (!SecurityUtils.isAuthenticated()) {
             return new ResponseEntity<>(new ErrorDTO(HttpStatus.UNAUTHORIZED, "You are not authorized to access this resource"), HttpStatus.UNAUTHORIZED);
         }
