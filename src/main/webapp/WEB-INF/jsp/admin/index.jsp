@@ -3,9 +3,7 @@
 <!doctype html>
 <html class="no-js" lang="en">
 <head>
-    <jsp:include page="../../template/head.jsp">
-        <jsp:param name="csrf_token" value='enabled'/>
-    </jsp:include>
+    <%@include file="../../template/head.jsp" %>
 </head>
 <%@include file="../../template/browserupgrade.jsp" %>
 <body>
